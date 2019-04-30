@@ -51,35 +51,15 @@
     worker-farm "^1.6.0"
     written-number "^0.9.1"
 
-"@etalab/adresses-util@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.5.0.tgz#52df48e3a361e2308a788cc833a2a29490c553db"
-  integrity sha512-QlbOtI6IXFrOwD21ZTfl0ioMa0Le06XqgA0eofnAv+brpwUDEcfYc8yhajfZwrEX5shV6ZtFkFg019wSTuvM/w==
+"@etalab/adresses-util@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.6.0.tgz#2841bc13196b02787bcc1088626ad843aab80d8f"
+  integrity sha512-iuGzP6HxxwENNpWjVPKxUfcjQUgcYL7UbWNIxeBCxeSrUqVKlChUouH867kvu3NIdiC8xbCqe5bufmwKDKhqLQ==
   dependencies:
-    "@etalab/cog" "^0.1.0"
-    "@etalab/fantoir" "^0.6.0"
-    "@etalab/normadresse" "^1.0.4"
-    "@etalab/project-legal" "^0.3.3"
     "@turf/distance" "^6.0.1"
-    JSONStream "^1.3.5"
-    bluebird "^3.5.4"
-    buffer-to-stream "^1.0.0"
-    codes-postaux "^3.0.0"
-    csv-parser "^2.2.0"
-    csv-write-stream "^2.0.0"
-    decompress "^4.2.0"
-    dotenv "^7.0.0"
-    fs-extra "^7.0.1"
-    geojson-stream "^0.1.0"
-    get-stream "^5.1.0"
-    gunzip-stream "^1.0.1"
-    into-stream "^5.1.0"
     leven "^3.1.0"
     lodash "^4.17.11"
-    ndjson "^1.5.0"
-    pumpify "^1.5.1"
     talisman "^0.21.0"
-    worker-farm "^1.6.0"
     written-number "^0.9.1"
 
 "@etalab/cog@^0.1.0":

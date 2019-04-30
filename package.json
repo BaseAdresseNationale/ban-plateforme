@@ -16,7 +16,7 @@
     "test": "xo"
   },
   "dependencies": {
-    "@etalab/adresses-util": "^0.5.0",
+    "@etalab/adresses-util": "^0.6.0",
     "@etalab/cog": "^0.2.0",
     "@etalab/fantoir": "^0.6.0",
     "@etalab/normadresse": "^1.0.4",
