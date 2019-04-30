@@ -1,5 +1,5 @@
 {
-  "name": "@etalab/adresse-merge",
+  "name": "@etalab/adresse-merger",
   "version": "0.0.0",
   "description": "Outil permettant de fusionner des données d'adresses",
   "main": "index.js",
