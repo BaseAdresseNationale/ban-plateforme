@@ -53,7 +53,7 @@ async function main() {
     }
   }
 
-  const farm = workerFarm(workerFarmOptions, require.resolve('../lib/merge/worker'))
+  const farm = workerFarm(workerFarmOptions, require.resolve('./lib/worker'))
   const runWorker = promisify(farm)
 
   await Promise.all(departements.map(async departement => {
