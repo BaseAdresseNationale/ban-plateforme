@@ -29,10 +29,10 @@
     talisman "^0.21.0"
     written-number "^0.9.1"
 
-"@etalab/cog@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@etalab/cog/-/cog-0.2.0.tgz#78813a69e7e32c0fe5dae4df1a232baba2ae5778"
-  integrity sha512-6TJcWqGWqdSS/hj0c0G9g7YRwDdHGX14pX2nS7d08+pOh844YpUR/YJ8b8AShLc07iQYlIYeHySYlVWqw1k7Eg==
+"@etalab/decoupage-administratif@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.5.1.tgz#292e0686225fb1d94b4e8c989b728d6f8727a07b"
+  integrity sha512-W1IOVpPNlCRLN2W+ImKX98qaBO1mEyWl01u7uifKF7+KUcPdXMQv8RkE/xNYJ+RVD13W4Px8ycBlP/N6yb6n9g==
 
 "@etalab/fantoir@^0.7.0":
   version "0.7.0"

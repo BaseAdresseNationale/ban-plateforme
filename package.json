@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@etalab/adresses-util": "^0.6.0",
-    "@etalab/cog": "^0.2.0",
+    "@etalab/decoupage-administratif": "^0.5.1",
     "@etalab/fantoir": "^0.7.0",
     "@etalab/normadresse": "^1.0.4",
     "@etalab/project-legal": "^0.3.3",
