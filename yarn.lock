@@ -45,10 +45,10 @@
     leven "^3.1.0"
     lodash "^4.17.11"
 
-"@etalab/gazetteer@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.3.tgz#b9dfd25a21269cfc912a09765dc281883c33986c"
-  integrity sha512-vIXwX3tr5RuWDY1j1loiJuhqSBPZwyMszJLZS/7x+gafTxFqEX9C70G3tWUlE/DhTunFLJO4dQiKRep8+0Evig==
+"@etalab/gazetteer@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.4.tgz#a98600686c6a6699e45254211311a114259681b4"
+  integrity sha512-rdEeE+PxT3Cxwx/u5V6AJqqKhlG+gt7a52IdVQXXkTPbiKWvSKuVic17BqYlFlhFVWlxdV6GQHpYb8My5ybpTg==
   dependencies:
     "@etalab/decoupage-administratif" "^0.6.2"
     "@keyv/sqlite" "^2.0.0"
