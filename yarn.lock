@@ -29,15 +29,15 @@
     talisman "^0.21.0"
     written-number "^0.9.1"
 
-"@etalab/decoupage-administratif@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.5.1.tgz#292e0686225fb1d94b4e8c989b728d6f8727a07b"
-  integrity sha512-W1IOVpPNlCRLN2W+ImKX98qaBO1mEyWl01u7uifKF7+KUcPdXMQv8RkE/xNYJ+RVD13W4Px8ycBlP/N6yb6n9g==
+"@etalab/decoupage-administratif@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.6.2.tgz#99d5482f05e206b6f9e6a2a56fa92bb83a9e7f1d"
+  integrity sha512-i/SteoVD/rhPZf1AZCvA86KfEVOWtOKkclUHoDUbWcqlvZrETHXvBtNRqUSMH4W6+0+HxVjlZMhYJamzaKwMTA==
 
-"@etalab/fantoir@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.7.0.tgz#3a2c3bf440c91d2cff5324aab2ab86846e1328f6"
-  integrity sha512-rT+VEDYPhfz860iqi2cItX3ZfCvb4tsgj6qVFzVc1J7T46aqHPwdKE5QzU2Lg0zw9Q3xRwkWQMhND0esTQJM8A==
+"@etalab/fantoir@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.7.1.tgz#726ca39e6f6491ccbd5527011c4a6faa99315249"
+  integrity sha512-UXX7jQnhJMJewFVYYECLOMfL8UdTn6N/VkrHM+gHbqXPLolOpgLcLYK/ZaiPXdT84PKqoH6I+KdKRu2yJ1kpgg==
   dependencies:
     "@etalab/adresses-util" "^0.6.0"
     "@keyv/sqlite" "^2.0.0"
@@ -45,12 +45,12 @@
     leven "^3.1.0"
     lodash "^4.17.11"
 
-"@etalab/gazetteer@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.2.tgz#734f6ed0de38966ec96a108207c0f7e83c3fe943"
-  integrity sha512-u7eA3mup1Rdedvz0PxFWMO8GI+ScFIxerVRvfJynnSk96LSQ/dKGMEAP2OlLulHmyswQHluEy/YUq5JYIx0KEA==
+"@etalab/gazetteer@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.3.tgz#b9dfd25a21269cfc912a09765dc281883c33986c"
+  integrity sha512-vIXwX3tr5RuWDY1j1loiJuhqSBPZwyMszJLZS/7x+gafTxFqEX9C70G3tWUlE/DhTunFLJO4dQiKRep8+0Evig==
   dependencies:
-    "@etalab/decoupage-administratif" "^0.5.1"
+    "@etalab/decoupage-administratif" "^0.6.2"
     "@keyv/sqlite" "^2.0.0"
     "@turf/boolean-point-in-polygon" "^6.0.1"
     flatbush "^3.1.1"
