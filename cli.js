@@ -49,7 +49,7 @@ async function main() {
     maxConcurrentCallsPerWorker,
     maxRetries: 0,
     workerOptions: {
-      execArgv: ['--max-old-space-size=8192']
+      execArgv: ['--max-old-space-size=4096']
     }
   }
 
