@@ -72,9 +72,7 @@ async function main() {
       sources,
       licences
     })
-  }))
-
-  workerFarm.end(farm)
+  })).finally(() => workerFarm.end(farm))
 }
 
 main()
