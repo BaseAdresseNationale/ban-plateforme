@@ -7,7 +7,8 @@ const {runInParallel} = require('../lib/cli/parallel')
 const DIST_PATTERNS = {
   'ban-v0': resolve(__dirname, '..', 'dist', 'ban-v0', 'adresses-{departement}.csv.gz'),
   bal: resolve(__dirname, '..', 'dist', 'bal', 'adresses-{departement}.csv.gz'),
-  geojson: resolve(__dirname, '..', 'dist', 'ban-v0', 'adresses-{departement}.geojson.gz')
+  geojson: resolve(__dirname, '..', 'dist', 'geojson', 'adresses-{departement}.geojson.gz'),
+  comparison: resolve(__dirname, '..', 'dist', 'comparison', 'adresses-{departement}.csv.gz')
 }
 
 async function main() {
