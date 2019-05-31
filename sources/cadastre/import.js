@@ -4,7 +4,6 @@ const {createGunzip} = require('gunzip-stream')
 const pumpify = require('pumpify')
 const getStream = require('get-stream')
 const {parse} = require('ndjson')
-const recomputeCodesVoies = require('../processing/recompute-codes-voies')
 
 function prepareData(addr, enc, next) {
   if (addr.numeroComplet.startsWith('X')) {
@@ -29,15 +28,14 @@ function prepareData(addr, enc, next) {
   next(null, adresse)
 }
 
-async function load(path) {
+async function importData(path) {
   const adresses = await getStream.array(pumpify.obj(
     createReadStream(path),
     createGunzip(),
     parse(),
     new Transform({objectMode: true, transform: prepareData})
   ))
-  recomputeCodesVoies(adresses)
   return adresses
 }
 
-module.exports = load
+module.exports = importData

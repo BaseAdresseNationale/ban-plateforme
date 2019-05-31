@@ -5,7 +5,6 @@ const {createGunzip} = require('gunzip-stream')
 const pumpify = require('pumpify')
 const parse = require('csv-parser')
 const getStream = require('get-stream')
-const recomputeCodesVoies = require('../processing/recompute-codes-voies')
 
 function prepareData(item, enc, next) {
   const adresse = {
@@ -30,7 +29,7 @@ function prepareData(item, enc, next) {
   next(null, adresse)
 }
 
-async function load(path) {
+async function importData(path) {
   if (!(await pathExists(path))) {
     return []
   }
@@ -41,8 +40,7 @@ async function load(path) {
     parse({separator: ';'}),
     new Transform({objectMode: true, transform: prepareData})
   ))
-  await recomputeCodesVoies(adresses)
   return adresses
 }
 
-module.exports = load
+module.exports = importData

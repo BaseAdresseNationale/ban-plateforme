@@ -5,8 +5,6 @@ const {createGunzip} = require('gunzip-stream')
 const pumpify = require('pumpify')
 const {parse} = require('geojson-stream')
 const getStream = require('get-stream')
-const removeStacked = require('../processing/remove-stacked')
-const recomputeCodesVoies = require('../processing/recompute-codes-voies')
 
 function prepareData(feature, enc, next) {
   const props = feature.properties
@@ -31,7 +29,7 @@ function prepareData(feature, enc, next) {
   next(null, adresse)
 }
 
-async function load(path) {
+async function importData(path) {
   if (!(await pathExists(path))) {
     return []
   }
@@ -42,8 +40,7 @@ async function load(path) {
     parse(),
     new Transform({objectMode: true, transform: prepareData})
   ))
-  await recomputeCodesVoies(adresses)
-  return removeStacked(adresses, 'ftth')
+  return adresses
 }
 
-module.exports = load
+module.exports = importData
