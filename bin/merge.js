@@ -15,8 +15,7 @@ async function main() {
 
   await runInParallel(
     require.resolve('../lib/merge'),
-    communes.map(codeCommune => ({codeCommune, sources, licences})),
-    {maxConcurrentCallsPerWorker: 2}
+    communes.map(codeCommune => ({codeCommune, sources, licences}))
   )
 }
 
