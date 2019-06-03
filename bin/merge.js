@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 require('dotenv').config()
-const {MergeDb} = require('../lib/db')
 const {getCommunes} = require('../lib/cli/util')
 const {runInParallel} = require('../lib/cli/parallel')
 
 async function main() {
-  const mergeDb = new MergeDb('default')
-  await mergeDb.clear()
-
   const communes = getCommunes()
 
   if (!process.env.SOURCES) {
