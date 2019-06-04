@@ -15,7 +15,8 @@ async function main() {
 
   await runInParallel(
     require.resolve('../lib/merge'),
-    communes.map(codeCommune => ({codeCommune, sources, licences}))
+    communes.map(codeCommune => ({codeCommune, sources, licences})),
+    {maxWorkerMemory: 3072}
   )
 }
 
