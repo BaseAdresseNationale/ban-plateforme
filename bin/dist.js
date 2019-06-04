@@ -28,6 +28,8 @@ async function main() {
       outputPath: DIST_PATTERNS[distName].replace('{departement}', departement)
     }))
   )
+
+  process.exit(0)
 }
 
 main()

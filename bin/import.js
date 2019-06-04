@@ -25,6 +25,8 @@ async function main() {
     sourceName,
     sourcePath: sourcePattern.replace('{dep}', departement)
   })))
+
+  process.exit(0)
 }
 
 main()

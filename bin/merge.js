@@ -18,6 +18,8 @@ async function main() {
     communes.map(codeCommune => ({codeCommune, sources, licences})),
     {maxWorkerMemory: 3072}
   )
+
+  process.exit(0)
 }
 
 main()
