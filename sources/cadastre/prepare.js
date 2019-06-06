@@ -4,7 +4,7 @@ const updateCommunes = require('../../lib/processing/update-communes')
 async function prepareData(adressesCommune) {
   await updateCommunes(adressesCommune)
   await recomputeCodesVoies(adressesCommune)
-  return adressesCommune
+  return {adresses: adressesCommune, stats: {}}
 }
 
 module.exports = prepareData

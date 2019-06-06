@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 require('dotenv').config()
+const {outputJson} = require('fs-extra')
 const {getCommunes} = require('../lib/cli/util')
 const {runInParallel} = require('../lib/cli/parallel')
 
@@ -13,13 +14,13 @@ async function main() {
   const sources = process.env.SOURCES.split(',')
   const licences = process.env.LICENCES ? process.env.LICENCES.split(',') : undefined
 
-  await runInParallel(
+  const communesStats = await runInParallel(
     require.resolve('../lib/merge'),
     communes.map(codeCommune => ({codeCommune, sources, licences})),
     {maxWorkerMemory: 3072}
   )
 
-  process.exit(0)
+  await outputJson('db/merge-default/stats.json', communesStats)
 }
 
 main()

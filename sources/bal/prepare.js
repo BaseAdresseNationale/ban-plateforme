@@ -14,7 +14,7 @@ async function prepareData(adressesCommune) {
 
   await updateCommunes(filteredAdresses)
   await recomputeCodesVoies(filteredAdresses)
-  return filteredAdresses
+  return {adresses: filteredAdresses, stats: {}}
 }
 
 module.exports = prepareData

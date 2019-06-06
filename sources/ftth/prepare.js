@@ -15,7 +15,7 @@ async function prepareData(adressesCommune) {
 
   await updateCommunes(filteredAdresses)
   await recomputeCodesVoies(filteredAdresses)
-  return removeStacked(filteredAdresses, 'ftth')
+  return {adresses: removeStacked(filteredAdresses, 'ftth'), stats: {}}
 }
 
 module.exports = prepareData
