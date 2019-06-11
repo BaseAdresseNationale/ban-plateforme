@@ -19,6 +19,7 @@
     "dist:bal": "DIST=bal node bin/dist",
     "dist:geojson": "DIST=geojson node bin/dist",
     "dist:comparison": "DIST=comparison node bin/dist",
+    "compare": "node bin/compare",
     "lint": "xo",
     "test": "xo"
   },
