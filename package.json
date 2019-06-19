@@ -12,6 +12,7 @@
   "scripts": {
     "import:bal": "SOURCE=bal node bin/import",
     "import:ban-v0": "SOURCE=ban-v0 node bin/import",
+    "import:ign-api-gestion": "SOURCE=ign-api-gestion node bin/import",
     "import:cadastre": "SOURCE=cadastre node bin/import",
     "import:ftth": "SOURCE=ftth node bin/import",
     "merge": "node bin/merge",

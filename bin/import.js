@@ -9,7 +9,8 @@ const SOURCES_PATTERNS = {
   'ban-v0': process.env.BANV0_PATH_PATTERN && resolve(process.env.BANV0_PATH_PATTERN),
   bal: process.env.BAL_PATH_PATTERN && resolve(process.env.BAL_PATH_PATTERN),
   cadastre: process.env.CADASTRE_PATH_PATTERN && resolve(process.env.CADASTRE_PATH_PATTERN),
-  ftth: process.env.FTTH_PATH_PATTERN && resolve(process.env.FTTH_PATH_PATTERN)
+  ftth: process.env.FTTH_PATH_PATTERN && resolve(process.env.FTTH_PATH_PATTERN),
+  'ign-api-gestion': process.env.IGN_API_GESTION_PATH_PATTERN && resolve(process.env.IGN_API_GESTION_PATH_PATTERN)
 }
 
 async function main() {
