@@ -11,17 +11,13 @@ function prepareData(feature, enc, next) {
 
   const adresse = {
     source: 'ftth',
-    originalId: props.id,
+    idAdresse: props.id,
     numero: props.numero,
     suffixe: props.suffixe,
     nomVoie: props.nomVoie,
     codeCommune: props.codeCommune,
     nomCommune: props.nomCommune,
     codePostal: props.codePostal || undefined,
-    extras: {
-      batiment: props.batiment,
-      pseudoCodeVoie: props.pseudoCodeVoie
-    },
     position: feature.geometry,
     licence: 'lov2'
   }

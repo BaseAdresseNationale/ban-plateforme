@@ -9,13 +9,12 @@ const getStream = require('get-stream')
 function prepareData(item, enc, next) {
   const adresse = {
     source: 'bal',
-    originalId: item.id,
+    idAdresse: item.id,
     numero: item.numero,
     suffixe: item.suffixe,
     nomVoie: item.nomVoie,
     codeCommune: item.codeCommune,
     nomCommune: item.nomCommune,
-    extras: {},
     licence: item.licence
   }
 
