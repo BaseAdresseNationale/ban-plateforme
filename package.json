@@ -27,7 +27,7 @@
   "dependencies": {
     "@etalab/adresses-util": "^0.6.0",
     "@etalab/decoupage-administratif": "^0.6.2",
-    "@etalab/fantoir": "^0.7.1",
+    "@etalab/fantoir": "^0.8.0",
     "@etalab/gazetteer": "^0.0.4",
     "@etalab/normadresse": "^1.0.4",
     "@etalab/project-legal": "^0.3.3",
@@ -46,7 +46,7 @@
     "into-stream": "^5.1.0",
     "lodash": "^4.17.11",
     "ndjson": "^1.5.0",
-    "pumpify": "^1.5.1",
+    "pumpify": "^2.0.0",
     "worker-farm": "^1.7.0"
   },
   "devDependencies": {
