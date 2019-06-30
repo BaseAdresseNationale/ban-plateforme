@@ -43,8 +43,7 @@ async function importData(pathPattern) {
       nomVoie: row.nom_voie,
       codePostal: row.code_postal,
       codeCommune: row.code_insee,
-      nomCommune: row.nom_commune,
-      nomAncienneCommune: row.nom_complementaire
+      nomCommune: row.nom_commune
     }
 
     if (row.id_ban_position) {
