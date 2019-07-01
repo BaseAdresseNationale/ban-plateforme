@@ -21,6 +21,7 @@
     "dist:geojson": "DIST=geojson node bin/dist",
     "dist:comparison": "DIST=comparison node bin/dist",
     "compare": "node bin/compare",
+    "compose": "node bin/compose",
     "lint": "xo",
     "test": "xo"
   },
@@ -44,6 +45,7 @@
     "get-stream": "^5.1.0",
     "gunzip-stream": "^1.0.1",
     "into-stream": "^5.1.0",
+    "leven": "^3.1.0",
     "lodash": "^4.17.11",
     "ndjson": "^1.5.0",
     "pumpify": "^2.0.0",
