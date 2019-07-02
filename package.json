@@ -19,8 +19,6 @@
     "dist:ban-v0": "DIST=ban-v0 node bin/dist",
     "dist:bal": "DIST=bal node bin/dist",
     "dist:geojson": "DIST=geojson node bin/dist",
-    "dist:comparison": "DIST=comparison node bin/dist",
-    "compare": "node bin/compare",
     "compose": "node bin/compose",
     "lint": "xo",
     "test": "xo"
