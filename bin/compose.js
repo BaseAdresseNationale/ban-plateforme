@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 require('dotenv').config()
-const {getCommunes} = require('../lib/cli/util')
-const {runInParallel} = require('../lib/cli/parallel')
+const {getCommunes} = require('../lib/util/cli')
+const {runInParallel} = require('../lib/util/parallel')
 
 async function main() {
   const communes = getCommunes()

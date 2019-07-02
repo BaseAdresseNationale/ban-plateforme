@@ -2,8 +2,8 @@
 require('dotenv').config()
 const {join} = require('path')
 const {outputJson} = require('fs-extra')
-const {getDepartements} = require('../lib/cli/util')
-const {runInParallel} = require('../lib/cli/parallel')
+const {getDepartements} = require('../lib/util/cli')
+const {runInParallel} = require('../lib/util/parallel')
 const {getDepartementFeature} = require('../lib/compare/geojson')
 
 const COMPARE_PATH = join(__dirname, '..', 'dist', 'compare')

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 require('dotenv').config()
 const {resolve} = require('path')
-const {SourceDb} = require('../lib/db')
-const {getDepartements} = require('../lib/cli/util')
-const {runInParallel} = require('../lib/cli/parallel')
+const {SourceDb} = require('../lib/util/storage')
+const {getDepartements} = require('../lib/util/cli')
+const {runInParallel} = require('../lib/util/parallel')
 
 const SOURCES_PATTERNS = {
   'ban-v0': process.env.BANV0_PATH_PATTERN && resolve(process.env.BANV0_PATH_PATTERN),

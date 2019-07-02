@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 require('dotenv').config()
 const {resolve} = require('path')
-const {getDepartements} = require('../lib/cli/util')
-const {runInParallel} = require('../lib/cli/parallel')
+const {getDepartements} = require('../lib/util/cli')
+const {runInParallel} = require('../lib/util/parallel')
 
 const DIST_PATTERNS = {
   'ban-v0': resolve(__dirname, '..', 'dist', 'ban-v0', 'adresses-{departement}.csv.gz'),
