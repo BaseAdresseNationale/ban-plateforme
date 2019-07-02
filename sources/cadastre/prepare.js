@@ -1,5 +1,5 @@
-const recomputeCodesVoies = require('../../lib/processing/recompute-codes-voies')
-const updateCommunes = require('../../lib/processing/update-communes')
+const recomputeCodesVoies = require('../../lib/merge/recompute-codes-voies')
+const updateCommunes = require('../../lib/merge/update-communes')
 
 async function prepareData(adressesCommune) {
   await updateCommunes(adressesCommune)

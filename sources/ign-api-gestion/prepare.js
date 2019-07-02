@@ -1,7 +1,7 @@
 const {memoize, deburr} = require('lodash')
-const recomputeCodesVoies = require('../../lib/processing/recompute-codes-voies')
-const removeStacked = require('../../lib/processing/remove-stacked')
-const updateCommunes = require('../../lib/processing/update-communes')
+const recomputeCodesVoies = require('../../lib/merge/recompute-codes-voies')
+const removeStacked = require('../../lib/merge/remove-stacked')
+const updateCommunes = require('../../lib/merge/update-communes')
 
 async function prepareData(adressesCommune) {
   const stats = {
