@@ -981,6 +981,11 @@ env-editor@^0.3.1:
   resolved "https://registry.yarnpkg.com/env-editor/-/env-editor-0.3.1.tgz#30d0540c2101414f258a94d4c0a524c06c13e3c6"
   integrity sha1-MNBUDCEBQU8lipTUwKUkwGwT48Y=
 
+epsg-index@^0.28.0:
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/epsg-index/-/epsg-index-0.28.0.tgz#08e719a496c3a8cdb7dedee82c109d0617c29ef5"
+  integrity sha512-+WoLOci4W4ZXdICcC/khJIEVHepCyQ0IauXlTKwX7Q3br6lp++C00MWVfCZLKvyaszXcvj19MJ5nxrqhNYRLfg==
+
 errno@~0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/errno/-/errno-0.1.7.tgz#4684d71779ad39af177e3f007996f7c67c852618"

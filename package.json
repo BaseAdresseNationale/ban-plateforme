@@ -15,6 +15,7 @@
     "import:ign-api-gestion": "SOURCE=ign-api-gestion node lib/import/cli",
     "import:cadastre": "SOURCE=cadastre node lib/import/cli",
     "import:ftth": "SOURCE=ftth node lib/import/cli",
+    "import:insee-ril": "SOURCE=insee-ril node lib/import/cli",
     "merge": "node lib/merge/cli",
     "dist:ban-v0": "DIST=ban-v0 node lib/distribute/cli",
     "dist:bal": "DIST=bal node lib/distribute/cli",
@@ -38,6 +39,7 @@
     "debug": "^4.1.1",
     "decompress": "^4.2.0",
     "dotenv": "^8.0.0",
+    "epsg-index": "^0.28.0",
     "fs-extra": "^8.0.1",
     "geojson-stream": "^0.1.0",
     "get-stream": "^5.1.0",
@@ -46,6 +48,7 @@
     "leven": "^3.1.0",
     "lodash": "^4.17.11",
     "ndjson": "^1.5.0",
+    "proj4": "^2.5.0",
     "pumpify": "^2.0.0",
     "worker-farm": "^1.7.0"
   },
