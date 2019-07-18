@@ -32,7 +32,7 @@
     "@turf/turf": "^5.1.6",
     "JSONStream": "^1.3.5",
     "bluebird": "^3.5.5",
-    "codes-postaux": "^3.2.0",
+    "codes-postaux": "^3.3.0",
     "csv-parser": "^2.3.0",
     "csv-write-stream": "^2.0.0",
     "debug": "^4.1.1",
