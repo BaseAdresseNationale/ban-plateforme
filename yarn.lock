@@ -45,17 +45,17 @@
     leven "^3.1.0"
     lodash "^4.17.11"
 
-"@etalab/gazetteer@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.4.tgz#a98600686c6a6699e45254211311a114259681b4"
-  integrity sha512-rdEeE+PxT3Cxwx/u5V6AJqqKhlG+gt7a52IdVQXXkTPbiKWvSKuVic17BqYlFlhFVWlxdV6GQHpYb8My5ybpTg==
+"@etalab/gazetteer@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.5.tgz#8f5b3c69f2078156e99fdaf4078e7f506407ab55"
+  integrity sha512-DcXmO2y/TusEVjHS10Ywi/zksDuIeymWpdtoc+KpuFJpCCziR1JIGByu8IecLNbAW497577TzXtQndel5zaLmg==
   dependencies:
     "@etalab/decoupage-administratif" "^0.6.2"
-    "@keyv/sqlite" "^2.0.0"
+    "@keyv/sqlite" "^2.0.1"
     "@turf/boolean-point-in-polygon" "^6.0.1"
     flatbush "^3.1.1"
     keyv "^3.1.0"
-    lodash "^4.17.11"
+    lodash "^4.17.15"
 
 "@etalab/normadresse@^1.0.4":
   version "1.0.4"
@@ -87,6 +87,15 @@
     "@keyv/sql" "1.1.2"
     pify "3.0.0"
     sqlite3 "4.0.2"
+
+"@keyv/sqlite@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@keyv/sqlite/-/sqlite-2.0.1.tgz#d9c8222f79efa09fd3a3a4991ed9e7ecbc17df0e"
+  integrity sha512-WvyYuF40vFsd7N4tY/sxNruJPZnv89b+R1+gp/gsJwOS135a83qFvA7zNEa3DIqQOunZRC0LQuM4wE48ElRaLw==
+  dependencies:
+    "@keyv/sql" "1.1.2"
+    pify "3.0.0"
+    sqlite3 "4.0.8"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -2163,10 +2172,10 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
-dotenv@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.0.0.tgz#ed310c165b4e8a97bb745b0a9d99c31bda566440"
-  integrity sha512-30xVGqjLjiUOArT4+M5q9sYdvuR4riM6yK9wMcas9Vbp6zZa+ocC9dp6QoftuhTPhFAiLK/0C5Ni2nou/Bk8lg==
+dotenv@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.1.0.tgz#d811e178652bfb8a1e593c6dd704ec7e90d85ea2"
+  integrity sha512-GUE3gqcDCaMltj2++g6bRQ5rBJWtkWTmqmD0fo1RnnMuUqHNCt2oTPeDnS9n6fKYvlhn7AeBkb38lymBtWBQdA==
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -2220,10 +2229,10 @@ env-editor@^0.3.1:
   resolved "https://registry.yarnpkg.com/env-editor/-/env-editor-0.3.1.tgz#30d0540c2101414f258a94d4c0a524c06c13e3c6"
   integrity sha1-MNBUDCEBQU8lipTUwKUkwGwT48Y=
 
-epsg-index@^0.28.0:
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/epsg-index/-/epsg-index-0.28.0.tgz#08e719a496c3a8cdb7dedee82c109d0617c29ef5"
-  integrity sha512-+WoLOci4W4ZXdICcC/khJIEVHepCyQ0IauXlTKwX7Q3br6lp++C00MWVfCZLKvyaszXcvj19MJ5nxrqhNYRLfg==
+epsg-index@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/epsg-index/-/epsg-index-1.0.0.tgz#3c272191bc28fd68a028a13d00f918c21318c36c"
+  integrity sha512-7EcEC97QaNzSKakpc6HgVdxBc7G1vEuNRIygjVXBvrLA+t8+4QlK6jisf0g552eSzBIAkx0IRmd/CWJKLc/W5A==
 
 errno@~0.1.7:
   version "0.1.7"
@@ -3764,10 +3773,10 @@ lodash@^4.13.1, lodash@^4.17.11, lodash@^4.6.1:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
 
-lodash@^4.17.14:
-  version "4.17.14"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.14.tgz#9ce487ae66c96254fe20b599f21b6816028078ba"
-  integrity sha512-mmKYbW3GLuJeX+iGP+Y7Gp1AiGHGbXHCOh/jZmrawMmsE7MS4znI3RL2FsjbqOyMayHInjOeykW7PEajUk1/xw==
+lodash@^4.17.15:
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
+  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
 log-symbols@^2.0.0:
   version "2.2.0"
@@ -4014,6 +4023,11 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
+nan@^2.12.1:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
+  integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
+
 nan@~2.10.0:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
@@ -4069,6 +4083,22 @@ node-pre-gyp@^0.10.3:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
   integrity sha512-d1xFs+C/IPS8Id0qPTZ4bUT8wWryfR/OzzAFxweG+uLN85oPzyo2Iw6bVlLQ/JOdgNonXLCoRyqDzDWq4iw72A==
+  dependencies:
+    detect-libc "^1.0.2"
+    mkdirp "^0.5.1"
+    needle "^2.2.1"
+    nopt "^4.0.1"
+    npm-packlist "^1.1.6"
+    npmlog "^4.0.2"
+    rc "^1.2.7"
+    rimraf "^2.6.1"
+    semver "^5.3.0"
+    tar "^4"
+
+node-pre-gyp@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.11.0.tgz#db1f33215272f692cd38f03238e3e9b47c5dd054"
+  integrity sha512-TwWAOZb0j7e9eGaf9esRx3ZcLaE5tQ2lvYy1pb5IAaG1a2e2Kv5Lms1Y4hpj+ciXJRofIxxlt5haeQ/2ANeE0Q==
   dependencies:
     detect-libc "^1.0.2"
     mkdirp "^0.5.1"
@@ -5068,6 +5098,15 @@ sqlite3@4.0.2:
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "^0.10.3"
+    request "^2.87.0"
+
+sqlite3@4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.8.tgz#81ee60d54befaa52f5421fe6337050bd43d4bb95"
+  integrity sha512-kgwHu4j10KhpCHtx//dejd/tVQot7jc3sw+Sn0vMuKOw0X00Ckyg9VceKgzPyGmmz+zEoYue9tOLriWTvYy0ww==
+  dependencies:
+    nan "^2.12.1"
+    node-pre-gyp "^0.11.0"
     request "^2.87.0"
 
 sshpk@^1.7.0:
