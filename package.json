@@ -23,9 +23,9 @@
     "test": "xo"
   },
   "dependencies": {
-    "@etalab/adresses-util": "^0.6.0",
+    "@etalab/adresses-util": "^0.7.0",
     "@etalab/decoupage-administratif": "^0.6.2",
-    "@etalab/fantoir": "^0.8.1",
+    "@etalab/fantoir": "^0.8.2",
     "@etalab/gazetteer": "^0.0.5",
     "@etalab/normadresse": "^1.0.4",
     "@etalab/project-legal": "^0.3.3",

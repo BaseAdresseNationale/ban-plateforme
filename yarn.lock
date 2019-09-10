@@ -18,14 +18,14 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@etalab/adresses-util@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.6.0.tgz#2841bc13196b02787bcc1088626ad843aab80d8f"
-  integrity sha512-iuGzP6HxxwENNpWjVPKxUfcjQUgcYL7UbWNIxeBCxeSrUqVKlChUouH867kvu3NIdiC8xbCqe5bufmwKDKhqLQ==
+"@etalab/adresses-util@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.7.0.tgz#510ebe53380ad86a5cccee69e167773733395c4f"
+  integrity sha512-b9LvKNIKmgNiCQ2pQiPf7O964LtQ4gqAlXtCXB4+1eZS/CxJQyjWfDKUAe+BRCTdQPyIcClRZZVWhRQOaKWRsg==
   dependencies:
     "@turf/distance" "^6.0.1"
     leven "^3.1.0"
-    lodash "^4.17.11"
+    lodash "^4.17.15"
     talisman "^0.21.0"
     written-number "^0.9.1"
 
@@ -34,16 +34,16 @@
   resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.6.2.tgz#99d5482f05e206b6f9e6a2a56fa92bb83a9e7f1d"
   integrity sha512-i/SteoVD/rhPZf1AZCvA86KfEVOWtOKkclUHoDUbWcqlvZrETHXvBtNRqUSMH4W6+0+HxVjlZMhYJamzaKwMTA==
 
-"@etalab/fantoir@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.8.1.tgz#fa10cc5c4ecd2d65cff76d7ae77f8b8374eec234"
-  integrity sha512-Tb1oi806n7jOU03WHQO85/jaOBIurDIOKD21NpWlI8MVT+2uOKgeva2heClOQdR30ZoQvoEFSBcvLxw0M8l7NA==
+"@etalab/fantoir@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.8.2.tgz#21a5c04f65aa98a63863858b8dc1e042c27ee663"
+  integrity sha512-5HW3ArRiCBSZg6/bC6smzwR4qsuYptFmux6NH3P/rdPCIYjIAW+nqhedF8KNx7ivUj+ql/XASY4l6E5VoLns9Q==
   dependencies:
-    "@etalab/adresses-util" "^0.6.0"
-    "@keyv/sqlite" "^2.0.0"
+    "@etalab/adresses-util" "^0.7.0"
+    "@keyv/sqlite" "^2.0.1"
     keyv "^3.1.0"
     leven "^3.1.0"
-    lodash "^4.17.11"
+    lodash "^4.17.15"
 
 "@etalab/gazetteer@^0.0.5":
   version "0.0.5"
@@ -78,15 +78,6 @@
   integrity sha1-HdhKXFrSOE34k08N3+IKuB3Cp10=
   dependencies:
     sql "~0.78.0"
-
-"@keyv/sqlite@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@keyv/sqlite/-/sqlite-2.0.0.tgz#1cd03849e027bc8ba7dd37ab3a89ef38856362d8"
-  integrity sha512-7rsbZwIFwmxH5N4TCZM1C3ci55jLB4MaFooeAu/yHwBxO/4JuvsS2k0hX7V9rGqsjcfmwFF0qfUzltC45dOZHQ==
-  dependencies:
-    "@keyv/sql" "1.1.2"
-    pify "3.0.0"
-    sqlite3 "4.0.2"
 
 "@keyv/sqlite@^2.0.1":
   version "2.0.1"
@@ -4028,11 +4019,6 @@ nan@^2.12.1:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
-nan@~2.10.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
-  integrity sha512-bAdJv7fBLhWC+/Bls0Oza+mvTaNQtP+1RyhhhvD95pgUJz6XM5IzgmxOkItJ9tkoCiplvAnXI1tNmmUD/eScyA==
-
 nanomatch@^1.2.9:
   version "1.2.13"
   resolved "https://registry.yarnpkg.com/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"
@@ -4078,22 +4064,6 @@ nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
-
-node-pre-gyp@^0.10.3:
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
-  integrity sha512-d1xFs+C/IPS8Id0qPTZ4bUT8wWryfR/OzzAFxweG+uLN85oPzyo2Iw6bVlLQ/JOdgNonXLCoRyqDzDWq4iw72A==
-  dependencies:
-    detect-libc "^1.0.2"
-    mkdirp "^0.5.1"
-    needle "^2.2.1"
-    nopt "^4.0.1"
-    npm-packlist "^1.1.6"
-    npmlog "^4.0.2"
-    rc "^1.2.7"
-    rimraf "^2.6.1"
-    semver "^5.3.0"
-    tar "^4"
 
 node-pre-gyp@^0.11.0:
   version "0.11.0"
@@ -5090,15 +5060,6 @@ sql@~0.78.0:
   dependencies:
     lodash "4.1.x"
     sliced "0.0.x"
-
-sqlite3@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.2.tgz#1bbeb68b03ead5d499e42a3a1b140064791c5a64"
-  integrity sha512-51ferIRwYOhzUEtogqOa/y9supADlAht98bF/gbIi6WkzRJX6Yioldxbzj1MV4yV+LgdKD/kkHwFTeFXOG4htA==
-  dependencies:
-    nan "~2.10.0"
-    node-pre-gyp "^0.10.3"
-    request "^2.87.0"
 
 sqlite3@4.0.8:
   version "4.0.8"
