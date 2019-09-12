@@ -30,7 +30,6 @@
     "@etalab/normadresse": "^1.0.4",
     "@etalab/project-legal": "^0.3.3",
     "@turf/turf": "^5.1.6",
-    "JSONStream": "^1.3.5",
     "bluebird": "^3.5.5",
     "codes-postaux": "^3.3.0",
     "csv-parser": "^2.3.0",
