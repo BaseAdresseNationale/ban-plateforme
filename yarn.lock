@@ -1946,10 +1946,10 @@ csv-parse@^4.3.1:
   resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.4.1.tgz#b40df60a3724fdf24ad2856586bf8f1dc7682e54"
   integrity sha512-uFe5phPfmwBXSPWz5GYHeaEc2Oezn2kY5iLIvG1sJjc32Y4GU7T/b/uX5ffZh4CBDWwJQjwAuxrDEdl3Z5Qv+g==
 
-csv-parser@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/csv-parser/-/csv-parser-2.3.1.tgz#dbc3cbef59241693bb78119634dbc879c2c83995"
-  integrity sha512-/u51FlBo75BcY/IL0WGibT628rr/xn4cXS9jX+AwT4x9yE7kqGqss7YgXpbdFai6m3uNbr4g1F19BoXBFeiJbA==
+csv-parser@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/csv-parser/-/csv-parser-2.3.2.tgz#3a4146abb9a0be7c3cbcae9c289f0a7e622dc07b"
+  integrity sha512-ggurTYuhhoUJyrPXTAkiO1x6QXkxAoimV+YSz2eSAXF+jQ/Xve/030T34tVStKFmX56pPtY5PiZl3bR4HkZK+Q==
   dependencies:
     "@hapi/joi" "^16.1.4"
     buffer-alloc "^1.1.0"
@@ -4529,6 +4529,14 @@ proj4@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/proj4/-/proj4-2.5.0.tgz#e3a88ce7e7a07221aaccbc6760dd2eafee745f03"
   integrity sha512-XZTRT7OPdLzgvtTqL8DG2cEj8lYdovztOwiwpwRSYayOty5Ipf3H68dh/fiL+HKDEyetmQSMhkkMGiJoyziz3w==
+  dependencies:
+    mgrs "1.0.0"
+    wkt-parser "^1.2.0"
+
+proj4@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/proj4/-/proj4-2.6.0.tgz#154c0e8eeb1aaae9914ec387753396cbc003ae72"
+  integrity sha512-ll2WyehUFOyzEZtN8hAiOTmZpuDCN5V+4A/HjhPbhlwVwlsFKnIHSZ3l3uhzgDndHjoL2MyERFGe9VmXN4rYUg==
   dependencies:
     mgrs "1.0.0"
     wkt-parser "^1.2.0"
