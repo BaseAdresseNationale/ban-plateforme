@@ -22,7 +22,7 @@
     "test": "xo"
   },
   "dependencies": {
-    "@etalab/adresses-util": "^0.7.0",
+    "@etalab/adresses-util": "^0.7.1",
     "@etalab/decoupage-administratif": "^0.8.0",
     "@etalab/fantoir": "^0.8.3",
     "@etalab/gazetteer": "^0.0.5",
@@ -45,6 +45,7 @@
     "into-stream": "^5.1.1",
     "leven": "^3.1.0",
     "lodash": "^4.17.19",
+    "mongodb": "^3.6.0",
     "ndjson": "^1.5.0",
     "proj4": "^2.6.2",
     "pumpify": "^2.0.1",
