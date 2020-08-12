@@ -16,7 +16,6 @@
     "import:cadastre": "SOURCE=cadastre node lib/import/cli",
     "import:ftth": "SOURCE=ftth node lib/import/cli",
     "import:insee-ril": "SOURCE=insee-ril node lib/import/cli",
-    "merge": "node lib/merge/cli",
     "dist": "node lib/distribute/cli",
     "compose": "node lib/compose/cli",
     "lint": "xo",
