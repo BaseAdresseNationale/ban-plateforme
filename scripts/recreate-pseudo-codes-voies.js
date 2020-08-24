@@ -4,6 +4,7 @@ const pipeline = promisify(require('stream').pipeline)
 const {Transform} = require('stream')
 const csvParse = require('csv-parser')
 const {chain} = require('lodash')
+const mongo = require('../lib/util/mongo')
 const {createPseudoCodeVoieGenerator} = require('../lib/pseudo-codes-voies')
 
 async function processCommuneRows(rows) {
@@ -41,6 +42,8 @@ async function processCommuneRows(rows) {
 }
 
 async function main() {
+  await mongo.connect()
+
   let codeCommune
   let communeRows
 
