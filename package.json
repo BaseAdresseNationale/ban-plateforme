@@ -11,7 +11,6 @@
   },
   "scripts": {
     "import:bal": "SOURCE=bal node lib/import/cli",
-    "import:ban-v0": "SOURCE=ban-v0 node lib/import/cli",
     "import:ign-api-gestion": "SOURCE=ign-api-gestion node lib/import/cli",
     "import:cadastre": "SOURCE=cadastre node lib/import/cli",
     "import:ftth": "SOURCE=ftth node lib/import/cli",
@@ -34,7 +33,6 @@
     "csv-parser": "^2.3.3",
     "csv-write-stream": "^2.0.0",
     "debug": "^4.2.0",
-    "decompress": "^4.2.1",
     "dotenv": "^8.2.0",
     "epsg-index": "^1.0.0",
     "fs-extra": "^9.0.1",
@@ -42,7 +40,6 @@
     "get-stream": "^6.0.0",
     "got": "^11.8.0",
     "gunzip-stream": "^1.0.1",
-    "into-stream": "^6.0.0",
     "leven": "^3.1.0",
     "lodash": "^4.17.20",
     "mongodb": "^3.6.3",
