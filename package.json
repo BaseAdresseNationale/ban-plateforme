@@ -46,6 +46,7 @@
     "ndjson": "^2.0.0",
     "proj4": "^2.6.2",
     "pumpify": "^2.0.1",
+    "rev-hash": "^3.0.0",
     "worker-farm": "^1.7.0"
   },
   "devDependencies": {
