@@ -7,7 +7,7 @@ const queue = require('./lib/util/queue')
 async function main() {
   await mongo.connect()
 
-  queue('compose-commune').process(10, require('./lib/jobs/compose-commune'))
+  queue('compose-commune').process(2, require('./lib/jobs/compose-commune'))
 }
 
 main().catch(error => {
