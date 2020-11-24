@@ -18,7 +18,8 @@
     "dist": "node lib/distribute/cli",
     "compose": "node lib/compose/cli",
     "lint": "xo",
-    "test": "xo"
+    "test": "xo",
+    "worker": "node worker"
   },
   "dependencies": {
     "@etalab/adresses-util": "^0.7.1",
