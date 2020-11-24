@@ -10,11 +10,11 @@
     "access": "public"
   },
   "scripts": {
-    "import:bal": "SOURCE=bal node lib/import/cli",
-    "import:ign-api-gestion": "SOURCE=ign-api-gestion node lib/import/cli",
-    "import:cadastre": "SOURCE=cadastre node lib/import/cli",
-    "import:ftth": "SOURCE=ftth node lib/import/cli",
-    "import:insee-ril": "SOURCE=insee-ril node lib/import/cli",
+    "import:bal": "node lib/import/cli bal",
+    "import:ign-api-gestion": "node lib/import/cli ign-api-gestion",
+    "import:cadastre": "node lib/import/cli cadastre",
+    "import:ftth": "node lib/import/cli ftth",
+    "import:insee-ril": "node lib/import/cli insee-ril",
     "dist": "node lib/distribute/cli",
     "compose": "node lib/compose/cli",
     "lint": "xo",
