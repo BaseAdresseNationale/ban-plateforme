@@ -1,8 +1,8 @@
 {
-  "name": "@etalab/adresse-pipeline",
+  "name": "@etalab/ban-plateforme",
   "version": "0.0.0",
-  "description": "Chaîne de traitement de données Adresse",
-  "repository": "https://github.com/etalab/adresse-pipeline",
+  "description": "Plateforme d'intégration et de production de la Base Adresse Nationale",
+  "repository": "https://github.com/etalab/ban-plateforme",
   "author": "Jérôme Desboeufs <jerome.desboeufs@data.gouv.fr>",
   "license": "MIT",
   "private": false,
