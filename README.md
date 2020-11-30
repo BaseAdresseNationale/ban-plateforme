@@ -32,12 +32,6 @@ Compte-tenu de la puissance de calcul nécessaire pour effectuer les traitements
 yarn
 ```
 
-### Démarrage du service "worker" (alpha)
-
-```bash
-yarn worker
-```
-
 ### Import des différentes sources
 
 ```bash
@@ -47,7 +41,11 @@ yarn import:cadastre
 yarn import:ftth
 ```
 
-Une fois les routines d'import terminées il faut attendre que le worker ait re-consolidé toutes les communes impactées.
+### Consolidation des adresses
+
+```bash
+yarn compose
+```
 
 ### Production des fichiers
 
