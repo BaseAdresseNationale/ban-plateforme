@@ -45,6 +45,7 @@
     "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^9.0.1",
     "geojson-stream": "^0.1.0",
+    "geojson-vt": "^3.2.1",
     "get-stream": "^6.0.0",
     "got": "^11.8.0",
     "gunzip-stream": "^1.0.1",
@@ -58,6 +59,7 @@
     "proj4": "^2.6.3",
     "pumpify": "^2.0.1",
     "rev-hash": "^3.0.0",
+    "vt-pbf": "^3.1.1",
     "worker-farm": "^1.7.0"
   },
   "devDependencies": {
