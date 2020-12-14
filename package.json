@@ -29,6 +29,7 @@
     "@etalab/gazetteer": "^0.0.6",
     "@etalab/normadresse": "^1.1.0",
     "@etalab/project-legal": "^0.4.0",
+    "@mapbox/tilebelt": "^1.0.2",
     "@turf/turf": "^5.1.6",
     "bluebird": "^3.7.2",
     "bull": "^3.20.0",
