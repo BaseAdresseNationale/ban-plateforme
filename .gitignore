@@ -62,7 +62,7 @@ typings/
 
 .DS_Store
 /dist
-
+/data
 /db
 
 *.geojson.gz
