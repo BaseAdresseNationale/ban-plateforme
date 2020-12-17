@@ -9,6 +9,7 @@ const Papa = require('papaparse')
 const {getCommuneData} = require('@etalab/majic')
 const communes = require('@etalab/decoupage-administratif/data/communes.json')
   .filter(c => ['arrondissement-municipal', 'commune-actuelle'].includes(c.type))
+const {replaceResourceFile} = require('../lib/util/datagouv')
 
 const dataPath = join(__dirname, '..', 'data')
 
@@ -72,13 +73,19 @@ async function main() {
 
   const communesLocauxCompact = compact(communesLocaux)
 
-  await outputJson(
-    join(dataPath, 'communes-locaux-adresses.json'),
-    communesLocauxCompact
+  const datasetId = '5fda75d3084b5fa14f89cd2f'
+
+  await replaceResourceFile(
+    datasetId,
+    '9a4a5188-8142-4c9d-b3e6-f54594848509',
+    'communes-locaux-adresses.json',
+    JSON.stringify(communesLocauxCompact)
   )
 
-  await outputFile(
-    join(dataPath, 'communes-locaux-adresses.csv'),
+  await replaceResourceFile(
+    datasetId,
+    '9854b368-abce-479e-80f1-cfdbedaa0232',
+    'communes-locaux-adresses.csv',
     Papa.unparse(communesLocauxCompact.map(c => mapKeys(c, (v, k) => snakeCase(k))))
   )
 }
