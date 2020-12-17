@@ -44,6 +44,7 @@
     "epsg-index": "^1.0.0",
     "express": "^4.17.1",
     "fast-json-stable-stringify": "^2.1.0",
+    "form-data": "^3.0.0",
     "fs-extra": "^9.0.1",
     "geojson-stream": "^0.1.0",
     "geojson-vt": "^3.2.1",
