@@ -1,17 +1,13 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
-const {join} = require('path')
 const bluebird = require('bluebird')
 const {chain, compact, snakeCase, mapKeys} = require('lodash')
-const {outputJson, outputFile} = require('fs-extra')
 const Papa = require('papaparse')
 const {getCommuneData} = require('@etalab/majic')
 const communes = require('@etalab/decoupage-administratif/data/communes.json')
   .filter(c => ['arrondissement-municipal', 'commune-actuelle'].includes(c.type))
 const {replaceResourceFile} = require('../lib/util/datagouv')
-
-const dataPath = join(__dirname, '..', 'data')
 
 const ACCEPTED_CATEGORIES_LOCAUX = [
   'maison',
