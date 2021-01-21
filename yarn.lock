@@ -29,15 +29,15 @@
     talisman "^0.21.0"
     written-number "^0.9.1"
 
-"@etalab/adresses-util@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.7.1.tgz#00828ea8e9a6a2d3ef833a573930f920fa6b9f55"
-  integrity sha512-0W8+SQ9YDQzi3VNfydWKkaECJUWIogMzpjx36va/epUCg06jo16zEe3nlOkien0oYo5x8BnbQpKk4eUKy2n/mA==
+"@etalab/adresses-util@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.8.0.tgz#7c452a4cebfae200afce542c88b5117168891ed7"
+  integrity sha512-tKUaSJLEgmqFAaShxDwFHNkHt8Fpikv4MfIqUz5P7R1x/EsNiGX/YFSHdJSqlN7F3Wxcz50ZIXlW9lYaQJFPyw==
   dependencies:
-    "@turf/distance" "^6.0.1"
+    "@turf/distance" "^6.3.0"
     leven "^3.1.0"
-    lodash "^4.17.15"
-    talisman "^0.21.0"
+    lodash "^4.17.20"
+    talisman "^1.1.4"
     written-number "^0.9.1"
 
 "@etalab/decoupage-administratif@^0.6.2":
@@ -558,6 +558,14 @@
     "@turf/helpers" "6.x"
     "@turf/invariant" "6.x"
 
+"@turf/distance@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@turf/distance/-/distance-6.3.0.tgz#4bd084af7fe369e921476e52b597a638dae4ed95"
+  integrity sha512-basi24ssNFnH3iXPFjp/aNUrukjObiFWoIyDRqKyBJxVwVOwAWvfk4d38QQyBj5nDo5IahYRq/Q+T47/5hSs9w==
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/ellipse@5.1.x", "@turf/ellipse@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/ellipse/-/ellipse-5.1.5.tgz#d57cab853985920cde60228a78d80458025c54be"
@@ -620,6 +628,11 @@
   resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-5.1.5.tgz#153405227ab933d004a5bb9641a9ed999fcbe0cf"
   integrity sha1-FTQFInq5M9AEpbuWQantmZ/L4M8=
 
+"@turf/helpers@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.3.0.tgz#87f90f806c3f8ad6385ef8d2041d3662bf3c9fb1"
+  integrity sha512-kr6KuD4Z0GZ30tblTEvi90rvvVNlKieXuMC8CTzE/rVQb0/f/Cb29zCXxTD7giQTEQY/P2nRW23wEqqyNHulCg==
+
 "@turf/hex-grid@5.1.x", "@turf/hex-grid@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/hex-grid/-/hex-grid-5.1.5.tgz#9b7ba5fecf5051f1e85892f713fce5c550502a6a"
@@ -678,6 +691,13 @@
   integrity sha1-8BUP9ykLOFd7c9CIt5MsHuCqkKc=
   dependencies:
     "@turf/helpers" "^5.1.5"
+
+"@turf/invariant@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.3.0.tgz#04a22b26c5503146c03fa6198176b72bd591eadf"
+  integrity sha512-2OFOi9p+QOrcIMySEnr+WlOiKaFZ1bY56jA98YyECewJHfhPFWUBZEhc4nWGRT0ahK08Vus9+gcuBX8QIpCIIw==
+  dependencies:
+    "@turf/helpers" "^6.3.0"
 
 "@turf/isobands@5.1.x":
   version "5.1.5"
@@ -3384,6 +3404,11 @@ html-entities@^1.2.0:
   resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.2.1.tgz#0df29351f0721163515dfb9e5543e5f6eed5162f"
   integrity sha1-DfKTUfByEWNRXfueVUPl9u7VFi8=
 
+html-entities@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.4.0.tgz#cfbd1b01d2afaf9adca1b10ae7dffab98c71d2dc"
+  integrity sha512-8nxjcBcd8wovbeKx7h3wTji4e6+rhaVuPNpMqwWgnHh+N9ToqsCs6XztWRBPQ+UtzsoMAdKZtUENoVzU/EMtZA==
+
 http-cache-semantics@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.0.3.tgz#495704773277eeef6e43f9ab2c2c7d259dda25c5"
@@ -4157,6 +4182,11 @@ long@^3.1.0:
   resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
   integrity sha1-2CG3E4yhy1gcFymQ7xTbIAtcR0s=
 
+long@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
+  integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
+
 loud-rejection@^1.0.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/loud-rejection/-/loud-rejection-1.6.0.tgz#5b46f80147edee578870f086d04821cf998e551f"
@@ -4401,6 +4431,13 @@ mnemonist@^0.14.0:
   integrity sha512-GosoNab9mShR9w6QJA+bFT9NC2fN+2smFuQ6dEvjt4myuMLFvy63qeFE0cJZ8DQQxmCrqKftTAA/8N686cRPiQ==
   dependencies:
     obliterator "^1.2.1"
+
+mnemonist@^0.38.1:
+  version "0.38.1"
+  resolved "https://registry.yarnpkg.com/mnemonist/-/mnemonist-0.38.1.tgz#4835f982c18713fc97ddf30756529f57cfa3b635"
+  integrity sha512-I674bCCj9p87Re+gv15ynDrP14XjcmLR7tBO22l3UoxQLniyIXdD9vid2sSxYkyOr0fZwJTA+dXRvrwANgdnyg==
+  dependencies:
+    obliterator "^1.6.1"
 
 moment-timezone@^0.5.31:
   version "0.5.32"
@@ -4702,6 +4739,11 @@ obliterator@^1.2.0, obliterator@^1.2.1:
   resolved "https://registry.yarnpkg.com/obliterator/-/obliterator-1.5.0.tgz#f3535e5be192473ef59efb2d30396738f7c645c6"
   integrity sha512-dENe0UviDf8/auXn0bIBKwCcUr49khvSBWDLlszv/ZB2qz1VxWDmkNKFqO2nfmve7hQb/QIDY7+rc7K3LdJimQ==
 
+obliterator@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/obliterator/-/obliterator-1.6.1.tgz#dea03e8ab821f6c4d96a299e17aef6a3af994ef3"
+  integrity sha512-9WXswnqINnnhOG/5SLimUlzuU1hFJUc8zkwyD59Sd+dPOMf05PmnYG/d6Q7HZ+KmgkZJa1PxRso6QdM3sTNHig==
+
 on-finished@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
@@ -4853,6 +4895,11 @@ pandemonium@^1.0.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/pandemonium/-/pandemonium-1.4.1.tgz#61f4fb0df843a9282b5f7bce7a467ed05857961d"
   integrity sha512-KhwY9xv8tZGQE8L7FfzaTHrLH+JnarUsDlsa8mqfisjtU3J00P362IL52Ei/EhDp025yBDzPuES/zMdWvvAR5g==
+
+pandemonium@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/pandemonium/-/pandemonium-2.0.0.tgz#4b0a646a4372e651ab7ab18f5277dbedc197ecd1"
+  integrity sha512-ACX7eLSSL7XKZEPxHw1HsZyjLDajIPuN5IFppmwwFs/xKE1FZF87cVk5bSg0ZI9lpA4DBTju/6KGDdrcwGG2rg==
 
 papaparse@^5.3.0:
   version "5.3.0"
@@ -5959,6 +6006,18 @@ talisman@^0.21.0:
     mnemonist "^0.14.0"
     obliterator "^1.2.0"
     pandemonium "^1.0.2"
+
+talisman@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/talisman/-/talisman-1.1.4.tgz#649fdc3bc6e631c17405742edee338133fb8ac69"
+  integrity sha512-XZ/vf5B2aW5A0c0CE6F6w/UgdBdD/0ClBgh/phpYSjV1CnQIFni3bKZ1z9ZXWHkGZRSpnbiWWMPx05DoxXBoFw==
+  dependencies:
+    html-entities "^1.4.0"
+    lodash "^4.17.20"
+    long "^4.0.0"
+    mnemonist "^0.38.1"
+    obliterator "^1.6.1"
+    pandemonium "^2.0.0"
 
 tar@^4:
   version "4.4.8"
