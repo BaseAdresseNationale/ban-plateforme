@@ -29,10 +29,10 @@
     talisman "^0.21.0"
     written-number "^0.9.1"
 
-"@etalab/adresses-util@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.8.0.tgz#7c452a4cebfae200afce542c88b5117168891ed7"
-  integrity sha512-tKUaSJLEgmqFAaShxDwFHNkHt8Fpikv4MfIqUz5P7R1x/EsNiGX/YFSHdJSqlN7F3Wxcz50ZIXlW9lYaQJFPyw==
+"@etalab/adresses-util@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.8.1.tgz#099b972f3acb3ff4498d22e401e8c8d399706d18"
+  integrity sha512-nGIDTS7qTSf4gCPmIknTbhjWHRpf9N0ead8KRqY1IN6zYrQkvbIvZlKNcIwEbtf/5k+Tsme0HrUezvBU7C3ulQ==
   dependencies:
     "@turf/distance" "^6.3.0"
     leven "^3.1.0"
