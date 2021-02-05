@@ -18,21 +18,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@etalab/adresses-util@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.7.0.tgz#510ebe53380ad86a5cccee69e167773733395c4f"
-  integrity sha512-b9LvKNIKmgNiCQ2pQiPf7O964LtQ4gqAlXtCXB4+1eZS/CxJQyjWfDKUAe+BRCTdQPyIcClRZZVWhRQOaKWRsg==
-  dependencies:
-    "@turf/distance" "^6.0.1"
-    leven "^3.1.0"
-    lodash "^4.17.15"
-    talisman "^0.21.0"
-    written-number "^0.9.1"
-
-"@etalab/adresses-util@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.8.1.tgz#099b972f3acb3ff4498d22e401e8c8d399706d18"
-  integrity sha512-nGIDTS7qTSf4gCPmIknTbhjWHRpf9N0ead8KRqY1IN6zYrQkvbIvZlKNcIwEbtf/5k+Tsme0HrUezvBU7C3ulQ==
+"@etalab/adresses-util@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@etalab/adresses-util/-/adresses-util-0.8.2.tgz#697c3ca9ed2e6103650a8f3c43fa2ae9caec360f"
+  integrity sha512-PsZfyECOvW6y5WzPq3NqaBk53CMcq9bNdcG8IzoFkAIf03RbFCMtSYFrhfOkJXa7qAxHJbESYBuiEPbaxCzZYw==
   dependencies:
     "@turf/distance" "^6.3.0"
     leven "^3.1.0"
@@ -52,16 +41,16 @@
   dependencies:
     lodash "^4.17.15"
 
-"@etalab/fantoir@^0.8.3":
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.8.3.tgz#1dd20cc06037e586bc30858d0d53105f0f479a48"
-  integrity sha512-DxKpu6rYlj8KpnLqV0v9sJgAoNg+c+ilNItSPLVifEkByhzXiCpQNNA1sV45YNASRcSJkmEXixqE7AFQQTitcA==
+"@etalab/fantoir@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.9.0.tgz#f76a6ca1b7c70aa785fdef91ecbe58d6ca7c9faf"
+  integrity sha512-fA9DRINhzeO/B5b7sr3Q86n9bLWtZlg8P0b37hjeFuPPj+4bONkIJgsrwxWfPt4tF9VE+eTdO3k0HzeEpIrWrg==
   dependencies:
-    "@etalab/adresses-util" "^0.7.0"
+    "@etalab/adresses-util" "^0.8.2"
     "@keyv/sqlite" "^2.0.2"
-    keyv "^4.0.0"
+    keyv "^4.0.3"
     leven "^3.1.0"
-    lodash "^4.17.15"
+    lodash "^4.17.20"
 
 "@etalab/gazetteer@^0.0.6":
   version "0.0.6"
@@ -550,7 +539,7 @@
     "@turf/helpers" "^5.1.5"
     "@turf/invariant" "^5.1.5"
 
-"@turf/distance@6.x", "@turf/distance@^6.0.1":
+"@turf/distance@6.x":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@turf/distance/-/distance-6.0.1.tgz#0761f28784286e7865a427c4e7e3593569c2dea8"
   integrity sha512-q7t7rWIWfkg7MP1Vt4uLjSEhe5rPfCO2JjpKmk7JC+QZKEQkuvHEqy3ejW1iC7Kw5ZcZNR3qdMGGz+6HnVwqvg==
@@ -3399,11 +3388,6 @@ hosted-git-info@^2.1.4:
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.7.1.tgz#97f236977bd6e125408930ff6de3eec6281ec047"
   integrity sha512-7T/BxH19zbcCTa8XkMlbK5lTo1WtgkFi3GvdWEyNuc4Vex7/9Dqbnpsf4JMydcfj9HCg4zUWFTL3Za6lapg5/w==
 
-html-entities@^1.2.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.2.1.tgz#0df29351f0721163515dfb9e5543e5f6eed5162f"
-  integrity sha1-DfKTUfByEWNRXfueVUPl9u7VFi8=
-
 html-entities@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.4.0.tgz#cfbd1b01d2afaf9adca1b10ae7dffab98c71d2dc"
@@ -4155,7 +4139,7 @@ lodash@4.1.x:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.1.0.tgz#299894283de01a9eefbedff4c4b9b00a6a2e6e96"
   integrity sha1-KZiUKD3gGp7vvt/0xLmwCmoubpY=
 
-lodash@^4.13.1, lodash@^4.17.11, lodash@^4.6.1:
+lodash@^4.13.1, lodash@^4.17.11:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -4176,11 +4160,6 @@ log-symbols@^2.0.0:
   integrity sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==
   dependencies:
     chalk "^2.0.1"
-
-long@^3.1.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
-  integrity sha1-2CG3E4yhy1gcFymQ7xTbIAtcR0s=
 
 long@^4.0.0:
   version "4.0.0"
@@ -4424,13 +4403,6 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   integrity sha1-MAV0OOrGz3+MR2fzhkjWaX11yQM=
   dependencies:
     minimist "0.0.8"
-
-mnemonist@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/mnemonist/-/mnemonist-0.14.0.tgz#9e85e529d4b6f78cade8ec6d4a919bb9d9e36c7e"
-  integrity sha512-GosoNab9mShR9w6QJA+bFT9NC2fN+2smFuQ6dEvjt4myuMLFvy63qeFE0cJZ8DQQxmCrqKftTAA/8N686cRPiQ==
-  dependencies:
-    obliterator "^1.2.1"
 
 mnemonist@^0.38.1:
   version "0.38.1"
@@ -4734,11 +4706,6 @@ object.pick@^1.3.0:
   dependencies:
     isobject "^3.0.1"
 
-obliterator@^1.2.0, obliterator@^1.2.1:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/obliterator/-/obliterator-1.5.0.tgz#f3535e5be192473ef59efb2d30396738f7c645c6"
-  integrity sha512-dENe0UviDf8/auXn0bIBKwCcUr49khvSBWDLlszv/ZB2qz1VxWDmkNKFqO2nfmve7hQb/QIDY7+rc7K3LdJimQ==
-
 obliterator@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/obliterator/-/obliterator-1.6.1.tgz#dea03e8ab821f6c4d96a299e17aef6a3af994ef3"
@@ -4890,11 +4857,6 @@ package-json@^4.0.0:
     registry-auth-token "^3.0.1"
     registry-url "^3.0.3"
     semver "^5.1.0"
-
-pandemonium@^1.0.2:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/pandemonium/-/pandemonium-1.4.1.tgz#61f4fb0df843a9282b5f7bce7a467ed05857961d"
-  integrity sha512-KhwY9xv8tZGQE8L7FfzaTHrLH+JnarUsDlsa8mqfisjtU3J00P362IL52Ei/EhDp025yBDzPuES/zMdWvvAR5g==
 
 pandemonium@^2.0.0:
   version "2.0.0"
@@ -6002,18 +5964,6 @@ table@^5.2.3:
     lodash "^4.17.11"
     slice-ansi "^2.1.0"
     string-width "^3.0.0"
-
-talisman@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/talisman/-/talisman-0.21.0.tgz#8de5af867107e27c9b3015a4974e59d04ceea25c"
-  integrity sha512-KUUq5mpHxJlvENZLsgngVxc08rtCGIs+v1Xfs41fbni+ysDJGWsZUDVER6JVV79eKiIFzECEQLrgunchc3M5WQ==
-  dependencies:
-    html-entities "^1.2.0"
-    lodash "^4.6.1"
-    long "^3.1.0"
-    mnemonist "^0.14.0"
-    obliterator "^1.2.0"
-    pandemonium "^1.0.2"
 
 talisman@^1.1.4:
   version "1.1.4"
