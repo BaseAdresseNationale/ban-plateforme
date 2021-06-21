@@ -41,16 +41,16 @@
   dependencies:
     lodash "^4.17.15"
 
-"@etalab/fantoir@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.9.0.tgz#f76a6ca1b7c70aa785fdef91ecbe58d6ca7c9faf"
-  integrity sha512-fA9DRINhzeO/B5b7sr3Q86n9bLWtZlg8P0b37hjeFuPPj+4bONkIJgsrwxWfPt4tF9VE+eTdO3k0HzeEpIrWrg==
+"@etalab/fantoir@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.10.0.tgz#eb96f64a40994ad9c7001244a153701c54f4caea"
+  integrity sha512-/sqtsSfiDdI4CIWi+aYzarvJbx6UzT7OySU3rJutAZl7kFV/fg4RidjzoWYEuSSz5p77PYcy/kABE5W2lqYLxw==
   dependencies:
     "@etalab/adresses-util" "^0.8.2"
     "@keyv/sqlite" "^2.0.2"
     keyv "^4.0.3"
     leven "^3.1.0"
-    lodash "^4.17.20"
+    lodash "^4.17.21"
 
 "@etalab/gazetteer@^0.0.6":
   version "0.0.6"
@@ -4153,6 +4153,11 @@ lodash@^4.17.19, lodash@^4.17.20:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
+
+lodash@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 log-symbols@^2.0.0:
   version "2.2.0"
