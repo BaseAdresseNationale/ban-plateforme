@@ -71,6 +71,7 @@
     "worker-farm": "^1.7.0"
   },
   "devDependencies": {
+    "ava": "^3.15.0",
     "xo": "^0.24.0"
   },
   "xo": {
