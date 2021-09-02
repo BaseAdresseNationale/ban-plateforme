@@ -26,12 +26,13 @@
   "dependencies": {
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^0.8.0",
-    "@etalab/fantoir": "^0.10.0",
-    "@etalab/gazetteer": "^0.0.6",
-    "@etalab/majic": "^0.9.0",
-    "@etalab/normadresse": "^1.1.0",
+    "@etalab/fantoir": "^0.10.1",
+    "@etalab/gazetteer": "^0.0.7",
+    "@etalab/majic": "^0.9.1",
+    "@etalab/normadresse": "^1.2.0",
     "@etalab/project-legal": "^0.4.1",
-    "@keyv/sqlite": "^2.0.2",
+    "@livingdata/keyv": "^4.1.0",
+    "@livingdata/keyv-sqlite": "^2.1.0",
     "@mapbox/tilebelt": "^1.0.2",
     "@turf/turf": "^5.1.6",
     "bluebird": "^3.7.2",
@@ -55,7 +56,6 @@
     "gunzip-stream": "^1.0.1",
     "into-stream": "^6.0.0",
     "ioredis": "^4.19.4",
-    "keyv": "^4.0.3",
     "leven": "^3.1.0",
     "lodash": "^4.17.20",
     "lru-cache": "^6.0.0",
@@ -79,6 +79,6 @@
     "space": 2
   },
   "engines": {
-    "node": "12.x"
+    "node": ">= 14"
   }
 }
