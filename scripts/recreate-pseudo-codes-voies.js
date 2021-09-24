@@ -49,7 +49,7 @@ async function main() {
 
   await pipeline(
     process.stdin,
-    Papa.parse(Papa.NODE_STREAM_INPUT, {delimiter: ';'}),
+    Papa.parse(Papa.NODE_STREAM_INPUT, {header: true, delimiter: ';'}),
     new Transform({
       objectMode: true,
       async transform(row, enc, cb) {
