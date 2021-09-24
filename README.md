@@ -52,3 +52,9 @@ yarn compose
 ```bash
 yarn dist
 ```
+
+## Appliquer la mise à jour de la liste des communes certifiées d'office
+
+```bash
+yarn apply-batch-certification
+```
