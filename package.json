@@ -10,6 +10,7 @@
     "access": "public"
   },
   "scripts": {
+    "apply-batch-certification": "node scripts/apply-batch-certification",
     "download-datasets": "node scripts/download-datasets",
     "import:bal": "node lib/import/cli bal",
     "import:ign-api-gestion": "node lib/import/cli ign-api-gestion",
