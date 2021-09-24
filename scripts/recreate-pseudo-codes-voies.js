@@ -2,7 +2,7 @@
 const {promisify} = require('util')
 const pipeline = promisify(require('stream').pipeline)
 const {Transform} = require('stream')
-const csvParse = require('csv-parser')
+const Papa = require('papaparse')
 const {chain} = require('lodash')
 const mongo = require('../lib/util/mongo')
 const {createPseudoCodeVoieGenerator} = require('../lib/pseudo-codes-voies')
@@ -49,7 +49,7 @@ async function main() {
 
   await pipeline(
     process.stdin,
-    csvParse({separator: ';'}),
+    Papa.parse(Papa.NODE_STREAM_INPUT, {delimiter: ';'}),
     new Transform({
       objectMode: true,
       async transform(row, enc, cb) {
