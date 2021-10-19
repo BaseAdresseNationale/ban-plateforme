@@ -9,7 +9,7 @@ const communes = require('@etalab/decoupage-administratif/data/communes.json')
   .filter(c => ['arrondissement-municipal', 'commune-actuelle'].includes(c.type))
 const {replaceResourceFile} = require('../lib/util/datagouv')
 
-const ACCEPTED_CATEGORIES_LOCAUX = [
+const ACCEPTED_CATEGORIES_LOCAUX = new Set([
   'maison',
   'appartement',
   'commerce',
@@ -36,10 +36,10 @@ const ACCEPTED_CATEGORIES_LOCAUX = [
   'maison-de-retraite',
   'centre-thermal-reeducation',
   'autre-etablissement'
-]
+])
 
 function eachCommune(commune, locaux) {
-  const acceptedLocaux = locaux.filter(l => ACCEPTED_CATEGORIES_LOCAUX.includes(l.categorieLocal))
+  const acceptedLocaux = locaux.filter(l => ACCEPTED_CATEGORIES_LOCAUX.has(l.categorieLocal))
   const nbAdressesLocaux = chain(acceptedLocaux).map(l => `${l.codeVoie}-${l.numero}`).uniq().value().length
 
   const communeLocaux = {

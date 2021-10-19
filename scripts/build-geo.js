@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint unicorn/prefer-object-from-entries: off */
 const {createGunzip} = require('zlib')
 const {join} = require('path')
 const got = require('got')
@@ -35,14 +36,12 @@ async function main() {
   const communesFeatures = await getFeatures(communes)
   const arrondissementsFeatures = await getFeatures(arrondissements)
 
-  const dataset = [...communesFeatures, ...arrondissementsFeatures].map(feature => {
-    return {
-      center: getCenter(feature),
-      bbox: getBbox(feature),
-      code: feature.properties.code,
-      nom: feature.properties.nom
-    }
-  })
+  const dataset = [...communesFeatures, ...arrondissementsFeatures].map(feature => ({
+    center: getCenter(feature),
+    bbox: getBbox(feature),
+    code: feature.properties.code,
+    nom: feature.properties.nom
+  }))
 
   const index = dataset.reduce((acc, data) => {
     acc[data.code] = {center: data.center, bbox: data.bbox, nom: data.nom}
