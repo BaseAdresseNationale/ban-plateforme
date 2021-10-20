@@ -2501,12 +2501,12 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codes-postaux@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/codes-postaux/-/codes-postaux-3.3.0.tgz#dfe2d0025494355f726c97fe4e85b3aaea238420"
-  integrity sha512-Nyh0RtZWH06DekvN6BMJIipWg+VwcShcG3aNH7Harr3vwgoUVS+8WOe+IQ2wUgl7DQcWQYGhx5ZcjdahFdTUcA==
+codes-postaux@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/codes-postaux/-/codes-postaux-3.4.0.tgz#9a440bcfe8ff8ff7173a5a2d254d2025b3d0232a"
+  integrity sha512-RCEE5doJaxi+xWNsZXU3nncc5DqtoImyM2BNDj8MIfbCr6yzI8MKU3D+La0VuPEkV7+6QPKl7BTM1U4CvD2d2w==
   dependencies:
-    lodash "^4.17.11"
+    lodash "^4.17.21"
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -5036,7 +5036,7 @@ lodash@4.1.x:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.1.0.tgz#299894283de01a9eefbedff4c4b9b00a6a2e6e96"
   integrity sha1-KZiUKD3gGp7vvt/0xLmwCmoubpY=
 
-lodash@^4.13.1, lodash@^4.17.11:
+lodash@^4.13.1:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
