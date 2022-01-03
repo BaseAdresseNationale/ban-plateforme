@@ -54,6 +54,7 @@
     "get-stream": "^6.0.1",
     "got": "^11.8.3",
     "gunzip-stream": "^1.0.1",
+    "iconv-lite": "^0.6.3",
     "into-stream": "^6.0.0",
     "ioredis": "^4.28.0",
     "leven": "^3.1.0",
