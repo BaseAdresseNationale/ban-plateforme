@@ -271,14 +271,14 @@
   dependencies:
     lodash "^4.17.15"
 
-"@etalab/fantoir@^0.10.2":
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.10.2.tgz#b789cf48c579873046c0e9cacfda1bff2561ef09"
-  integrity sha512-FWOaVlKQXl4ac/tyqxpXWjYhNzTD1BdslExBBiuLX3Izpw6fJB4XX1YE8f3ajc3LX4XusssIuzQLlufN/1lCng==
+"@etalab/fantoir@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.11.0.tgz#577f2a8f1e15295e77818986ca7244963ac221b6"
+  integrity sha512-QL9wXnZ5bKQpY0i8NuQK4BdPJPFOFYVEyUpgA49IP2xywBt6p1w0UCsWdoCINKOV/nYd3GrKsynX22udF36m7g==
   dependencies:
     "@etalab/adresses-util" "^0.8.2"
-    "@keyv/sqlite" "^2.0.3"
-    keyv "^4.0.3"
+    "@keyv/sqlite" "^2.1.0"
+    keyv "^4.0.5"
     leven "^3.1.0"
     lodash "^4.17.21"
 
@@ -344,12 +344,11 @@
   dependencies:
     sql "~0.78.0"
 
-"@keyv/sqlite@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@keyv/sqlite/-/sqlite-2.0.3.tgz#a4cdc5b0910acc77f8e4ae9892eb50aa8671a742"
-  integrity sha512-+UatSUYEa+M2JYOyZilq0z26fjAcC3BSICMXguwx05GT9n2czUl87bG9yLA3k+XBszQbHkY4wHDcO+OemmEUXg==
+"@keyv/sqlite@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@keyv/sqlite/-/sqlite-2.1.0.tgz#b2491a288c45785635bc16d43ee7bf9359c456b7"
+  integrity sha512-K0iyphEQKecf+r3RJ4v2dkKUJ7RzobRXZbs/2vTGUpBqw1rH5I1+y6/p5UAPlC+l1j54XTHFw2ev/Vs2bjmEAg==
   dependencies:
-    "@keyv/sql" "1.1.2"
     pify "5.0.0"
     sqlite3 "^5.0.2"
 
@@ -4892,10 +4891,10 @@ keyv@^4.0.0:
   dependencies:
     json-buffer "3.0.1"
 
-keyv@^4.0.3:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.0.4.tgz#f040b236ea2b06ed15ed86fbef8407e1a1c8e376"
-  integrity sha512-vqNHbAc8BBsxk+7QBYLW0Y219rWcClspR6WSeoHYKG5mnsSoOH+BL1pWq02DDCVdvvuUny5rkBlzMRzoqc+GIg==
+keyv@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.0.5.tgz#bb12b467aba372fab2a44d4420c00d3c4ebd484c"
+  integrity sha512-531pkGLqV3BMg0eDqqJFI0R1mkK1Nm5xIP2mM6keP5P8WfFtCkg2IOwplTUmlGoTgIg9yQYZ/kdihhz89XH3vA==
   dependencies:
     json-buffer "3.0.1"
 

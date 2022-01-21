@@ -27,7 +27,7 @@
   "dependencies": {
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^0.8.0",
-    "@etalab/fantoir": "^0.10.2",
+    "@etalab/fantoir": "^0.11.0",
     "@etalab/gazetteer": "^0.0.7",
     "@etalab/majic": "^0.9.1",
     "@etalab/normadresse": "^1.2.0",
