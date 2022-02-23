@@ -32,6 +32,12 @@ Compte-tenu de la puissance de calcul nécessaire pour effectuer les traitements
 yarn
 ```
 
+### Téléchargement des données nécessaires
+
+```bash
+yarn download-datasets
+```
+
 ### Import des différentes sources
 
 ```bash
