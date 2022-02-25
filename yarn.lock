@@ -259,13 +259,6 @@
     talisman "^1.1.4"
     written-number "^0.9.1"
 
-"@etalab/decoupage-administratif@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.8.0.tgz#378a73a00737de5432179394dd28244a93bcbd46"
-  integrity sha512-BNO0BLfPyUvLpGAStdKpZAX80hUHdkhhD3GMu7HcwERqmshl96uIU0v3/1LlL23DiMs9qRyVIRnfDDIAfHaG/w==
-  dependencies:
-    lodash "^4.17.15"
-
 "@etalab/decoupage-administratif@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-2.0.0.tgz#24ee640070c47e3c62883873c35450197fa5f78c"
