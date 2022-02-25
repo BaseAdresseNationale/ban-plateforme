@@ -2486,10 +2486,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codes-postaux@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/codes-postaux/-/codes-postaux-3.4.0.tgz#9a440bcfe8ff8ff7173a5a2d254d2025b3d0232a"
-  integrity sha512-RCEE5doJaxi+xWNsZXU3nncc5DqtoImyM2BNDj8MIfbCr6yzI8MKU3D+La0VuPEkV7+6QPKl7BTM1U4CvD2d2w==
+codes-postaux@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/codes-postaux/-/codes-postaux-3.6.0.tgz#bff9acb746b3bfbbfe463fe923fa996fe145053f"
+  integrity sha512-yC3ejMZo/4oLDnnCSIJxc+QBs6FNnegLKGcazecC/+yZMdtT//CuEV2yv+cb7JGdZlnLaP8v8WMF3pQ3mvgKYw==
   dependencies:
     lodash "^4.17.21"
 
