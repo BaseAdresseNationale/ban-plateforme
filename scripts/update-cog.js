@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /* eslint no-await-in-loop: off */
+require('dotenv').config()
 const mongo = require('../lib/util/mongo')
 const {getCommune} = require('../lib/util/cog')
 const {deleteCommune, askCompositionAll} = require('../lib/models/commune')
