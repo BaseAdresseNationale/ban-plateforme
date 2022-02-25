@@ -7,8 +7,7 @@ const {center, bbox} = require('@turf/turf')
 const getStream = require('get-stream')
 const {outputJson} = require('fs-extra')
 
-const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/latest/geojson/communes-100m.geojson.gz'
-const arrondissements = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/latest/geojson/arrondissements-municipaux-100m.geojson.gz'
+const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2022/geojson/communes-100m.geojson.gz'
 
 async function getFeatures(url) {
   const buffer = await getStream.buffer(
@@ -34,9 +33,8 @@ function getBbox(feature) {
 
 async function main() {
   const communesFeatures = await getFeatures(communes)
-  const arrondissementsFeatures = await getFeatures(arrondissements)
 
-  const dataset = [...communesFeatures, ...arrondissementsFeatures].map(feature => ({
+  const dataset = communesFeatures.map(feature => ({
     center: getCenter(feature),
     bbox: getBbox(feature),
     code: feature.properties.code,
