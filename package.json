@@ -28,7 +28,7 @@
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^0.8.0",
     "@etalab/fantoir": "^0.12.1",
-    "@etalab/gazetteer": "^0.0.7",
+    "@etalab/gazetteer": "^1.0.0",
     "@etalab/majic": "^0.10.0",
     "@etalab/normadresse": "^1.2.0",
     "@etalab/project-legal": "^0.5.0",

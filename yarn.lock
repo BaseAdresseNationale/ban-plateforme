@@ -259,17 +259,17 @@
     talisman "^1.1.4"
     written-number "^0.9.1"
 
-"@etalab/decoupage-administratif@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.6.2.tgz#99d5482f05e206b6f9e6a2a56fa92bb83a9e7f1d"
-  integrity sha512-i/SteoVD/rhPZf1AZCvA86KfEVOWtOKkclUHoDUbWcqlvZrETHXvBtNRqUSMH4W6+0+HxVjlZMhYJamzaKwMTA==
-
 "@etalab/decoupage-administratif@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-0.8.0.tgz#378a73a00737de5432179394dd28244a93bcbd46"
   integrity sha512-BNO0BLfPyUvLpGAStdKpZAX80hUHdkhhD3GMu7HcwERqmshl96uIU0v3/1LlL23DiMs9qRyVIRnfDDIAfHaG/w==
   dependencies:
     lodash "^4.17.15"
+
+"@etalab/decoupage-administratif@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-2.0.0.tgz#24ee640070c47e3c62883873c35450197fa5f78c"
+  integrity sha512-X+pQDnm0Sk8T5KPhT5kU9cLyMKc+LagK8ObYxyzVDoQapjLNZl9/KY2VFr42aw4LEiTnUfqCgNZc9lhHfi6shQ==
 
 "@etalab/fantoir@^0.12.1":
   version "0.12.1"
@@ -282,18 +282,18 @@
     leven "^3.1.0"
     lodash "^4.17.21"
 
-"@etalab/gazetteer@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-0.0.7.tgz#daa6158b3d623d0cc1f3dd640cddec4e1dc2cefd"
-  integrity sha512-8wDfKK7PBO3nlbnC1SvfxPiGzxb62Xh2HfxdUeF6MhfASB5lCPqmhFDrD6bhvZv4eQfpnUNO6VxDInOdqyyBuA==
+"@etalab/gazetteer@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@etalab/gazetteer/-/gazetteer-1.0.0.tgz#008b67a73400ace65b7fe1bf4be3a7ee9b538e01"
+  integrity sha512-upIypNBmEIjXZAfzdL0/z2FLTgmWeARnacglhYi0h62PN4v6S58W32pL+aKBm5D/Lu8X5ufdRZLTskWxpValKg==
   dependencies:
-    "@etalab/decoupage-administratif" "^0.6.2"
-    "@livingdata/keyv" "^4.1.0"
-    "@livingdata/keyv-sqlite" "^2.1.0"
-    "@turf/boolean-point-in-polygon" "^6.0.1"
-    flatbush "^3.1.1"
-    lodash "^4.17.15"
-    lru-cache "^6.0.0"
+    "@etalab/decoupage-administratif" "^2.0.0"
+    "@keyv/sqlite" "^3.0.0"
+    "@turf/boolean-point-in-polygon" "^6.5.0"
+    flatbush "^3.3.0"
+    keyv "^4.1.1"
+    lodash "^4.17.21"
+    lru-cache "^7.4.0"
 
 "@etalab/majic@^0.10.0":
   version "0.10.0"
@@ -578,14 +578,6 @@
     "@turf/helpers" "^6.5.0"
     "@turf/line-segment" "^6.5.0"
     "@turf/rhumb-bearing" "^6.5.0"
-
-"@turf/boolean-point-in-polygon@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@turf/boolean-point-in-polygon/-/boolean-point-in-polygon-6.0.1.tgz#5836677afd77d2ee391af0056a0c29b660edfa32"
-  integrity sha512-FKLOZ124vkJhjzNSDcqpwp2NvfnsbYoUOt5iAE7uskt4svix5hcjIEgX9sELFTJpbLGsD1mUbKdfns8tZxcMNg==
-  dependencies:
-    "@turf/helpers" "6.x"
-    "@turf/invariant" "6.x"
 
 "@turf/boolean-point-in-polygon@^6.5.0":
   version "6.5.0"
@@ -923,13 +915,6 @@
     "@turf/helpers" "^6.5.0"
     "@turf/invariant" "^6.5.0"
     polygon-clipping "^0.15.3"
-
-"@turf/invariant@6.x":
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.1.2.tgz#6013ed6219f9ac2edada9b31e1dfa5918eb0a2f7"
-  integrity sha512-WU08Ph8j0J2jVGlQCKChXoCtI50BB3yEH21V++V0T4cR1T27HKCxkehV2sYMwTierfMBgjwSwDIsxnR4/2mWXg==
-  dependencies:
-    "@turf/helpers" "6.x"
 
 "@turf/invariant@^6.3.0":
   version "6.3.0"
@@ -3741,17 +3726,17 @@ flat-cache@^3.0.4:
     flatted "^3.1.0"
     rimraf "^3.0.2"
 
-flatbush@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/flatbush/-/flatbush-3.1.1.tgz#41871ee75e197b9b620b2692c3db150b2e23839a"
-  integrity sha512-gmNpTLhNH+3UHVirxNbyGxxfey7G2jvgqJTm70t6hlCGrtk3TQHLPjMSYzCpZLkUAx8EXXxpIfqhQFkQJ5wo5g==
+flatbush@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/flatbush/-/flatbush-3.3.0.tgz#b68c9149107ae86d2bce6373491f404ba4f4534e"
+  integrity sha512-F3EzQvKpdmXUbFwWxLKBpytOFEGYQMCTBLuqZ4GEajFOEAvnOIBiyxW3OFSZXIOtpCS8teN6bFEpNZtnVXuDQA==
   dependencies:
-    flatqueue "^1.1.0"
+    flatqueue "^1.2.0"
 
-flatqueue@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/flatqueue/-/flatqueue-1.1.0.tgz#bc03140d40940c4cb799d18d45eaced176c3ef2d"
-  integrity sha512-N95K6UfbI1wg6iOg3ItYrL3d3kNN6Fe0+dsp6sbTBg9/3dqR5KiTaMdfxG2dz2ITKAWCSYCvjf69xpA6760Zfw==
+flatqueue@^1.2.0:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/flatqueue/-/flatqueue-1.2.1.tgz#82f501758fc5925742fbeb478637230456157ef2"
+  integrity sha512-X86TpWS1rGuY7m382HuA9vngLeDuWA9lJvhEG+GfgKMV5onSvx5a71cl7GMbXzhWtlN9dGfqOBrpfqeOtUfGYQ==
 
 flatted@^3.1.0:
   version "3.2.2"
@@ -5119,6 +5104,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+lru-cache@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.4.0.tgz#2830a779b483e9723e20f26fa5278463c50599d8"
+  integrity sha512-YOfuyWa/Ee+PXbDm40j9WXyJrzQUynVbgn4Km643UYcWNcrSfRkKL0WaiUcxcIbkXcVTgNpDqSnPXntWXT75cw==
 
 make-dir@^3.0.0, make-dir@^3.0.2:
   version "3.1.0"
