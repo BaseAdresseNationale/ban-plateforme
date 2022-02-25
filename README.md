@@ -32,6 +32,12 @@ Compte-tenu de la puissance de calcul nécessaire pour effectuer les traitements
 yarn
 ```
 
+### Préparation des contours administratifs
+
+```bash
+yarn prepare-contours
+```
+
 ### Téléchargement des données nécessaires
 
 ```bash
