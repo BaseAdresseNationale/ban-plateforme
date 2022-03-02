@@ -11,7 +11,7 @@ Ce dépôt regroupe l'essentiel des briques faisant partie de la plateforme Base
 
 ### Pré-requis
 
-- Node.js 12.x
+- Node.js 16 ou supérieur
 - MongoDB 4 ou supérieur
 - Redis
 - yarn ou npm
