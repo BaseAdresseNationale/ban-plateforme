@@ -66,3 +66,4 @@ typings/
 /db
 
 *.geojson.gz
+communes-50m.sqlite
