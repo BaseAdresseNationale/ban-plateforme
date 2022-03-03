@@ -21,6 +21,11 @@ async function main() {
     'https://adresse.data.gouv.fr/data/db/gazetteer/2022/gazetteer.sqlite',
     'gazetteer.sqlite'
   )
+
+  await downloadFile(
+    'https://adresse.data.gouv.fr/data/db/fantoir/2022/fantoir.sqlite',
+    'fantoir.sqlite'
+  )
 }
 
 main().catch(error => {
