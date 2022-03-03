@@ -16,10 +16,6 @@ Ce dépôt regroupe l'essentiel des briques faisant partie de la plateforme Base
 - Redis
 - yarn ou npm
 
-### Données référentiels
-
-Pour fonctionner certaines routines nécessitent les référentiels "Etalab Gazetteer" et "FANTOIR". Ils peuvent être téléchargés à [cette adresse](http://etalab-datasets.geo.data.gouv.fr/dev-databases/).
-
 ### Configuration
 
 Pour mettre en place un environnement fonctionnel, vous pouvez partir du fichier `.env.sample` et le copier en le renommant `.env`.
