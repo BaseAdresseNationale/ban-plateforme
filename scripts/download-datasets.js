@@ -16,6 +16,11 @@ async function main() {
     'https://www.data.gouv.fr/fr/datasets/r/9a4a5188-8142-4c9d-b3e6-f54594848509',
     'communes-locaux-adresses.json'
   )
+
+  await downloadFile(
+    'https://adresse.data.gouv.fr/data/db/gazetteer/2022/gazetteer.sqlite',
+    'gazetteer.sqlite'
+  )
 }
 
 main().catch(error => {
