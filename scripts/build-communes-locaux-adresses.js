@@ -5,8 +5,7 @@ const bluebird = require('bluebird')
 const {chain, compact, snakeCase, mapKeys} = require('lodash')
 const Papa = require('papaparse')
 const {getCommuneData} = require('@etalab/majic')
-const communes = require('@etalab/decoupage-administratif/data/communes.json')
-  .filter(c => ['arrondissement-municipal', 'commune-actuelle'].includes(c.type))
+const {getCommunes} = require('../lib/util/cog')
 const {replaceResourceFile} = require('../lib/util/datagouv')
 
 const ACCEPTED_CATEGORIES_LOCAUX = new Set([
@@ -54,7 +53,7 @@ function eachCommune(commune, locaux) {
 }
 
 async function main() {
-  const communesLocaux = await bluebird.map(communes, async commune => {
+  const communesLocaux = await bluebird.map(getCommunes(), async commune => {
     const locaux = await getCommuneData(commune.code, {profile: 'simple'})
 
     if (!locaux || locaux.length === 0) {
