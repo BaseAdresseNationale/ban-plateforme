@@ -4,15 +4,17 @@ const {createWriteStream} = require('fs')
 const {pipeline} = require('stream/promises')
 const {mkdirp} = require('fs-extra')
 const got = require('got')
+const ora = require('ora')
 
 const dataDir = path.join(__dirname, '..', 'data')
 
 async function downloadFile(url, fileName) {
+  const spinner = ora(`Téléchargement du fichier ${fileName}`).start()
   await pipeline(
     got.stream(url, {responseType: 'buffer'}),
     createWriteStream(path.join(dataDir, fileName))
   )
-  console.log(` * ${fileName} téléchargé`)
+  spinner.succeed()
 }
 
 async function main() {
