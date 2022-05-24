@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "ava": "^4.2.0",
-    "xo": "^0.46.4"
+    "xo": "^0.49.0"
   },
   "xo": {
     "semicolon": false,
@@ -87,6 +87,8 @@
       "unicorn/import-style": "off",
       "unicorn/prevent-abbreviations": "off",
       "unicorn/prefer-module": "off",
+      "unicorn/prefer-code-point": "off",
+      "unicorn/no-await-expression-member": "off",
       "import/extensions": "off",
       "node/prefer-global/process": "off",
       "node/prefer-global/buffer": "off"
