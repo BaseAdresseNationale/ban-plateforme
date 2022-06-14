@@ -2,13 +2,22 @@
 /* eslint no-await-in-loop: off */
 require('dotenv').config()
 const mongo = require('../lib/util/mongo')
-const {getCommune} = require('../lib/util/cog')
-const {deleteCommune, askCompositionAll} = require('../lib/models/commune')
+const {getCommune, getCommunes} = require('../lib/util/cog')
+const {deleteCommune, askComposition, askCompositionAll} = require('../lib/models/commune')
 
 async function main() {
   await mongo.connect()
 
   const codesCommunesBAN = await mongo.db.collection('communes').distinct('codeCommune')
+  const currentCodes = new Set(codesCommunesBAN)
+
+  const missingCommunes = getCommunes().filter(c => !currentCodes.has(c.code))
+
+  for (const missingCommune of missingCommunes) {
+    console.log(`Création de la commune ${missingCommune.code}`)
+    await askComposition(missingCommune.code)
+  }
+
   const obsoleteCodes = codesCommunesBAN.filter(c => !getCommune(c))
 
   for (const codeCommune of obsoleteCodes) {
@@ -16,7 +25,9 @@ async function main() {
     await deleteCommune(codeCommune)
   }
 
-  await askCompositionAll()
+  if (obsoleteCodes.length > 0) {
+    await askCompositionAll()
+  }
 
   await mongo.disconnect()
   process.exit(0)
