@@ -54,10 +54,10 @@
   resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-2.0.0.tgz#24ee640070c47e3c62883873c35450197fa5f78c"
   integrity sha512-X+pQDnm0Sk8T5KPhT5kU9cLyMKc+LagK8ObYxyzVDoQapjLNZl9/KY2VFr42aw4LEiTnUfqCgNZc9lhHfi6shQ==
 
-"@etalab/fantoir@^0.14.0":
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.14.0.tgz#080dd1842ecdbf92f5c2f983d3551235f451d1fe"
-  integrity sha512-fxE0FwiK1hQvF98O7IjgiBvJqrBK1nECKBpXoLxWC8rNlyI2aoH3PvwSjA4Qc8T7q4DWQDYP+WsvMKeR1jnJ2Q==
+"@etalab/fantoir@^0.14.1":
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/@etalab/fantoir/-/fantoir-0.14.1.tgz#96ebb6dd3b91ece4b556b08b8aacd0e5b1a4fac1"
+  integrity sha512-rEYpB/En+7Yv5y7ladntK2U7epc6OiQif+Nsi9hORNxhzje5eN1TIDWJUS606+kYh9pMq4/hPasuwnYBzVDaug==
   dependencies:
     "@etalab/adresses-util" "^0.8.2"
     "@keyv/sqlite" "^3.5.1"
