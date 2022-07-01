@@ -52,7 +52,7 @@
     "geojson-stream": "^0.1.0",
     "geojson-vt": "^3.2.1",
     "get-stream": "^6.0.1",
-    "got": "^12.1.0",
+    "got": "^11.8.5",
     "gunzip-stream": "^1.0.1",
     "iconv-lite": "^0.6.3",
     "into-stream": "^6.0.0",
