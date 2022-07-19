@@ -21,7 +21,7 @@ async function main() {
   await mkdirp(dataDir)
 
   await downloadFile(
-    'https://www.data.gouv.fr/fr/datasets/r/9a4a5188-8142-4c9d-b3e6-f54594848509',
+    'https://www.data.gouv.fr/fr/datasets/r/8297d760-2c12-4811-af08-ad874c61e171',
     'communes-locaux-adresses.json'
   )
 
