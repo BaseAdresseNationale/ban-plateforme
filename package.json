@@ -26,7 +26,6 @@
     "start": "node server"
   },
   "dependencies": {
-    "@ban-team/shared-data": "^1.0.0",
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^2.0.0",
     "@etalab/fantoir": "^0.14.1",
