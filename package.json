@@ -21,7 +21,7 @@
     "dist": "node lib/distribute/cli",
     "compose": "node lib/compose/cli",
     "lint": "xo",
-    "test": "xo",
+    "test": "ava",
     "worker": "node worker",
     "start": "node server"
   },
