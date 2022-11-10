@@ -13,7 +13,6 @@
     "apply-batch-certification": "node scripts/apply-batch-certification",
     "prepare-contours": "node scripts/prepare-contours",
     "download-datasets": "node scripts/download-datasets",
-    "import:bal": "node lib/import/cli bal",
     "import:ign-api-gestion": "node lib/import/cli ign-api-gestion",
     "import:cadastre": "node lib/import/cli cadastre",
     "import:ftth": "node lib/import/cli ftth",
