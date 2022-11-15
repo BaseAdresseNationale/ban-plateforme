@@ -43,7 +43,6 @@ yarn download-datasets
 ### Import des différentes sources
 
 ```bash
-yarn import:bal
 yarn import:ign-api-gestion
 yarn import:cadastre
 yarn import:ftth

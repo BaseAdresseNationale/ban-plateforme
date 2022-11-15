@@ -13,7 +13,6 @@
     "apply-batch-certification": "node scripts/apply-batch-certification",
     "prepare-contours": "node scripts/prepare-contours",
     "download-datasets": "node scripts/download-datasets",
-    "import:bal": "node lib/import/cli bal",
     "import:ign-api-gestion": "node lib/import/cli ign-api-gestion",
     "import:cadastre": "node lib/import/cli cadastre",
     "import:ftth": "node lib/import/cli ftth",
@@ -26,6 +25,7 @@
     "start": "node server"
   },
   "dependencies": {
+    "@ban-team/validateur-bal": "^2.11.0",
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^2.0.0",
     "@etalab/fantoir": "^0.14.1",

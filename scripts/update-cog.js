@@ -15,7 +15,7 @@ async function main() {
 
   for (const missingCommune of missingCommunes) {
     console.log(`Création de la commune ${missingCommune.code}`)
-    await askComposition(missingCommune.code)
+    await askComposition(missingCommune.code, {force: true})
   }
 
   const obsoleteCodes = codesCommunesBAN.filter(c => !getCommune(c))
