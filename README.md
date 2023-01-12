@@ -33,6 +33,7 @@ yarn
 ```bash
 yarn prepare-contours
 ```
+Prepare les contours France entière sans prendre en compte le .env.
 
 ### Téléchargement des données nécessaires
 
@@ -47,6 +48,7 @@ yarn import:ign-api-gestion
 yarn import:cadastre
 yarn import:ftth
 ```
+Prend en compte le .env pour ne télécharger les données que sur le département concerné.
 
 ### Consolidation des adresses
 
