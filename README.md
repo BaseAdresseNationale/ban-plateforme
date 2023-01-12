@@ -40,6 +40,7 @@ Prepare les contours France entière sans prendre en compte le .env.
 ```bash
 yarn download-datasets
 ```
+Télécharge fantoir.sqlite, gazetteer.sqlite, communes-locaux-adresses.json.
 
 ### Import des différentes sources
 
