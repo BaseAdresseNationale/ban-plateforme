@@ -1,0 +1,44 @@
+services:
+  db:
+    # Version of mongoDB currently in production
+    image: mongo:4.2.23
+    ports:
+      - "${MONGODB_PORT:-27017}:27017"
+    volumes:
+      - db:/data/db
+  redis:
+    # Version of Redis currently in production
+    image: redis:4.0.9
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+  api:
+    build: 
+      dockerfile: 'Dockerfile.dev'
+    depends_on:
+      - db
+      - redis
+    environment:
+      - MONGODB_URL=mongodb://db
+      - MONGODB_DBNAME=${MONGODB_DBNAME}
+      - REDIS_URL=redis://redis
+      - FANTOIR_PATH=${FANTOIR_PATH}
+      - GAZETTEER_DB_PATH=${GAZETTEER_DB_PATH}
+      - INSEE_RIL_PATH_PATTERN=${INSEE_RIL_PATH_PATTERN}
+      - DEPARTEMENTS=${DEPARTEMENTS}
+      - COMMUNES=${COMMUNES}
+      - MAX_CONCURRENT_WORKERS=${MAX_CONCURRENT_WORKERS}
+      - DATAGOUV_API_KEY=${DATAGOUV_API_KEY}
+      - API_DEPOT_URL=${API_DEPOT_URL}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - FORCE_DOWNLOAD_CONTOUR=
+      - FORCE_DOWNLOAD_DATASETS=
+    ports:
+      - "${PORT:-5000}:5000"
+    volumes:
+      - data:/app/data
+      - dist:/app/dist
+
+volumes:
+  data:
+  dist:
+  db:
