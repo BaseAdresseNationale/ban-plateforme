@@ -1,0 +1,42 @@
+services:
+  db:
+    # Version of mongoDB currently in production
+    image: mongo:4.2.23
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-ban-plateforme:/data/db
+  redis:
+    # Version of Redis currently in production
+    image: redis:4.0.9
+    ports:
+      - "6379:6379"
+  api:
+    build: 
+      dockerfile: 'Dockerfile.dev'
+    depends_on:
+      - db
+      - redis
+    environment:
+      - MONGODB_URL=mongodb://db
+      - MONGODB_DBNAME=ban
+      - REDIS_URL=redis://redis
+      - FANTOIR_PATH=${FANTOIR_PATH}
+      - GAZETTEER_DB_PATH=${GAZETTEER_DB_PATH}
+      - INSEE_RIL_PATH_PATTERN=${INSEE_RIL_PATH_PATTERN}
+      - DEPARTEMENTS=${DEPARTEMENTS}
+      - COMMUNES=${COMMUNES}
+      - MAX_CONCURRENT_WORKERS=${MAX_CONCURRENT_WORKERS}
+      - DATAGOUV_API_KEY=${DATAGOUV_API_KEY}
+      - API_DEPOT_URL=${API_DEPOT_URL}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ban-plateforme-data:/app/data
+      - ban-plateforme-dist:/app/dist
+
+volumes:
+  ban-plateforme-data:
+  ban-plateforme-dist:
+  db-ban-plateforme:
