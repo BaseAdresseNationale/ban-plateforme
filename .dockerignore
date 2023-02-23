@@ -49,6 +49,7 @@ reports
 #Docker config
 Dockerfile*
 docker-compose.yml
+.dockerignore
 
 #Other
 *.md
