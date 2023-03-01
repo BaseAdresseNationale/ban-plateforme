@@ -1,5 +1,5 @@
 {
-  "name": "@etalab/ban-plateforme",
+  "name": "@ban-team/ban-plateforme",
   "version": "0.0.0",
   "description": "Plateforme d'intégration et de production de la Base Adresse Nationale",
   "repository": "https://github.com/etalab/ban-plateforme",
