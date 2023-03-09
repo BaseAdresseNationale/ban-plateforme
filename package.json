@@ -21,7 +21,9 @@
     "lint": "xo",
     "test": "ava",
     "worker": "node worker",
-    "start": "node server"
+    "worker:dev": "npx nodemon worker",
+    "start": "node server",
+    "dev": "npx nodemon server"
   },
   "dependencies": {
     "@ban-team/validateur-bal": "^2.11.0",
