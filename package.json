@@ -73,7 +73,8 @@
     "pumpify": "^2.0.1",
     "rev-hash": "^3.0.0",
     "vt-pbf": "^3.1.3",
-    "worker-farm": "^1.7.0"
+    "worker-farm": "^1.7.0",
+    "yup": "^1.0.2"
   },
   "devDependencies": {
     "jest": "^29.5.0",
