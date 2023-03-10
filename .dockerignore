@@ -19,9 +19,6 @@ CHANGELOG.md
 .LSOverride
 
 # Build
-.next
-bundle-stats
-available-flags.json
 /dist
 /data
 
