@@ -7,7 +7,7 @@ const {center, bbox} = require('@turf/turf')
 const getStream = require('get-stream')
 const {outputJson} = require('fs-extra')
 
-const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2022/geojson/communes-100m.geojson.gz'
+const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2023/geojson/communes-100m.geojson.gz'
 
 async function getFeatures(url) {
   const buffer = await getStream.buffer(
