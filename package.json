@@ -1,6 +1,6 @@
 {
   "name": "@ban-team/ban-plateforme",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Plateforme d'intégration et de production de la Base Adresse Nationale",
   "repository": "https://github.com/etalab/ban-plateforme",
   "author": "Jérôme Desboeufs <jerome.desboeufs@data.gouv.fr>",
