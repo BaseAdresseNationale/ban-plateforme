@@ -22,6 +22,7 @@ async function main() {
   })
 
   app.use('/', require('./lib/api/routes'))
+  app.use('/address', require('./lib/api/address/routes'))
 
   const port = process.env.PORT || 5000
 
