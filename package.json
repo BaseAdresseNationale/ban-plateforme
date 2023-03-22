@@ -26,7 +26,7 @@
     "dev": "npx nodemon server"
   },
   "dependencies": {
-    "@ban-team/validateur-bal": "^2.11.0",
+    "@ban-team/validateur-bal": "^2.12.0",
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^2.0.0",
     "@etalab/fantoir": "^0.14.1",
