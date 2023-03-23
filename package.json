@@ -10,20 +10,22 @@
     "access": "public"
   },
   "scripts": {
-    "apply-batch-certification": "node scripts/apply-batch-certification",
-    "prepare-contours": "node scripts/prepare-contours",
-    "download-datasets": "node scripts/download-datasets",
-    "import:ign-api-gestion": "node lib/import/cli ign-api-gestion",
-    "import:cadastre": "node lib/import/cli cadastre",
-    "import:ftth": "node lib/import/cli ftth",
-    "dist": "node lib/distribute/cli",
-    "compose": "node lib/compose/cli",
+    "build":"babel src -d build --copy-files",
+    "build-watch":"babel --watch src -d build --copy-files",
+    "apply-batch-certification": "node build/scripts/apply-batch-certification",
+    "prepare-contours": "node build/scripts/prepare-contours",
+    "download-datasets": "node build/scripts/download-datasets",
+    "import:ign-api-gestion": "node build/lib/import/cli ign-api-gestion",
+    "import:cadastre": "node build/lib/import/cli cadastre",
+    "import:ftth": "node build/lib/import/cli ftth",
+    "dist": "node build/lib/distribute/cli",
+    "compose": "node build/lib/compose/cli",
     "lint": "xo",
     "test": "jest",
     "worker": "node worker",
-    "worker:dev": "npx nodemon worker",
+    "worker:dev": "yarn build-watch && npx nodemon worker",
     "start": "node server",
-    "dev": "npx nodemon server"
+    "dev": "yarn build-watch && npx nodemon server"
   },
   "dependencies": {
     "@ban-team/validateur-bal": "^2.13.0",
@@ -77,6 +79,9 @@
     "yup": "^1.0.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.3",
+    "@babel/preset-env": "^7.20.2",
     "jest": "^29.5.0",
     "xo": "^0.50.0"
   },

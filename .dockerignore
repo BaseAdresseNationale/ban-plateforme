@@ -19,8 +19,7 @@ CHANGELOG.md
 .LSOverride
 
 # Build
-/dist
-/data
+/build
 
 # Cache
 .yarn-cache

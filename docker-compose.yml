@@ -35,8 +35,8 @@ services:
     ports:
       - "${PORT:-5000}:5000"
     volumes:
-      - data:/app/data
-      - dist:/app/dist
+      - data:/app/build/data
+      - dist:/app/build/dist
 
 volumes:
   data:

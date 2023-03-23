@@ -3,7 +3,7 @@
 echo "FORCE_DOWNLOAD_CONTOUR : $FORCE_DOWNLOAD_CONTOUR"
 echo "FORCE_DOWNLOAD_DATASETS : $FORCE_DOWNLOAD_DATASETS"
 
-if [[ -f 'data/communes-50m.sqlite' ]]; then
+if [[ -f 'build/data/communes-50m.sqlite' ]]; then
     echo "contours already exists."
     if [[ "$FORCE_DOWNLOAD_CONTOUR" = "true" ]]; then
         echo "forcing contours download..."
@@ -15,7 +15,7 @@ else
     npm run prepare-contours
 fi
 
-if [[ -f 'data/communes-locaux-adresses.json' && -f 'data/fantoir.sqlite' && -f 'data/gazetteer.sqlite' ]]; then
+if [[ -f 'build/data/communes-locaux-adresses.json' && -f 'build/data/fantoir.sqlite' && -f 'build/data/gazetteer.sqlite' ]]; then
     echo "data sets already exist."
     if [[ "$FORCE_DOWNLOAD_DATASETS" = "true" ]]; then
         echo "forcing datasets download..."

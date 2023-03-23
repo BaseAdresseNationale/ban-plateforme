@@ -1,4 +1,5 @@
 /* eslint no-await-in-loop: off */
+const path = require('path')
 const Keyv = require('keyv')
 const Cache = require('lru-cache')
 const {throttle} = require('lodash')
@@ -10,7 +11,7 @@ let _db
 
 function db() {
   if (!_db) {
-    _db = new Keyv('sqlite://data/communes-50m.sqlite')
+    _db = new Keyv(`sqlite://${path.join(__dirname, '../../', 'data/communes-50m.sqlite')}`)
   }
 
   return _db

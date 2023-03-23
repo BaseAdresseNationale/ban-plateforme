@@ -1,7 +1,7 @@
 apps:
   - name : 'ban-api'
-    script : 'server.js'
+    script : 'build/server.js'
     instances: '1'
   - name : 'ban-worker'
-    script : 'worker.js'
+    script : 'build/worker.js'
     instances: '1'

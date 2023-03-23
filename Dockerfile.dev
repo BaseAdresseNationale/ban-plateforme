@@ -6,12 +6,13 @@ RUN npm install pm2 -g
 # optimzing caching for yarn install
 WORKDIR /app
 COPY package.json yarn.lock .
-RUN yarn install 
-
-# creating /data and /dist folder to be able to map volumes
-RUN mkdir data && mkdir dist
+RUN yarn install
 
 # copying the root folder into the workdir taking into account the .dockerignore file
 COPY . .
+RUN yarn build
+
+# creating /data and /dist folder to be able to map volumes
+RUN mkdir build/data && mkdir build/dist
 
 CMD ["sh", "start.dev.sh"]
