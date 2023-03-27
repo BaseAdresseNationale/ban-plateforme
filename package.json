@@ -9,21 +9,22 @@
   "publishConfig": {
     "access": "public"
   },
+  "type":"module",
   "scripts": {
-    "apply-batch-certification": "node scripts/apply-batch-certification",
-    "prepare-contours": "node scripts/prepare-contours",
-    "download-datasets": "node scripts/download-datasets",
-    "import:ign-api-gestion": "node lib/import/cli ign-api-gestion",
-    "import:cadastre": "node lib/import/cli cadastre",
-    "import:ftth": "node lib/import/cli ftth",
-    "dist": "node lib/distribute/cli",
-    "compose": "node lib/compose/cli",
+    "apply-batch-certification": "node scripts/apply-batch-certification.cjs",
+    "prepare-contours": "node scripts/prepare-contours.cjs",
+    "download-datasets": "node scripts/download-datasets.cjs",
+    "import:ign-api-gestion": "node lib/import/cli.cjs ign-api-gestion",
+    "import:cadastre": "node lib/import/cli.cjs cadastre",
+    "import:ftth": "node lib/import/cli.cjs ftth",
+    "dist": "node lib/distribute/cli.cjs",
+    "compose": "node lib/compose/cli.cjs",
     "lint": "xo",
     "test": "jest",
-    "worker": "node worker",
-    "worker:dev": "npx nodemon worker",
-    "start": "node server",
-    "dev": "npx nodemon server"
+    "worker": "node worker.cjs",
+    "worker:dev": "npx nodemon worker.cjs",
+    "start": "node server.cjs",
+    "dev": "npx nodemon server.cjs"
   },
   "dependencies": {
     "@ban-team/validateur-bal": "^2.13.0",
