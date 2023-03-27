@@ -1,10 +1,14 @@
 #!/usr/bin/env
-require('dotenv').config()
+import dotenv from 'dotenv'
 
-const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-const mongo = require('./lib/util/mongo.cjs')
+import express from 'express'
+import morgan from 'morgan'
+import cors from 'cors'
+import mongo from './lib/util/mongo.cjs'
+import legacyRoutes from './lib/api/routes.cjs'
+import routes from './lib/api/address/routes.js'
+
+dotenv.config()
 
 async function main() {
   await mongo.connect()
@@ -21,8 +25,8 @@ async function main() {
     res.send('pong')
   })
 
-  app.use('/', require('./lib/api/routes.cjs'))
-  app.use('/address', require('./lib/api/address/routes.cjs'))
+  app.use('/', legacyRoutes)
+  app.use('/address', routes)
 
   const port = process.env.PORT || 5000
 

@@ -20,7 +20,7 @@
     "dist": "node lib/distribute/cli.cjs",
     "compose": "node lib/compose/cli.cjs",
     "lint": "xo",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "worker": "node worker.cjs",
     "worker:dev": "npx nodemon worker.cjs",
     "start": "node server.cjs",
@@ -80,6 +80,9 @@
   "devDependencies": {
     "jest": "^29.5.0",
     "xo": "^0.50.0"
+  },
+  "jest": {
+    "transform": {}
   },
   "xo": {
     "envs": [
