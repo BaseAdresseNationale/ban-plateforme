@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import dotenv from 'dotenv'
+import 'dotenv/config.js' // eslint-disable-line import/no-unassigned-import
 import ms from 'ms'
 
 import addressConsumers from './lib/api/address/consumers.js'
@@ -9,8 +9,6 @@ import mongo from './lib/util/mongo.cjs'
 import queue from './lib/util/queue.cjs'
 import composeCommune from './lib/jobs/compose-commune.cjs'
 import computeBanStats from './lib/jobs/compute-ban-stats.cjs'
-
-dotenv.config()
 
 async function main() {
   await mongo.connect()
