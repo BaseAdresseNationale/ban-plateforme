@@ -1,14 +1,11 @@
 #!/usr/bin/env
-import dotenv from 'dotenv'
-
+import 'dotenv/config.js' // eslint-disable-line import/no-unassigned-import
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import mongo from './lib/util/mongo.cjs'
 import legacyRoutes from './lib/api/routes.cjs'
 import routes from './lib/api/address/routes.js'
-
-dotenv.config()
 
 async function main() {
   await mongo.connect()
