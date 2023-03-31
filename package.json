@@ -21,10 +21,10 @@
     "compose": "node lib/compose/cli.cjs",
     "lint": "xo",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "worker": "node worker.cjs",
-    "worker:dev": "npx nodemon worker.cjs",
-    "start": "node server.cjs",
-    "dev": "npx nodemon server.cjs"
+    "worker": "node worker.js",
+    "worker:dev": "npx nodemon worker.js",
+    "start": "node server.js",
+    "dev": "npx nodemon server.js"
   },
   "dependencies": {
     "@ban-team/validateur-bal": "^2.13.0",
