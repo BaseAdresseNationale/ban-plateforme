@@ -9,7 +9,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "type":"module",
+  "type": "module",
   "scripts": {
     "apply-batch-certification": "node scripts/apply-batch-certification.cjs",
     "prepare-contours": "node scripts/prepare-contours.cjs",
@@ -20,18 +20,18 @@
     "dist": "node lib/distribute/cli.cjs",
     "compose": "node lib/compose/cli.cjs",
     "lint": "xo",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "worker": "node worker.js",
     "worker:dev": "npx nodemon worker.js",
     "start": "node server.js",
     "dev": "npx nodemon server.js"
   },
   "dependencies": {
+    "@ban-team/fantoir": "^0.15.0",
+    "@ban-team/gazetteer": "^2.0.0",
     "@ban-team/validateur-bal": "^2.13.0",
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^3.0.0",
-    "@ban-team/fantoir": "^0.15.0",
-    "@ban-team/gazetteer": "^2.0.0",
     "@etalab/majic": "^0.11.0",
     "@etalab/normadresse": "^1.2.0",
     "@etalab/project-legal": "^0.6.0",
@@ -78,6 +78,7 @@
     "yup": "^1.0.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "jest": "^29.5.0",
     "xo": "^0.50.0"
   },
