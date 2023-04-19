@@ -3,7 +3,7 @@
 import 'dotenv/config.js' // eslint-disable-line import/no-unassigned-import
 import ms from 'ms'
 
-import addressConsumers from './lib/api/address/consumers.js'
+import apiConsumer from './lib/api/consumers/api-consumer.js'
 
 import mongo from './lib/util/mongo.cjs'
 import queue from './lib/util/queue.cjs'
@@ -19,7 +19,7 @@ async function main() {
   queue('compute-ban-stats').add({}, {repeat: {every: ms('15m')}, removeOnComplete: true})
 
   // BanID
-  queue('address').process(1, addressConsumers)
+  queue('api').process(1, apiConsumer)
 }
 
 main().catch(error => {

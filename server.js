@@ -4,8 +4,12 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import mongo from './lib/util/mongo.cjs'
-import legacyRoutes from './lib/api/routes.cjs'
-import routes from './lib/api/address/routes.js'
+
+import addressRoutes from './lib/api/address/routes.js'
+import roadRoutes from './lib/api/road/routes.js'
+import statusRoutes from './lib/api/job-status/routes.js'
+
+import legacyRoutes from './lib/api/legacy-routes.cjs'
 
 async function main() {
   await mongo.connect()
@@ -23,7 +27,9 @@ async function main() {
   })
 
   app.use('/', legacyRoutes)
-  app.use('/address', routes)
+  app.use('/address', addressRoutes)
+  app.use('/road', roadRoutes)
+  app.use('/job-status', statusRoutes)
 
   const port = process.env.PORT || 5000
 
