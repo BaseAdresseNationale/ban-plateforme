@@ -4,6 +4,7 @@ import 'dotenv/config.js' // eslint-disable-line import/no-unassigned-import
 import ms from 'ms'
 
 import apiConsumer from './lib/api/consumers/api-consumer.js'
+import cleanJobStatusConsumer from './lib/api/consumers/clean-job-status-consumer.js'
 
 import mongo from './lib/util/mongo.cjs'
 import queue from './lib/util/queue.cjs'
@@ -20,6 +21,8 @@ async function main() {
 
   // BanID
   queue('api').process(1, apiConsumer)
+  queue('clean-job-status').process(1, cleanJobStatusConsumer)
+  queue('clean-job-status').add({}, {repeat: {every: ms('1d')}, removeOnComplete: true})
 }
 
 main().catch(error => {
