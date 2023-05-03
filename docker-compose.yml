@@ -37,7 +37,10 @@ services:
     volumes:
       - data:/app/data
       - dist:/app/dist
-
+      - ./lib:/app/lib
+      - ./scripts:/app/scripts
+      - ./server.js:/app/server.js
+      - ./worker.js:/app/worker.js
 volumes:
   data:
   dist:
