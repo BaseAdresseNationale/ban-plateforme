@@ -6,7 +6,7 @@ import cors from 'cors'
 import mongo from './lib/util/mongo.cjs'
 
 import addressRoutes from './lib/api/address/routes.js'
-import roadRoutes from './lib/api/road/routes.js'
+import commonToponymRoutes from './lib/api/common-toponym/routes.js'
 import statusRoutes from './lib/api/job-status/routes.js'
 
 import legacyRoutes from './lib/api/legacy-routes.cjs'
@@ -28,7 +28,7 @@ async function main() {
 
   app.use('/', legacyRoutes)
   app.use('/address', addressRoutes)
-  app.use('/road', roadRoutes)
+  app.use('/common-toponym', commonToponymRoutes)
   app.use('/job-status', statusRoutes)
 
   const port = process.env.PORT || 5000
