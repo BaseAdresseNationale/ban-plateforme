@@ -10,9 +10,15 @@ import mongo from './lib/util/mongo.cjs'
 import queue from './lib/util/queue.cjs'
 import composeCommune from './lib/jobs/compose-commune.cjs'
 import computeBanStats from './lib/jobs/compute-ban-stats.cjs'
+import balGarbageCollector from './lib/compose/bal-garbage-collector/index.js'
 
 async function main() {
   await mongo.connect()
+
+  if (process.env.NODE_ENV === 'production') {
+    // Garbage collector
+    await balGarbageCollector()
+  }
 
   // Legacy
   queue('compose-commune').process(2, composeCommune)
