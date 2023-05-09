@@ -23,12 +23,12 @@ async function main() {
   // Legacy
   queue('compose-commune').process(2, composeCommune)
   queue('compute-ban-stats').process(1, computeBanStats)
-  queue('compute-ban-stats').add({}, {repeat: {every: ms('15m')}, removeOnComplete: true})
+  queue('compute-ban-stats').add({}, {jobId: 'computeBanStatsJobId', repeat: {every: ms('15m')}, removeOnComplete: true})
 
   // BanID
   queue('api').process(1, apiConsumer)
   queue('clean-job-status').process(1, cleanJobStatusConsumer)
-  queue('clean-job-status').add({}, {repeat: {every: ms('1d')}, removeOnComplete: true})
+  queue('clean-job-status').add({}, {jobId: 'cleanJobStatusJobId', repeat: {every: ms('1d')}, removeOnComplete: true})
 }
 
 main().catch(error => {
