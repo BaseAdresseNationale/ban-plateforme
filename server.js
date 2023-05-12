@@ -7,6 +7,7 @@ import mongo from './lib/util/mongo.cjs'
 
 import addressRoutes from './lib/api/address/routes.js'
 import commonToponymRoutes from './lib/api/common-toponym/routes.js'
+import districtRoutes from './lib/api/district/routes.js'
 import statusRoutes from './lib/api/job-status/routes.js'
 
 import legacyRoutes from './lib/api/legacy-routes.cjs'
@@ -29,6 +30,7 @@ async function main() {
   app.use('/', legacyRoutes)
   app.use('/address', addressRoutes)
   app.use('/common-toponym', commonToponymRoutes)
+  app.use('/district', districtRoutes)
   app.use('/job-status', statusRoutes)
 
   const port = process.env.PORT || 5000
