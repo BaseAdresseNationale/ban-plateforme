@@ -19,6 +19,7 @@
     "import:ftth": "node lib/import/cli.cjs ftth",
     "dist": "node lib/distribute/cli.cjs",
     "compose": "node lib/compose/cli.cjs",
+    "composeAllForce": "node lib/compose/compose-all-force.cjs",
     "lint": "xo",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "worker": "node worker.js",
