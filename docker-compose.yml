@@ -4,8 +4,11 @@ services:
     image: mongo:4.2.23
     ports:
       - "${MONGODB_PORT:-27017}:27017"
+    environment:
+      - MONGODB_DBNAME=${MONGODB_DBNAME}
     volumes:
       - db:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
   redis:
     # Version of Redis currently in production
     image: redis:4.0.9
