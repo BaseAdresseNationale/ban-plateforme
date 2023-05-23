@@ -9,6 +9,7 @@ import addressRoutes from './lib/api/address/routes.js'
 import commonToponymRoutes from './lib/api/common-toponym/routes.js'
 import districtRoutes from './lib/api/district/routes.js'
 import statusRoutes from './lib/api/job-status/routes.js'
+import banIdRoutes from './lib/api/ban-id/routes.js'
 
 import legacyRoutes from './lib/api/legacy-routes.cjs'
 
@@ -32,6 +33,7 @@ async function main() {
   app.use('/common-toponym', commonToponymRoutes)
   app.use('/district', districtRoutes)
   app.use('/job-status', statusRoutes)
+  app.use('/ban-id', banIdRoutes)
 
   const port = process.env.PORT || 5000
 
