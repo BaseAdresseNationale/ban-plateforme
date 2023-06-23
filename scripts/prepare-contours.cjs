@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('dotenv').config()
 const path = require('path')
 const {mkdirp} = require('fs-extra')
 const {prepareContours} = require('../lib/util/contours.cjs')
