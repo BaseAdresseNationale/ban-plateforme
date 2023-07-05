@@ -1,17 +1,19 @@
 #!/usr/bin/env node
+require('dotenv').config()
 const path = require('path')
 const {createWriteStream} = require('fs')
 const {pipeline} = require('stream/promises')
 const {mkdirp} = require('fs-extra')
-const got = require('got')
 const ora = require('ora')
+const fetch = require('../lib/util/fetch.cjs')
 
 const dataDir = path.join(__dirname, '..', 'data')
 
 async function downloadFile(url, fileName) {
   const spinner = ora(`Téléchargement du fichier ${fileName}`).start()
+  const response = await fetch(url)
   await pipeline(
-    got.stream(url, {responseType: 'buffer'}),
+    response.body,
     createWriteStream(path.join(dataDir, fileName))
   )
   spinner.succeed()

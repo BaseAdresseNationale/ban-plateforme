@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 /* eslint unicorn/prefer-object-from-entries: off */
+require('dotenv').config()
 const {createGunzip} = require('zlib')
 const {join} = require('path')
-const got = require('got')
 const {center, bbox} = require('@turf/turf')
 const getStream = require('get-stream')
 const {outputJson} = require('fs-extra')
+const fetch = require('../lib/util/fetch.cjs')
 
 const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2023/geojson/communes-100m.geojson.gz'
 
 async function getFeatures(url) {
-  const buffer = await getStream.buffer(
-    got.stream(url).pipe(createGunzip())
-  )
+  const response = await fetch(url)
+  const unzippedStream = response.body.pipe(createGunzip())
+  const bufferData = await getStream.buffer(unzippedStream)
 
-  return JSON.parse(buffer.toString()).features
+  return JSON.parse(bufferData.toString()).features
 }
 
 function toPrecision(float, precision) {
