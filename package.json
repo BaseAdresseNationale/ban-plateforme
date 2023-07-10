@@ -25,7 +25,9 @@
     "worker": "node worker.js",
     "worker:dev": "npx nodemon worker.js",
     "start": "node server.js",
-    "dev": "npx nodemon server.js"
+    "dev": "npx nodemon server.js",
+    "toolbox:snapshot":"node toolbox.dev/scripts/db-snapshot.js",
+    "toolbox:compare":"node toolbox.dev/scripts/compare-data-from-db-snapshot-and-current-db"
   },
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
@@ -80,6 +82,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "deep-diff": "^1.0.2",
     "jest": "^29.5.0",
     "xo": "^0.50.0"
   },

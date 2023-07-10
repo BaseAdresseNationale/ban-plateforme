@@ -64,3 +64,6 @@ typings/
 /dist
 /data
 
+# Toolbox
+/toolbox.dev/data
+
