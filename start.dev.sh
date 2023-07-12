@@ -27,9 +27,9 @@ else
     npm run download-datasets
 fi
 
-npm run import:ign-api-gestion
-npm run import:cadastre
-npm run import:ftth
+# npm run import:ign-api-gestion
+# npm run import:cadastre
+# npm run import:ftth
 
 # npm run apply-batch-certification
 # npm run compose

@@ -46,6 +46,7 @@ services:
       - ./scripts:/app/scripts
       - ./server.js:/app/server.js
       - ./worker.js:/app/worker.js
+      - ./toolbox.dev:/app/toolbox.dev
 volumes:
   data:
   dist:
