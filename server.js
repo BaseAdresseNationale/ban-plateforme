@@ -17,6 +17,8 @@ async function main() {
     app.use(morgan('dev'))
   }
 
+  app.use(express.json({limit: '20mb'}))
+
   app.use(cors({origin: true}))
 
   app.get('/ping', (req, res) => {
