@@ -67,3 +67,5 @@ typings/
 # Toolbox
 /toolbox.dev/data
 
+# Migration data backup
+db-migrations/migrations/data-backup
