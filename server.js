@@ -4,12 +4,17 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 import mongo from './lib/util/mongo.cjs'
+import {init} from './lib/util/sequelize.js'
 
 import apiRoutes from './lib/api/routes.js'
 import legacyRoutes from './lib/api/legacy-routes.cjs'
 
 async function main() {
+  // Mongo DB : connecting and creating indexes
   await mongo.connect()
+
+  // Postgres DB : Testing connection and syncing models
+  await init()
 
   const app = express()
 
