@@ -34,7 +34,7 @@
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
     "@ban-team/gazetteer": "^2.0.0",
-    "@ban-team/validateur-bal": "^2.15.0",
+    "@ban-team/validateur-bal": "^2.16.0",
     "@etalab/adresses-util": "^0.8.2",
     "@etalab/decoupage-administratif": "^3.0.0",
     "@etalab/majic": "^0.11.0",
