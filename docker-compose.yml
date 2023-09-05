@@ -23,7 +23,7 @@ services:
       - "${REDIS_PORT:-6379}:6379"
   api:
     build: 
-      dockerfile: 'Dockerfile.dev'
+      dockerfile: docker-resources/api/Dockerfile.dev
     depends_on:
       - db-mongo
       - db-postgres
