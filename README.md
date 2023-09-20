@@ -1,72 +1,86 @@
-# Plateforme Base Adresse Nationale
+# Plateforme de la Base Adresse Nationale
 
-Ce dépôt regroupe l'essentiel des briques faisant partie de la plateforme Base Adresse Nationale, à savoir :
+## Architecture
 
-- les routines d'import ;
-- les routines de consolidation ;
-- les routines de production des fichiers ;
-- un service "worker" réagissant en temps réel à toute modification.
+La BAN Plateforme contient : 
+- Une API synchrone et asynchrone : serveur Express (point d'entrée : server.js).
+L'API asynchrone envoit des tâches dans la queue du redis, pris en charge par le worker.
+- Un worker (point d'entrée : worker.js) qui récupère les tâches du redis (qui ont été déposées soit par l'API, soit par les scripts).
+- Des scripts (imports, consolidation, exports, ...).
 
-## Installer un environnement de développement
+La BAN Plateforme import et export des données d'une base MongoDB.
 
-### Pré-requis
+## Installation
 
+### Configuration
+Pour mettre en place un environnement fonctionnel, vous pouvez partir du fichier .env.sample et le copier en le renommant .env.
+
+### Deploiement local avec Docker
+
+#### Pré-requis
+- Docker
+- Docker-compose
+
+#### Commandes
+Pour déployer l'environnement, lancer la commande suivante : 
+
+```sh
+docker-compose up --build -d
+```
+
+--build : permet de builder les images locales.
+-d : permet de lancer les conteneurs en arrière plan.
+
+La commande précédente va déployer une architecture locale, interconnectée, avec : 
+- un conteneur "db" (image mongo:4.2.23)
+- un conteneur "redis" (image redis:4.0.9)
+- un conteneur "api" (à partir de l'image définie dans le fichier docker-resources/api/Dockerfile.dev) => Au lancement de ce conteneur, un script d'initialisation (défini dans le fichier docker-resources/api/start.sh) va permettre le téléchargement des données requises au démarrage de la plateforme.
+
+### Deploiement local sans Docker
+
+#### Pré-requis
 - Node.js 16 ou supérieur
 - MongoDB 4 ou supérieur
 - Redis
 - yarn ou npm
 
-### Configuration
+#### Commandes
+Pour installer les dépendances, lancer la commande suivate : 
 
-Pour mettre en place un environnement fonctionnel, vous pouvez partir du fichier `.env.sample` et le copier en le renommant `.env`.
-
-Compte-tenu de la puissance de calcul nécessaire pour effectuer les traitements sur France entière il est conseillé de restreindre à un seul département pour les développements. Par exemple `DEPARTEMENTS=57`.
-
-### Installation des dépendances
-
-```bash
+```sh
 yarn
 ```
 
-### Préparation des contours administratifs
+Il faut ensuite télécharger les fichiers requis au démarrage de la plateforme avec les commandes suivantes : 
 
-```bash
-yarn prepare-contours
-```
-Prepare les contours France entière sans prendre en compte le .env.
-
-### Téléchargement des données nécessaires
-
-```bash
-yarn download-datasets
-```
-Télécharge fantoir.sqlite, gazetteer.sqlite, communes-locaux-adresses.json.
-
-### Import des différentes sources
-
-```bash
-yarn import:ign-api-gestion
-yarn import:cadastre
-yarn import:ftth
-```
-Prend en compte le .env pour ne télécharger les données que sur le département concerné.
-
-### Consolidation des adresses
-
-```bash
-yarn compose
+```sh
+yarn prepare-contours ## Prepare les contours administratifs de la France entière.
 ```
 
-### Production des fichiers
-
-```bash
-yarn dist
+```sh
+yarn download-datasets ## Télécharge fantoir.sqlite, gazetteer.sqlite, communes-locaux-adresses.json.
 ```
 
-## Opérations d’exploitation
+Pour déployer l'api et le worker, lancer les deux commandes suivantes en parallèle : 
 
-### Appliquer la mise à jour de la liste des communes certifiées d'office
+```sh
+yarn dev
+```
 
-```bash
-yarn apply-batch-certification
+```sh
+yarn worker:dev
+```
+
+### Autres commandes
+
+```sh
+yarn compose ## Consolidation des adresses
+```
+
+```sh
+yarn dist ## Production des fichiers d'export
+```
+
+```sh
+yarn apply-batch-certification ## Appliquer la mise à jour de la liste des communes certifiées d'office
 ```

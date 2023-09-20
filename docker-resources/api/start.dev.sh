@@ -35,4 +35,4 @@ fi
 # npm run compose
 # npm run dist
 
-pm2-runtime process.dev.yml
+pm2-runtime docker-resources/api/process.dev.yml
