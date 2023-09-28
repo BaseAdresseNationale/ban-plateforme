@@ -1,0 +1,8 @@
+# Use the official PostgreSQL image as the base image
+FROM postgres:15
+
+# Install PostGIS extension
+RUN apt-get update && apt-get install -y postgresql-15-postgis-3
+
+# Copy a script to activate PostGIS
+COPY docker-resources/postgres/init-postgis.sh /docker-entrypoint-initdb.d
