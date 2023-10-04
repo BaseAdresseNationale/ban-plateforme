@@ -1,0 +1,11 @@
+[
+  {"fra": "entrée", "eng": "entrance"},
+  {"fra": "bâtiment", "eng": "building"},
+  {"fra": "cage d’escalier", "eng": "staircase identifier"},
+  {"fra": "logement", "eng": "unit identifier"},
+  {"fra": "service technique", "eng": "utility service"},
+  {"fra": "délivrance postale", "eng": "postal delivery"},
+  {"fra": "parcelle", "eng": "parcel"},
+  {"fra": "segment", "eng": "segment"},
+  {"fra": "autre", "eng": "other"}
+]
