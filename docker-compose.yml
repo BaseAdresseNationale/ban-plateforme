@@ -7,7 +7,8 @@ services:
     volumes:
       - db-mongo:/data/db
   db-postgres:
-    image: postgres:15-alpine
+    build: 
+      dockerfile: docker-resources/postgres/Dockerfile.dev
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:
