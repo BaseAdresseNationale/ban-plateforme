@@ -1,0 +1,177 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test Auth function > Error on Classic Method (POST) 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "ERROR ON Création: /error-test-API/fake/url/fake.url",
+    },
+    "url": "/error-test-API/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsErrorMiddleware > Error on Unknow Method 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "ERROR ON UNKNOW_METHOD to error-test-API: /error-test-API/fake/url/fake.url",
+    },
+    "url": "/error-test-API/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Create 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Création: /fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Invalid Method on Multi Delete 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Suppression Multiple [INVALID_METHOD (POST): reveived UNKNOW_METHOD]: /delete/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/delete/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Invalid Method on Request COG 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Demande de conversion COG-to-District [INVALID_METHOD (GET): reveived POST]: /cog/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/cog/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Invalid Method on Request Delta Report 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Demande de rapport delta [INVALID_METHOD (POST): reveived UNKNOW_METHOD]: /delta-report/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/delta-report/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Multi Delete 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Suppression Multiple: /delete/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/delete/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Read 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Lecture: /fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Request COG 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Demande de conversion COG-to-District: /cog/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/cog/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Request Delta Report 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Demande de rapport delta: /delta-report/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/delta-report/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Single Delete 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Suppression Unique: /fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Unknow Method 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "UNKNOW_METHOD to Test-sub-API: /Test-sub-API/fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/Test-sub-API/fake/url/fake.url",
+  },
+]
+`;
+
+exports[`Test Auth function analyticsMiddleware > Event: Update 1`] = `
+[
+  {
+    "trackEvent": {
+      "action": "Modification: /fake/url/fake.url",
+      "category": "Call API BAN",
+      "name": "fake-path-name",
+      "value": 1,
+    },
+    "url": "/fake/url/fake.url",
+  },
+]
+`;
