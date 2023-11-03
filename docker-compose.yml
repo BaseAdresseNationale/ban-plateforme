@@ -7,7 +7,7 @@ services:
     volumes:
       - db-mongo:/data/db
   db-postgres:
-    build: 
+    build:
       dockerfile: docker-resources/postgres/Dockerfile.dev
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -23,7 +23,7 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:6379"
   api:
-    build: 
+    build:
       dockerfile: docker-resources/api/Dockerfile.dev
     depends_on:
       - db-mongo
@@ -53,6 +53,7 @@ services:
       - JOB_STATUS_LIMIT_DURATION=${JOB_STATUS_LIMIT_DURATION}
       - MATOMO_URL=${MATOMO_URL}
       - MATOMO_SITE_ID=${MATOMO_SITE_ID}
+      - MATOMO_TOKEN_AUTH=${MATOMO_TOKEN_AUTH}
       - FORCE_DOWNLOAD_CONTOUR=
       - FORCE_DOWNLOAD_DATASETS=
     ports:
