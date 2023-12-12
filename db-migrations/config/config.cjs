@@ -6,7 +6,7 @@ module.exports = {
   development: {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DBNAME,
+    database: process.env.POSTGRES_DB,
     host: process.env.POSTGRES_URL,
     port: 5432,
     dialect: 'postgres',
@@ -14,7 +14,7 @@ module.exports = {
   production: {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DBNAME,
+    database: process.env.POSTGRES_DB,
     host: process.env.POSTGRES_URL,
     port: 5432,
     dialect: 'postgres',
