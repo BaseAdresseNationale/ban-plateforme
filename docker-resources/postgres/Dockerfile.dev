@@ -5,4 +5,4 @@ FROM postgres:16
 RUN apt-get update && apt-get install -y postgresql-16-postgis-3
 
 # Copy a script to activate PostGIS
-COPY docker-resources/postgres/init-postgis.sh /docker-entrypoint-initdb.d
+COPY docker-resources/postgres/init.sh /docker-entrypoint-initdb.d
