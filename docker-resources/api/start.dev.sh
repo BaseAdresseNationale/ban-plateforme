@@ -8,11 +8,13 @@ if [[ -f 'data/communes-50m.sqlite' ]]; then
     if [[ "$FORCE_DOWNLOAD_CONTOUR" = "true" ]]; then
         echo "forcing contours download..."
         npm run prepare-contours
+        echo "contours download done."
     fi
 else
     echo "contours does not exist."
-    echo "downloading contours"
+    echo "downloading contours..."
     npm run prepare-contours
+    echo "contours download done."
 fi
 
 if [[ -f 'data/communes-locaux-adresses.json' && -f 'data/fantoir.sqlite' && -f 'data/gazetteer.sqlite' ]]; then
@@ -20,11 +22,13 @@ if [[ -f 'data/communes-locaux-adresses.json' && -f 'data/fantoir.sqlite' && -f 
     if [[ "$FORCE_DOWNLOAD_DATASETS" = "true" ]]; then
         echo "forcing datasets download..."
         npm run download-datasets
+        echo "data sets download done."
     fi
 else
     echo "data sets do not exist."
-    echo "downloading data sets"
+    echo "downloading data sets..."
     npm run download-datasets
+    echo "data sets download done."
 fi
 
 # npm run import:ign-api-gestion
@@ -34,5 +38,9 @@ fi
 # npm run apply-batch-certification
 # npm run compose
 # npm run dist
+
+echo "running migrations..."
+npm run migrate:up
+echo "migrations done."
 
 pm2-runtime docker-resources/api/process.dev.yml
