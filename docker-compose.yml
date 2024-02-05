@@ -34,6 +34,17 @@ services:
     image: redis:4.0.9
     ports:
       - "${REDIS_PORT:-6379}:6379"
+  minio:
+    image: minio/minio
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_FRONT_PORT:-90001}:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    command: server --console-address ":9001" /data
   api:
     build:
       dockerfile: docker-resources/api/Dockerfile.dev
@@ -74,6 +85,11 @@ services:
       - MATOMO_TOKEN_AUTH=${MATOMO_TOKEN_AUTH}
       - FORCE_DOWNLOAD_CONTOUR=
       - FORCE_DOWNLOAD_DATASETS=
+      - S3_REGION={S3_REGION}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+      - S3_BUCKET=${S3_BUCKET}
+      - S3_ENDPOINT_URL=http://minio:9000
     ports:
       - "${PORT:-5000}:5000"
     volumes:
@@ -89,3 +105,4 @@ volumes:
   dist:
   db-mongo:
   db-postgres:
+  minio-data:
