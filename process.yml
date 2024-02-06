@@ -1,0 +1,12 @@
+apps:
+  - name : 'ban-api'
+    script : 'server.js'
+    instances: '2'
+    env:
+      PORT : 5000
+      NODE_ENV : 'production'
+  - name : 'ban-worker'
+    script : 'worker.js'
+    instances: '4'
+    env:
+      NODE_ENV : 'production'
