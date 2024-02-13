@@ -6,6 +6,11 @@ services:
       - "${MONGODB_PORT:-27017}:27017"
     volumes:
       - db-mongo:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongo --eval 'db.runCommand({ connectionStatus: 1 })'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   db-postgres:
     build:
       dockerfile: docker-resources/postgres/Dockerfile.dev
@@ -19,6 +24,11 @@ services:
       - POSTGRES_BAN_PASSWORD=${POSTGRES_BAN_PASSWORD}
     volumes:
       - db-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   redis:
     # Version of Redis currently in production
     image: redis:4.0.9
@@ -28,16 +38,22 @@ services:
     build:
       dockerfile: docker-resources/api/Dockerfile.dev
     depends_on:
-      - db-mongo
-      - db-postgres
-      - redis
+      db-mongo: 
+        condition: service_healthy
+      db-postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       - MONGODB_URL=mongodb://db-mongo
       - MONGODB_DBNAME=${MONGODB_DBNAME}
       - POSTGRES_URL=db-postgres
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_ROOT_USER=${POSTGRES_ROOT_USER}
+      - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
       - POSTGRES_BAN_USER=${POSTGRES_BAN_USER}
       - POSTGRES_BAN_PASSWORD=${POSTGRES_BAN_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
       - REDIS_URL=redis://redis
       - FANTOIR_PATH=${FANTOIR_PATH}
       - GAZETTEER_DB_PATH=${GAZETTEER_DB_PATH}
