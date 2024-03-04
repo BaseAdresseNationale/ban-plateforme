@@ -5,7 +5,7 @@ import {createWriteStream, createReadStream, promises as fsPromises, rmdirSync, 
 import {GetObjectCommand} from '@aws-sdk/client-s3'
 import s3 from '../lib/util/s3.cjs'
 
-const {S3_BUCKET} = process.env
+const {S3_CONFIG_BUCKET} = process.env
 
 const prefixBase = 'ban/adresses/latest'
 const tempFolderName = 'dist'
@@ -42,7 +42,7 @@ const downloadAndWriteFile = async (folderPath, key) => {
 
   const outputStream = createWriteStream(`${folderPath}/${fileName}`)
   const getObjectCommand = new GetObjectCommand({
-    Bucket: S3_BUCKET,
+    Bucket: S3_CONFIG_BUCKET,
     Key: key,
   })
 
