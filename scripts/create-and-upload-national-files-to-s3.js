@@ -7,7 +7,7 @@ import s3 from '../lib/util/s3.cjs'
 
 const {S3_CONFIG_BUCKET} = process.env
 
-const prefixBase = 'ban/adresses/latest'
+const prefixBase = 'adresse-data/ban/adresses/latest'
 const tempFolderName = 'dist'
 const nationalFilesConfig = [{
   type: 'csv-bal',
