@@ -84,6 +84,7 @@ services:
       - ./server.js:/app/server.js
       - ./worker.js:/app/worker.js
       - ./toolbox.dev:/app/toolbox.dev
+      - ./db-migrations:/app/db-migrations
 volumes:
   data:
   dist:
