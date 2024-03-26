@@ -32,6 +32,8 @@
     "migrate:undo": "npx sequelize-cli db:migrate:undo"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.502.0",
+    "@aws-sdk/lib-storage": "^3.502.0",
     "@ban-team/fantoir": "^0.15.0",
     "@ban-team/gazetteer": "^2.0.0",
     "@ban-team/validateur-bal": "^2.17.0",

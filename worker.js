@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+import {execFile} from 'node:child_process'
 import 'dotenv/config.js' // eslint-disable-line import/no-unassigned-import
 import ms from 'ms'
 
@@ -30,6 +30,14 @@ async function main() {
   queue('compose-commune').process(4, composeCommune)
   queue('compute-ban-stats').process(1, computeBanStats)
   queue('compute-ban-stats').add({}, {jobId: 'computeBanStatsJobId', repeat: {every: ms('15m')}, removeOnComplete: true})
+
+  // Department files
+  queue('compute-ban-dep').process(1, () => execFile('node', ['lib/distribute/cli.cjs'], {stdio: 'inherit'}))
+  queue('compute-ban-dep').add({}, {jobId: 'computeBanDepJobId', repeat: {cron: '0 1 * * 1-5'}, removeOnComplete: true})
+
+  // National Files
+  queue('compute-ban-nat').process(1, () => execFile('node', ['scripts/create-and-upload-national-files-to-s3.js'], {stdio: 'inherit'}))
+  queue('compute-ban-nat').add({}, {jobId: 'computeBanNatJobId', repeat: {cron: '0 2 * * 1-5'}, removeOnComplete: true})
 
   // BanID
   queue('api').process(1, apiConsumer)
