@@ -29,7 +29,9 @@
     "toolbox:snapshot": "node toolbox.dev/scripts/db-snapshot.js",
     "toolbox:compare": "node toolbox.dev/scripts/compare-data-from-db-snapshot-and-current-db",
     "migrate:up": "npx sequelize-cli db:migrate",
-    "migrate:undo": "npx sequelize-cli db:migrate:undo"
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "seed:up": "npx sequelize-cli db:seed:all",
+    "seed:undo": "npx sequelize-cli db:seed:undo"
   },
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
