@@ -28,7 +28,7 @@ const main = async () => {
     const filePath = path.join(snapshotFolder, file)
     const fileData = JSON.parse(await fs.readFile(filePath))
 
-    const dbData = DISTRICT_TO_SNAPSHOT
+    const dbData = DISTRICT_TO_SNAPSHOT.length > 0
       ? await collection.find({codeCommune: {$in: DISTRICT_TO_SNAPSHOT}}).toArray()
       : await collection.find().toArray()
 
