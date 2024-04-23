@@ -29,7 +29,7 @@ async function main() {
   // Legacy
   queue('compose-commune').process(4, composeCommune)
   queue('compute-ban-stats').process(1, computeBanStats)
-  queue('compute-ban-stats').add({}, {jobId: 'computeBanStatsJobId', repeat: {every: ms('15m')}, removeOnComplete: true})
+  queue('compute-ban-stats').add({}, {jobId: 'computeBanStatsJobId', repeat: {every: ms('2h')}, removeOnComplete: true})
 
   // BanID
   queue('api').process(1, apiConsumer)
