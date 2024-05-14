@@ -12,7 +12,7 @@ const __dirname = dirname(__filename)
 const SNAPSHOT_FOLDER_NAME = 'ban-db-snapshot'
 
 const collectionNotToSnapshot = new Set(
-  ['metrics', 'sources_adresses', 'sources_voies', 'sources_communes', 'sources_parts', 'address_test', 'commonToponym_test', 'district_test', 'job_status']
+  ['metrics', 'sources_adresses', 'sources_voies', 'sources_communes', 'sources_parts', 'address_test', 'commonToponym_test', 'district_test', 'job_status', 'pseudo_codes_voies']
 )
 
 const main = async () => {
@@ -36,7 +36,7 @@ const main = async () => {
     }
 
     const collection = mongo.db.collection(collectionName)
-    const data = DISTRICT_TO_SNAPSHOT
+    const data = DISTRICT_TO_SNAPSHOT.length > 0
       ? await collection.find({codeCommune: {$in: DISTRICT_TO_SNAPSHOT}}).toArray()
       : await collection.find().toArray()
     const filePath = path.join(initDir, `${collectionName}.json`)
