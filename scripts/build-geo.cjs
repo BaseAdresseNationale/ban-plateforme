@@ -8,7 +8,7 @@ const getStream = require('get-stream')
 const {outputJson} = require('fs-extra')
 const fetch = require('../lib/util/fetch.cjs')
 
-const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2023/geojson/communes-100m.geojson.gz'
+const communes = 'http://etalab-datasets.geo.data.gouv.fr/contours-administratifs/2024/geojson/communes-100m.geojson.gz'
 
 async function getFeatures(url) {
   const response = await fetch(url)
