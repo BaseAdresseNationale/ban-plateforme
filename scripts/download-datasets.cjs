@@ -28,7 +28,7 @@ async function main() {
   )
 
   await downloadFile(
-    'https://adresse.data.gouv.fr/data/db/gazetteer/2023/gazetteer.sqlite',
+    'https://adresse.data.gouv.fr/data/db/gazetteer/2024/gazetteer.sqlite',
     'gazetteer.sqlite'
   )
 

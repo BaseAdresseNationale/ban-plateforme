@@ -1040,18 +1040,18 @@
     leven "^3.1.0"
     lodash "^4.17.21"
 
-"@ban-team/gazetteer@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@ban-team/gazetteer/-/gazetteer-2.0.0.tgz#8ee442a0cf93fe617e35f01127c20c89ca4d2394"
-  integrity sha512-3Almu5Xk+4sL/4syQfIUsh3q6j6HHZN1bfUKtM66KgbAHgQAA9lEdy7N7TM7FooEAYhUYXiMhSMbxHGx7kta/w==
+"@ban-team/gazetteer@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@ban-team/gazetteer/-/gazetteer-3.2.0.tgz#c941e7eed47375ef63e5f07115d386ae2866186e"
+  integrity sha512-9YWOJbUu2FBEncqLYKBPVKKOF8oTY1TNADsxPUrKZC3IRM2czEngU9QeajV151PbdySy0pAm1UqcmSfZniwcsQ==
   dependencies:
-    "@etalab/decoupage-administratif" "^3.0.0"
-    "@keyv/sqlite" "^3.0.0"
+    "@etalab/decoupage-administratif" "^4.0.0"
+    "@keyv/sqlite" "^3.6.5"
     "@turf/boolean-point-in-polygon" "^6.5.0"
-    flatbush "^3.3.0"
-    keyv "^4.1.1"
+    flatbush "^3.3.1"
+    keyv "^4.5.2"
     lodash "^4.17.21"
-    lru-cache "^7.4.0"
+    lru-cache "^7.18.3"
 
 "@ban-team/shared-data@^1.2.0":
   version "1.2.0"
@@ -1128,10 +1128,10 @@
     talisman "^1.1.4"
     written-number "^0.9.1"
 
-"@etalab/decoupage-administratif@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-3.0.0.tgz#1d0d54b5b884c3df9555b4b8db543f83559629d3"
-  integrity sha512-WlXHeArXK7zwcxoPev8NM3ncUjaIiBYiTmY1wh3X6RXITKjTwn3yaYdQqbPplTfFA/ByllG4Y4q4Jt0bCmbEzw==
+"@etalab/decoupage-administratif@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-4.0.0.tgz#b5d048efc43a688312a42f6daa2bef93c0d2c63b"
+  integrity sha512-TMGZT4rFaQdkovoAZF5iMNJnxc2To8GXiC4x/N8Z5j6I0j29AeInE2Js86Wy9W2ZnjGFbKkSpmnsbLYwWYAFsw==
 
 "@etalab/majic@^0.11.0":
   version "0.11.0"
@@ -1438,7 +1438,7 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@keyv/sqlite@^3.0.0", "@keyv/sqlite@^3.5.0", "@keyv/sqlite@^3.5.1":
+"@keyv/sqlite@^3.5.0", "@keyv/sqlite@^3.5.1":
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/@keyv/sqlite/-/sqlite-3.6.4.tgz#5582efe86e3fbbf9a65b895973d73d6d5950c879"
   integrity sha512-nE7bjOU6lmGn3QBkaAZS+LLvBHebBKDwDbMGlTbhRNJoREam69LZewspGbePb8dpZS1C6IazedVRCq2eb5kFWw==
@@ -4726,7 +4726,7 @@ flat-cache@^3.0.4:
     flatted "^3.1.0"
     rimraf "^3.0.2"
 
-flatbush@^3.3.0:
+flatbush@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/flatbush/-/flatbush-3.3.1.tgz#2ba10dfe4069ef142b8692a0c19982cf0ebabce0"
   integrity sha512-oKuPbtT+DS2CxH+9Vhbsq8HifmSCuOw+3Cy5zt/vCIrZl5KyengoTHDBLmtpZoBhcwa7/biNjgL1DwdLMJYm1A==
@@ -6126,10 +6126,17 @@ jsonparse@^1.2.0:
   resolved "https://registry.yarnpkg.com/jsonparse/-/jsonparse-1.3.1.tgz#3f4dae4a91fac315f71062f8521cc239f1366280"
   integrity sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==
 
-keyv@^4.1.1, keyv@^4.2.2, keyv@^4.2.8, keyv@^4.3.2:
+keyv@^4.2.2, keyv@^4.2.8, keyv@^4.3.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.2.tgz#0e310ce73bf7851ec702f2eaf46ec4e3805cce56"
   integrity sha512-5MHbFaKn8cNSmVW7BYnijeAVlE4cYA/SVkifVgrh7yotnfhKmjuXpDKjrABLnT0SfHWV21P8ow07OGfRrNDg8g==
+  dependencies:
+    json-buffer "3.0.1"
+
+keyv@^4.5.2:
+  version "4.5.4"
+  resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.4.tgz#a879a99e29452f942439f2a405e3af8b31d4de93"
+  integrity sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==
   dependencies:
     json-buffer "3.0.1"
 
@@ -6251,7 +6258,7 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-lru-cache@^7.4.0:
+lru-cache@^7.18.3:
   version "7.18.3"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.3.tgz#f793896e0fd0e954a59dfdd82f0773808df6aa89"
   integrity sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==
