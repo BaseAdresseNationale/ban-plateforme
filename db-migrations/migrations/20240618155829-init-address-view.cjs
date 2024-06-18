@@ -5,7 +5,7 @@ const {POSTGRES_BAN_USER} = process.env
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
-    const bboxBuffer = 50;
+    const bboxBuffer = 50
     try {
       // Create the address_view
       await queryInterface.sequelize.query(`
@@ -18,18 +18,18 @@ module.exports = {
         WHERE A."isActive" = true
         ORDER BY A.id ASC
       `)
-      await queryInterface.sequelize.query(`GRANT SELECT ON ban."address_view" TO "${POSTGRES_BAN_USER}";`);
+      await queryInterface.sequelize.query(`GRANT SELECT ON ban."address_view" TO "${POSTGRES_BAN_USER}";`)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   },
 
   async down(queryInterface) {
     try {
       // Drop the address_view if it exists
-      await queryInterface.sequelize.query('DROP VIEW IF EXISTS ban."address_view";');
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS ban."address_view";')
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 }

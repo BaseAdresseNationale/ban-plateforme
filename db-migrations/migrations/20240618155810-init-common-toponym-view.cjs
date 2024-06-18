@@ -5,8 +5,8 @@ const {POSTGRES_BAN_USER} = process.env
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
-    const addressBboxBuffer = 200;
-    const bboxBuffer = 100;
+    const addressBboxBuffer = 200
+    const bboxBuffer = 100
     try {
       // Execute the view creation
       await queryInterface.sequelize.query(`
@@ -32,16 +32,16 @@ module.exports = {
       // Grant permissions to ban user
       await queryInterface.sequelize.query(`GRANT SELECT ON ban."common_toponym_view" TO "${POSTGRES_BAN_USER}";`)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   },
 
   async down(queryInterface) {
     try {
       // Drop the view if it exists
-      await queryInterface.sequelize.query('DROP VIEW IF EXISTS ban."common_toponym_view" ;');
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS ban."common_toponym_view" ;')
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 }
