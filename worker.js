@@ -6,6 +6,7 @@ import ms from 'ms'
 import apiConsumer from './lib/api/consumers/api-consumer.js'
 import exportToExploitationDBConsumer from './lib/api/consumers/export-to-exploitation-db-consumer.js'
 import cleanJobStatusConsumer from './lib/api/consumers/clean-job-status-consumer.js'
+import buildReportsConsumer from './lib/api/consumers/build-reports.js'
 
 import mongo from './lib/util/mongo.cjs'
 import queue from './lib/util/queue.cjs'
@@ -36,6 +37,8 @@ async function main() {
   queue('export-to-exploitation-db').process(1, exportToExploitationDBConsumer)
   queue('clean-job-status').process(1, cleanJobStatusConsumer)
   queue('clean-job-status').add({}, {jobId: 'cleanJobStatusJobId', repeat: {every: ms('1d')}, removeOnComplete: true})
+  queue('build-reports').process(1, buildReportsConsumer)
+  queue('build-reports').add({}, {jobId: 'buildReportsJobId', repeat: {every: ms('1d')}, removeOnComplete: true})
 }
 
 main().catch(error => {

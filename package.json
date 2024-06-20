@@ -45,6 +45,7 @@
     "@etalab/project-legal": "^0.6.0",
     "@keyv/sqlite": "^3.6.5",
     "@mapbox/tilebelt": "^1.0.2",
+    "@supercharge/promise-pool": "^3.2.0",
     "@turf/turf": "^6.5.0",
     "bluebird": "^3.7.2",
     "bull": "^3.29.3",
