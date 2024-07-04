@@ -1,0 +1,18 @@
+usage : ban [--version] [-h | --help] [-c=<valeur> | --config=<valeur>] 
+            <chemin du fichier source> <chemin du fichier de destination> [-s | --silence | --quiet]
+        ban [--version] [-h | --help] [-c=<valeur> | --config=<valeur>] 
+            <chemin du fichier source> <chemin du repertoir de destination> [-s | --silence | --quiet]
+
+parametres :
+   chemin du fichier source            Chemin du fichiers BAN à convertir
+   chemin du fichier de destination    Chemin vers le fichiers dans lequel seront sauvegarder les 
+                                       données converties.
+   chemin du repertoir de destination  Chemin vers le repertoir dans lequel se trouvera 
+                                       le fichier ou seront sauvegarder les données converties.
+
+options :
+   -v, --version           Affiche le numero de version
+   -h, --help              Afficher cette aide.
+   -c, --config            nom de la preconfiguration ou chemin vers la configuration du fichier de destination.
+   -s, --silence, --quiet  Le loader et les informations de traitement ne sont pas afficher lors du traitement.
+
