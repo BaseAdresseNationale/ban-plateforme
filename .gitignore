@@ -69,3 +69,4 @@ typings/
 
 # Migration data backup
 db-migrations/migrations/data-backup
+db-migrations/data/
