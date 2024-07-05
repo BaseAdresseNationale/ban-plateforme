@@ -202,6 +202,19 @@ module.exports = {
         ORDER BY pca.id ASC
       `)
       await queryInterface.sequelize.query(`GRANT SELECT ON ban."common_toponym_view_cp" TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT USAGE ON SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT ALL PRIVILEGES ON SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT USAGE ON SCHEMA public TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT ALL PRIVILEGES ON SCHEMA public TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "${POSTGRES_BAN_USER}";`)
+
+      // Drop unused view
+
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS ban."address_view";')
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS ban."common_toponym_view";')
     } catch (error) {
       console.log(error)
     }
