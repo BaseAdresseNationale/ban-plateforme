@@ -32,8 +32,8 @@ module.exports = {
           type: Sequelize.ARRAY(Sequelize.STRING),
           allowNull: false,
         },
-        libelleAcheminementWithPostalCodes: {
-          type: Sequelize.TEXT,
+        libelleAcheminement: {
+          type: Sequelize.STRING,
           allowNull: false,
         },
         createdAt: {
@@ -84,36 +84,23 @@ module.exports = {
           acc[codeInsee] = {
             inseeCom: codeInsee,
             postalCodes: new Set(),
-            libelleAcheminementWithPostalCodes: {},
+            libelleAcheminement,
             createdAt: new Date(),
             updatedAt: new Date(),
           }
         }
 
         acc[codeInsee].postalCodes.add(codePostal)
-        if (!acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal]) {
-          acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal] = libelleAcheminement
-        }
-
         return acc
       }, {})
 
       const formattedData = Object.values(inseeDataMap).map(entry => ({
         ...entry,
         postalCodes: [...entry.postalCodes],
-        libelleAcheminementWithPostalCodes: JSON.stringify(entry.libelleAcheminementWithPostalCodes)
       }))
 
       await queryInterface.bulkInsert({schema: 'external', tableName: 'datanova'}, formattedData, {transaction})
       console.log('Data inserted successfully into external.datanova table')
-
-      // Convert the column to JSONB after insertion
-      await queryInterface.sequelize.query(`
-        ALTER TABLE external.datanova 
-        ALTER COLUMN "libelleAcheminementWithPostalCodes" 
-        TYPE JSONB USING "libelleAcheminementWithPostalCodes"::JSONB
-      `, {transaction})
-      console.log('Column libelleAcheminementWithPostalCodes converted to JSONB')
 
       await transaction.commit()
     } catch (error) {
