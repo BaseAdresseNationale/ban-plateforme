@@ -45,7 +45,8 @@ module.exports = {
             type: Sequelize.JSONB,
             allowNull: false,
           },
-          parcelles: {
+          // eslint-disable-next-line camelcase
+          cadastre_ids: {
             type: Sequelize.ARRAY(Sequelize.STRING),
             allowNull: true,
           },
