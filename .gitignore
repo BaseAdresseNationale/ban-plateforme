@@ -69,3 +69,5 @@ typings/
 
 # Migration data backup
 db-migrations/migrations/data-backup
+# Ignorer tout le contenu du dossier db-migrations/data/
+db-migrations/data
