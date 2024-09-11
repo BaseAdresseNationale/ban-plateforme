@@ -81,12 +81,12 @@ async function main() {
   // with below files
 
   await fsPromises.writeFile(
-    `communes-locaux-adresses-${year}.json`,
+    `communes-locaux-adresses-${YEAR_MAJIC}.json`,
     JSON.stringify(communesLocauxCompact)
   )
 
   await fsPromises.writeFile(
-    `communes-locaux-adresses-${year}.csv`,
+    `communes-locaux-adresses-${YEAR_MAJIC}.csv`,
     Papa.unparse(communesLocauxCompact.map(c => mapKeys(c, (v, k) => snakeCase(k))))
   )
 }
