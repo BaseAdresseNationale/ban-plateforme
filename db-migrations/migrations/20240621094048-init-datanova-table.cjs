@@ -48,65 +48,68 @@ module.exports = {
         }
       }, {transaction})
 
-      const csvFilePath = path.resolve(DATANOVA_PATH)
+      if(DATANOVA_PATH) {
+        const csvFilePath = path.resolve(DATANOVA_PATH)
 
-      const csvFileContent = fs.readFileSync(csvFilePath, 'utf8')
+        const csvFileContent = fs.readFileSync(csvFilePath, 'utf8')
 
-      console.log('CSV file read successfully')
+        console.log('CSV file read successfully')
 
-      const dataRaw = Papa.parse(csvFileContent, {
-        header: true,
-        transformHeader(name) {
-          switch (name.toLowerCase()) {
-            case 'code_commune_insee':
-              return 'codeInsee'
-            case 'nom_de_la_commune':
-              return 'nomCommune'
-            case 'code_postal':
-              return 'codePostal'
-            case 'libelle_d_acheminement':
-              return 'libelleAcheminement'
-            case 'ligne_5':
-              return 'ligne5'
-            case '_geopoint':
-              return 'geopoint'
-            default:
-              return name
+        const dataRaw = Papa.parse(csvFileContent, {
+          header: true,
+          transformHeader(name) {
+            switch (name.toLowerCase()) {
+              case 'code_commune_insee':
+                return 'codeInsee'
+              case 'nom_de_la_commune':
+                return 'nomCommune'
+              case 'code_postal':
+                return 'codePostal'
+              case 'libelle_d_acheminement':
+                return 'libelleAcheminement'
+              case 'ligne_5':
+                return 'ligne5'
+              case '_geopoint':
+                return 'geopoint'
+              default:
+                return name
+            }
+          },
+          skipEmptyLines: true,
+        })
+
+        console.log('CSV file parsed successfully')
+
+        const inseeDataMap = dataRaw.data.reduce((acc, {codeInsee, codePostal, libelleAcheminement}) => {
+          if (!acc[codeInsee]) {
+            acc[codeInsee] = {
+              inseeCom: codeInsee,
+              postalCodes: new Set(),
+              libelleAcheminementWithPostalCodes: {},
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            }
           }
-        },
-        skipEmptyLines: true,
-      })
 
-      console.log('CSV file parsed successfully')
-
-      const inseeDataMap = dataRaw.data.reduce((acc, {codeInsee, codePostal, libelleAcheminement}) => {
-        if (!acc[codeInsee]) {
-          acc[codeInsee] = {
-            inseeCom: codeInsee,
-            postalCodes: new Set(),
-            libelleAcheminementWithPostalCodes: {},
-            createdAt: new Date(),
-            updatedAt: new Date(),
+          acc[codeInsee].postalCodes.add(codePostal)
+          if (!acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal]) {
+            acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal] = libelleAcheminement
           }
-        }
 
-        acc[codeInsee].postalCodes.add(codePostal)
-        if (!acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal]) {
-          acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal] = libelleAcheminement
-        }
+          return acc
+        }, {})
 
-        return acc
-      }, {})
+        const formattedData = Object.values(inseeDataMap).map(entry => ({
+          ...entry,
+          postalCodes: [...entry.postalCodes],
+          libelleAcheminementWithPostalCodes: JSON.stringify(entry.libelleAcheminementWithPostalCodes)
+        }))
 
-      const formattedData = Object.values(inseeDataMap).map(entry => ({
-        ...entry,
-        postalCodes: [...entry.postalCodes],
-        libelleAcheminementWithPostalCodes: JSON.stringify(entry.libelleAcheminementWithPostalCodes)
-      }))
-
-      await queryInterface.bulkInsert({schema: 'external', tableName: 'datanova'}, formattedData, {transaction})
-      console.log('Data inserted successfully into external.datanova table')
-
+        await queryInterface.bulkInsert({schema: 'external', tableName: 'datanova'}, formattedData, {transaction})
+        console.log('Data inserted successfully into external.datanova table')
+      } else {
+        console.log('No DATANOVA_PATH provided')
+      }
       // Convert the column to JSONB after insertion
       await queryInterface.sequelize.query(`
         ALTER TABLE external.datanova 

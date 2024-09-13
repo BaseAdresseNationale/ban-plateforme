@@ -76,23 +76,27 @@ module.exports = {
       })
     }
 
-    const stream = fs.createReadStream(CP_PATH)
-      .pipe(JSONStream.parse('features.*'))
-      .pipe(new Transform({
-        objectMode: true,
-        async transform(feature, encoding, callback) {
-          try {
-            await insertFeature(feature)
-            callback()
-          } catch (error) {
-            callback(error)
-          }
-        },
-      }))
-    return new Promise((resolve, reject) => {
-      stream.on('finish', resolve)
-      stream.on('error', reject)
-    })
+    if(CP_PATH) {
+      const stream = fs.createReadStream(CP_PATH)
+        .pipe(JSONStream.parse('features.*'))
+        .pipe(new Transform({
+          objectMode: true,
+          async transform(feature, encoding, callback) {
+            try {
+              await insertFeature(feature)
+              callback()
+            } catch (error) {
+              callback(error)
+            }
+          },
+        }))
+      return new Promise((resolve, reject) => {
+        stream.on('finish', resolve)
+        stream.on('error', reject)
+      })
+    } else {
+      console.log('No CP_PATH provided')
+    }
   },
 
   async down(queryInterface, _Sequelize) {
