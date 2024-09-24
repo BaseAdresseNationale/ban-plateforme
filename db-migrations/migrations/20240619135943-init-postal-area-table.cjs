@@ -76,7 +76,7 @@ module.exports = {
       })
     }
 
-    if(CP_PATH) {
+    if (CP_PATH) {
       const stream = fs.createReadStream(CP_PATH)
         .pipe(JSONStream.parse('features.*'))
         .pipe(new Transform({
@@ -94,9 +94,9 @@ module.exports = {
         stream.on('finish', resolve)
         stream.on('error', reject)
       })
-    } else {
-      console.log('No CP_PATH provided')
     }
+
+    console.log('No CP_PATH provided')
   },
 
   async down(queryInterface, _Sequelize) {

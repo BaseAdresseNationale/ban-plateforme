@@ -48,7 +48,7 @@ module.exports = {
         }
       }, {transaction})
 
-      if(DATANOVA_PATH) {
+      if (DATANOVA_PATH) {
         const csvFilePath = path.resolve(DATANOVA_PATH)
 
         const csvFileContent = fs.readFileSync(csvFilePath, 'utf8')
@@ -110,6 +110,7 @@ module.exports = {
       } else {
         console.log('No DATANOVA_PATH provided')
       }
+
       // Convert the column to JSONB after insertion
       await queryInterface.sequelize.query(`
         ALTER TABLE external.datanova 
