@@ -3549,10 +3549,10 @@ co@^4.6.0:
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==
 
-codes-postaux@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/codes-postaux/-/codes-postaux-4.0.0.tgz#93c7778ce46936ca134defd322927d290d0b6636"
-  integrity sha512-TolXXq86dMTrsAHzjVbJ/sPZCvN2TUxneV8UJ+50cErgH1zq4j86wKjIetPqLvHCtkLbf+H8Xqy7j6n9+MllUA==
+codes-postaux@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/codes-postaux/-/codes-postaux-4.1.2.tgz#0bef82fa88b5a8666e8c39cd6500eb822781ed81"
+  integrity sha512-naSV2sect0t5YmX9GhQgvBD/eLGtdhbhMSEu2eYx7Gwd2zpzH2qY2CQI2r41zb5/97YOuIwLVbuHxA1TCDuIZA==
   dependencies:
     lodash "^4.17.21"
 
