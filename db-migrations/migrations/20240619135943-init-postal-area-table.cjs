@@ -5,7 +5,8 @@ const {Transform} = require('stream')
 const JSONStream = require('JSONStream')
 
 const {POSTGRES_BAN_USER} = process.env
-const {CP_PATH} = process.env
+const {MIGRATION_DATA_FOLDER_PATH} = process.env
+const CP_FILE_NAME = '20240619135943-contours-postaux.geojson'
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -76,23 +77,26 @@ module.exports = {
       })
     }
 
-    const stream = fs.createReadStream(CP_PATH)
-      .pipe(JSONStream.parse('features.*'))
-      .pipe(new Transform({
-        objectMode: true,
-        async transform(feature, encoding, callback) {
-          try {
-            await insertFeature(feature)
-            callback()
-          } catch (error) {
-            callback(error)
-          }
-        },
-      }))
-    return new Promise((resolve, reject) => {
-      stream.on('finish', resolve)
-      stream.on('error', reject)
-    })
+    const DATA_FILE_PATH = `${MIGRATION_DATA_FOLDER_PATH}/${CP_FILE_NAME}`
+    if (fs.existsSync(DATA_FILE_PATH)) {
+      const stream = fs.createReadStream(DATA_FILE_PATH)
+        .pipe(JSONStream.parse('features.*'))
+        .pipe(new Transform({
+          objectMode: true,
+          async transform(feature, encoding, callback) {
+            try {
+              await insertFeature(feature)
+              callback()
+            } catch (error) {
+              callback(error)
+            }
+          },
+        }))
+      return new Promise((resolve, reject) => {
+        stream.on('finish', resolve)
+        stream.on('error', reject)
+      })
+    }
   },
 
   async down(queryInterface, _Sequelize) {
