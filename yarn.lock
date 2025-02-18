@@ -1053,17 +1053,17 @@
     lodash "^4.17.21"
     lru-cache "^7.18.3"
 
-"@ban-team/shared-data@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@ban-team/shared-data/-/shared-data-1.4.0.tgz#3071dbec5e042676ecab11502df243aa0f1dc806"
-  integrity sha512-XJ3B6t2+0tFZ79sxN1VOLDNhSA/aB2qdiR6O3NacaMe753GRS7tuX2/rbsRShU85d+Qb0eNqcLwtddqi8qtl6Q==
+"@ban-team/shared-data@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@ban-team/shared-data/-/shared-data-1.4.1.tgz#befd80777dd8a5f80262d65730f92c3a1c8a0116"
+  integrity sha512-dcbwb+6xUE3O/5e7Gz5XrMw6rkI7XvTAXqfSzpFPkf5yteuy8nkLZc8EK4hX3G2nSvOx/hh8mVVCpo+OAZuOwA==
 
-"@ban-team/validateur-bal@^2.21.0":
-  version "2.21.0"
-  resolved "https://registry.yarnpkg.com/@ban-team/validateur-bal/-/validateur-bal-2.21.0.tgz#372e6e936baa9696c0774a2ad9813f0d188101d7"
-  integrity sha512-QCQcgIENslaZFQtAMqGl1/11z9+3qgC/Z2v2B7JWxzWAIir46/nbOIA6KU8b/tloKWuHEtdrMvQ32DhT4px/EQ==
+"@ban-team/validateur-bal@^2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@ban-team/validateur-bal/-/validateur-bal-2.22.0.tgz#bfd6110658c216e45555464c69113ee644d3d5ff"
+  integrity sha512-MULBYYnHbxXwiLnnIHH/oEC2xgdfKquPByI26ITWY6QVLlClnUgBRpqJejten8M7QV/NIsVex2vXRsQ8mj555A==
   dependencies:
-    "@ban-team/shared-data" "^1.4.0"
+    "@ban-team/shared-data" "^1.4.1"
     "@etalab/project-legal" "^0.6.0"
     blob-to-buffer "^1.2.9"
     bluebird "^3.7.2"
