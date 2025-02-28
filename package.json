@@ -18,6 +18,7 @@
     "import:cadastre": "node lib/import/cli.cjs cadastre",
     "import:ftth": "node lib/import/cli.cjs ftth",
     "dist": "node lib/distribute/cli.cjs",
+    "dist-and-upload": "node scripts/dist-and-upload.js",
     "compose": "node lib/compose/cli.cjs",
     "askComposeAll": "node lib/compose/ask-compose-all.cjs",
     "lint": "xo",
