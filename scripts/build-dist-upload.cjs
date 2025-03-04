@@ -1,6 +1,7 @@
 /* eslint-disable unicorn/no-process-exit */
 /* eslint-disable no-await-in-loop */
-import spawn from 'node:child_process'
+const {spawn} = require('node:child_process')
+require('dotenv').config()
 
 const fs = require('fs')
 const path = require('path')
@@ -14,16 +15,21 @@ const readdir = util.promisify(fs.readdir)
 
 // Configuration
 const config = {
-  localDistPath: path.resolve(__dirname, 'dist'),
-  s3Bucket: 'ban-migration',
-  s3Prefix: 'prd-ign-mut-ban/adresse-data/ban/adresses/latest'
+  localDistPath: path.resolve(__dirname, '..', 'dist'),
+  s3Bucket: process.env.S3_CONFIG_BUCKET,
+  s3Prefix: 'adresse-data/ban/adresses/latest'
 }
 
-// Client S3
 const s3Client = new S3Client({
-  region: 'eu-west-3', // Ajustez selon votre région AWS
+  region: process.env.S3_CONFIG_REGION,
+  endpoint: process.env.S3_CONFIG_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.S3_CONFIG_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_CONFIG_SECRET_ACCESS_KEY,
+  }
 })
 
+console.log(config.localDistPath)
 async function runYarn(args) {
   return new Promise((resolve, reject) => {
     const yarn = spawn('yarn', args.split(' '))
@@ -201,6 +207,7 @@ async function syncToS3(localPath, s3Bucket, s3Prefix) {
         // Vérifier que c'est bien un fichier
         const stat = await fs.promises.stat(filePath)
         if (stat.isFile()) {
+          console.log(filePath , s3Bucket, s3Key)
           await uploadFile(filePath, s3Bucket, s3Key)
         }
       }
