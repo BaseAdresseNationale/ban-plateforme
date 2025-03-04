@@ -31,7 +31,8 @@
     "migrate:up": "npx sequelize-cli db:migrate",
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "seed:up": "npx sequelize-cli db:seed:all",
-    "seed:undo": "npx sequelize-cli db:seed:undo"
+    "seed:undo": "npx sequelize-cli db:seed:undo",
+    "exportban": "node scripts/ban-converter/index.js"
   },
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
@@ -69,6 +70,7 @@
     "keyv": "^4.3.2",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "lru-cache": "^6.0.0",
     "minimist": "^1.2.8",
     "mongodb": "^4.7.0",
@@ -77,7 +79,7 @@
     "nanoid": "^4.0.2",
     "ndjson": "^2.0.0",
     "node-fetch": "^2.6.11",
-    "ora": "^5.4.1",
+    "ora": "7.x",
     "papaparse": "^5.4.1",
     "pg": "^8.11.0",
     "proj4": "^2.9.0",
