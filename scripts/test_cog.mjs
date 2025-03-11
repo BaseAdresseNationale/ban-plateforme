@@ -14,10 +14,10 @@ const defaultHeader = {
   'Content-Type': 'application/json',
 };
 
-const TEST_COG = process.env.TEST_COG || false
-const INSERT = process.env.INSERT || false
-const UPDATE = process.env.UPDATE || false
-const PATCH = process.env.PATCH || false
+const TEST_COG = process.env.TEST_COG === 'true' || false
+const INSERT = process.env.INSERT === 'true' || false
+const UPDATE = process.env.UPDATE === 'true' || false
+const PATCH = process.env.PATCH === 'true' || false
 
 async function main() { 
 
@@ -32,10 +32,6 @@ async function main() {
 
         // Formattage
         const formatterdDistrict = formatDistrict(district[0])
-
-        // // Vérification des communes: il faut que la pair label/id existe
-        // console.assert(formatterdDistrict["id"]!=null, formatterdDistrict["id"])
-        // console.assert(slugify(formatterdDistrict["labels"][0]["value"])==slugify(districtMouvement["NomCA"]), slugify(formatterdDistrict["labels"][0]["value"]) + "_" + slugify(districtMouvement["NomCA"]))
 
         // Nom de la commune nouvelle
         const idCN = uuidv4()
@@ -56,7 +52,7 @@ async function main() {
                 "insee":{
                   "cog": codeComN.cog,
                   "mainCog": codeComN.cog,
-                  "isMainCog": true,
+                  "isMain": true,
                   "mainId": codeComN.id
                 }
               },
@@ -65,16 +61,23 @@ async function main() {
             // Ajout à la liste des objets à traiter
             communesNouvelles.push(newDistrict)
         }
+        
         formatterdDistrict["meta"]["insee"] = {
           ...oldMeta, 
           "mainCog": districtMouvement["DepComN"],
-          "isMainCog": false,
+          "isMain": false,
           "mainId": isNew ? idCN : communesNouvelles.slice().reverse().find((item) => item)["id"]
         }
+        const oldDistrict = {
+          "id": formatterdDistrict.id,
+          "labels": formatterdDistrict.labels,
+          "meta": formatterdDistrict["meta"],
+          "updateDate": new Date(codeComN.date)   
+        }
 
-        communesAnciennes.push(formatterdDistrict)
+        communesAnciennes.push(oldDistrict)
     }
-    
+
     if (TEST_COG && INSERT){  // Insert des communes nouvelles
         try {
           const body = JSON.stringify(communesNouvelles);
@@ -84,7 +87,8 @@ async function main() {
             body,
           });
           const result = await HandleHTTPResponse(response)
-          console.log(result)        } catch (error) {
+          console.log(result)
+        } catch (error) {
           const { message } = error
           throw new Error(`Ban API - ${message}`);
         }
@@ -100,7 +104,8 @@ async function main() {
             body,
           });
           const result = await HandleHTTPResponse(response)
-          console.log(result)        } catch (error) {
+          console.log(result)
+          } catch (error) {
           const { message } = error
           throw new Error(`Ban API - ${message}`);
         }
