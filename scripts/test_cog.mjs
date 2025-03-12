@@ -2,8 +2,8 @@
 import 'dotenv/config.js'
 import {formatDistrict} from '../lib/api/district/utils.js'
 import {getDistrictsFromCog} from '../lib/api/district/models.js'
-import {dataCog2025, dataCogFusions2025} from '../lib/api/cog/cog_data/communes_nouvelles_2024_utf8.js'
-import {v4 as uuidv4} from 'uuid'
+import {dataCog2025, dataCogFusions2025, fixIdNewCommunes} from './dataCog2025/communes_nouvelles_2024_utf8.js'
+import {communesAnciennes, communesNouvelles} from './dataCog2025/updatedCommunes.js'
 import HandleHTTPResponse from '../lib/util/http-request-handler.js'
 import fetch from 'node-fetch'
 
@@ -21,64 +21,71 @@ const PATCH = process.env.PATCH === 'true' || false
 
 async function main() { 
 
-    const data = dataCogFusions2025 // données extraites du COG 2025
-    const communesNouvelles = [] // Communes nouvelles à créer
-    const communesAnciennes = [] // Commmunes anciennes à updater
+    //
+    // Méthode de fabrication des données dans le fichier `updatedCommunes.js`
+    // 
 
-    for (const districtMouvement of data){
+    // const data = dataCogFusions2025 // données extraites du COG 2025
+    // const ids = fixIdNewCommunes
+    // const communesNouvelles = [] // Communes nouvelles à créer
+    // const communesAnciennes = [] // Commmunes anciennes à updater
+    // var counter = 0 // Pour le parcours du fichier des Ids des nouvelles communes
 
-        // Récupération des données d'un mouvement sur les communes
-        const district = await getDistrictsFromCog(districtMouvement["DepComA"])
+    // for (const districtMouvement of data){
 
-        // Formattage
-        const formatterdDistrict = formatDistrict(district[0])
+    //     // Récupération des données d'un mouvement sur les communes
+    //     const district = await getDistrictsFromCog(districtMouvement["DepComA"])
 
-        // Nom de la commune nouvelle
-        const idCN = uuidv4()
-        var isNew = false
-        const codeComN = {"nom": districtMouvement["NomCN"], "cog": districtMouvement["DepComN"], "date": districtMouvement["Date2"], "id": ""}
+    //     // Formattage
+    //     const formatterdDistrict = formatDistrict(district[0])
 
-        // Meta de l'ancienne commune
-        const oldMeta = formatterdDistrict["meta"]["insee"]
+    //     // Valeur de la commune nouvelle
+    //     const idCN = ids[counter]
+    //     var isNew = false
+    //     const codeComN = {"nom": districtMouvement["NomCN"], "cog": districtMouvement["DepComN"], "date": districtMouvement["Date2"], "id": ""}
 
-        // Commune Nouvelle rencontrée
-        if(!(communesNouvelles.some((item) => item.meta.insee.cog == codeComN.cog))){
-            isNew = true
-            codeComN["id"] = idCN
-            const newDistrict = {
-              "id": codeComN.id,
-              "labels": [{"value": codeComN.nom, "isoCode": 'fra'}],
-              "meta": {
-                "insee":{
-                  "cog": codeComN.cog,
-                  "mainCog": codeComN.cog,
-                  "isMain": true,
-                  "mainId": codeComN.id
-                }
-              },
-              "updateDate": new Date(codeComN.date)   
-            }
-            // Ajout à la liste des objets à traiter
-            communesNouvelles.push(newDistrict)
-        }
-        
-        formatterdDistrict["meta"]["insee"] = {
-          ...oldMeta, 
-          "mainCog": districtMouvement["DepComN"],
-          "isMain": false,
-          "mainId": isNew ? idCN : communesNouvelles.slice().reverse().find((item) => item)["id"]
-        }
-        const oldDistrict = {
-          "id": formatterdDistrict.id,
-          "labels": formatterdDistrict.labels,
-          "meta": formatterdDistrict["meta"],
-          "updateDate": new Date(codeComN.date)   
-        }
+    //     // Meta de l'ancienne commune
+    //     const oldMeta = formatterdDistrict["meta"]["insee"]
+    //     // Commune Nouvelle rencontrée
+    //     if(!(communesNouvelles.some((item) => item.meta.insee.cog == codeComN.cog))){
+    //         isNew = true
+    //         counter = counter + 1
+    //         codeComN["id"] = idCN
 
-        communesAnciennes.push(oldDistrict)
-    }
+    //         const newDistrict = {
+    //           "id": codeComN.id,
+    //           "labels": [{"value": codeComN.nom, "isoCode": 'fra'}],
+    //           "meta": {
+    //             "insee":{
+    //               "cog": codeComN.cog,
+    //               "mainCog": codeComN.cog,
+    //               "isMain": true,
+    //               "mainId": codeComN.id
+    //             }
+    //           },
+    //           "updateDate": new Date(codeComN.date)   
+    //         }
+    //         // Ajout à la liste des objets à traiter
+    //         communesNouvelles.push(newDistrict)
+    //     }
 
-    if (TEST_COG && INSERT){  // Insert des communes nouvelles
+    //     formatterdDistrict["meta"]["insee"] = {
+    //       ...oldMeta, 
+    //       "mainCog": districtMouvement["DepComN"],
+    //       "isMain": false,
+    //       "mainId": isNew ? idCN : communesNouvelles.slice().reverse().find((item) => item)["id"]
+    //     }
+    //     const oldDistrict = {
+    //       "id": formatterdDistrict.id,
+    //       "labels": formatterdDistrict.labels,
+    //       "meta": formatterdDistrict["meta"],
+    //       "updateDate": new Date(codeComN.date)   
+    //     }
+    //     communesAnciennes.push(oldDistrict)
+    // }
+
+    if (TEST_COG && INSERT && UPDATE){
+      // Insert des communes nouvelles
         try {
           const body = JSON.stringify(communesNouvelles);
           const response = await fetch(`${BAN_API_URL}/district/`, {
@@ -92,10 +99,8 @@ async function main() {
           const { message } = error
           throw new Error(`Ban API - ${message}`);
         }
-    }
-
-
-    if(TEST_COG && UPDATE){  // Update des anciennes communes
+      
+        // Update des anciennes communes
         try {
           const body = JSON.stringify(communesAnciennes);
           const response = await fetch(`${BAN_API_URL}/district/`, {
@@ -110,8 +115,6 @@ async function main() {
           throw new Error(`Ban API - ${message}`);
         }
     }
-
-
 
     // Renommage des communes : Code_modalite : 10
     const renamedData = dataCog2025.filter((district)=> district.MOD === '10')
