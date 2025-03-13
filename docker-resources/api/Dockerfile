@@ -1,18 +1,17 @@
-# using an optimized node image
 FROM node:18.19.0-alpine
 
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install
 
-# creating /data and /dist folder
-RUN mkdir -p data dist
+RUN mkdir -p data dist && chown -R node:node /app
 
-# copying the root folder into the workdir
 COPY . .
 
-# Exposer le port utilisé par l'application
+RUN chown -R node:node /app
+
+USER node
+
 EXPOSE 5000
 
-# Point d'entrée défini à l'exécution (dans les deployments)
 CMD ["node", "server.js"]
