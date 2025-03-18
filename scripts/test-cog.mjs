@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-import'dotenv/config.js'
 // Import {formatDistrict} from '../lib/api/district/utils.js'
 import fetch from 'node-fetch'
-import {getDistrictsFromCog} from '../lib/api/district/models.js'
+// Import {getDistrictsFromCog} from '../lib/api/district/models.js'
 // Import {dataCogFusions2025, fixIdNewCommunes} from './dataCog2025/communes_nouvelles_2024_utf8.js'
 import HandleHTTPResponse from '../lib/util/http-request-handler.js'
 // Import {dataCog2025} from './dataCog2025/communes-nouvelles-2024-utf8.js'
 import {communesAnciennes, communesNouvelles, renamedCommunes,} from './dataCog2025/updated-communes.js'
-import {fixIdNewCommunes} from './dataCog2025/communes-nouvelles-2024-utf8.js'
+
+// Import {fixIdNewCommunes} from './dataCog2025/communes-nouvelles-2024-utf8.js'
 // Import fs from 'fs-extra'
 
 const BAN_API_URL = process.env.BAN_API_URL || 'https://plateforme.adresse.data.gouv.fr/api'
@@ -21,7 +21,6 @@ const TEST_COG = process.env.TEST_COG === 'true' || false
 const INSERT = process.env.INSERT === 'true' || false
 const UPDATE = process.env.UPDATE === 'true' || false
 const PATCH = process.env.PATCH === 'true' || false
-const DELETE = process.env.DELETE === 'true' || false
 
 async function main() {
   //
@@ -102,7 +101,8 @@ async function main() {
       const {message} = error
       throw new Error(`Ban API - ${message}`)
     }
-
+  }
+  if (TEST_COG && UPDATE) {
     // Update des anciennes communes
     try {
       const body = JSON.stringify(communesAnciennes)
@@ -157,7 +157,7 @@ async function main() {
     }
   }
 
-  // const deletedCommunes = []
+  // Const deletedCommunes = []
   // for (const rmdistrict of communesNouvelles) {
   //   // Récupération des données d'un mouvement sur les communes
   //   const district = getDistrictsFromCog(rmdistrict.meta.insee.cog)
