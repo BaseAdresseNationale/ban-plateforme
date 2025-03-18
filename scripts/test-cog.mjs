@@ -102,6 +102,7 @@ async function main() {
       throw new Error(`Ban API - ${message}`)
     }
   }
+
   if (TEST_COG && UPDATE) {
     // Update des anciennes communes
     try {
