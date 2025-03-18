@@ -1,4 +1,5 @@
-export const communesAnciennes = [
+{
+  "communesAnciennes": [
   {
     "id": "0da93c50-64cc-4356-b88b-8658422fa872",
     "labels": [
@@ -471,7 +472,7 @@ export const communesAnciennes = [
     "id": "122d49a3-4a24-4b65-9f07-d15708d0dfc0",
     "labels": [
       {
-        "value": "Val-d'Arguenon",
+        "value": "Val-d\"Arguenon",
         "isoCode": "fra"
       }
     ],
@@ -903,7 +904,7 @@ export const communesAnciennes = [
     "id": "7c25e934-f640-47c0-851a-7ee95073681c",
     "labels": [
       {
-        "value": "Cap d'Astarac",
+        "value": "Cap d\"Astarac",
         "isoCode": "fra"
       }
     ],
@@ -1101,7 +1102,7 @@ export const communesAnciennes = [
     "id": "c954e791-cc93-48fb-a375-ef457a0bd1d2",
     "labels": [
       {
-        "value": "L'Hôpital-sous-Rochefort",
+        "value": "L\"Hôpital-sous-Rochefort",
         "isoCode": "fra"
       }
     ],
@@ -1245,7 +1246,7 @@ export const communesAnciennes = [
     "id": "c7d3dc2c-b57c-49d3-ae55-6f90947cbd7c",
     "labels": [
       {
-        "value": "L'Orée de Mormal",
+        "value": "L\"Orée de Mormal",
         "isoCode": "fra"
       }
     ],
@@ -1875,7 +1876,7 @@ export const communesAnciennes = [
     "id": "827caa2f-855b-4c08-a9d5-2c91936bca4b",
     "labels": [
       {
-        "value": "Saint-Jean-d'Hermine",
+        "value": "Saint-Jean-d\"Hermine",
         "isoCode": "fra"
       }
     ],
@@ -1979,9 +1980,9 @@ export const communesAnciennes = [
     },
     "updateDate": "2024-12-31T23:00:00.000Z"
   }
-]
+],
 
-export const communesNouvelles = [
+"communesNouvelles": [
   {
     "id": "73d64e89-f3c8-4a88-a84b-1d0c231f700b",
     "labels": [
@@ -2202,7 +2203,7 @@ export const communesNouvelles = [
     "id": "af5c2735-6bbc-4817-80ae-92fbedac3056",
     "labels": [
       {
-        "value": "Val-d'Arguenon",
+        "value": "Val-d\"Arguenon",
         "isoCode": "fra"
       }
     ],
@@ -2364,7 +2365,7 @@ export const communesNouvelles = [
     "id": "ad37c47e-1d94-4e24-b465-e99e02eb178b",
     "labels": [
       {
-        "value": "Cap d'Astarac",
+        "value": "Cap d\"Astarac",
         "isoCode": "fra"
       }
     ],
@@ -2526,7 +2527,7 @@ export const communesNouvelles = [
     "id": "7c3fe602-b62c-40b8-a59a-2707ce2ca20d",
     "labels": [
       {
-        "value": "L'Orée de Mormal",
+        "value": "L\"Orée de Mormal",
         "isoCode": "fra"
       }
     ],
@@ -2760,7 +2761,7 @@ export const communesNouvelles = [
     "id": "67b09f90-071d-4447-9ffb-d59b558a1d71",
     "labels": [
       {
-        "value": "Saint-Jean-d'Hermine",
+        "value": "Saint-Jean-d\"Hermine",
         "isoCode": "fra"
       }
     ],
@@ -2810,4 +2811,80 @@ export const communesNouvelles = [
     },
     "updateDate": "2024-12-31T23:00:00.000Z"
   }
+],
+
+"renamedCommunes": [
+  {
+    "id": "0b518a82-b657-436a-a88a-d46b76937b87",
+    "labels": [
+      {
+        "value": "Rousset-Serre-Ponçon",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "68786978-b112-42e5-b286-2b68b35dc964",
+    "labels": [
+      {
+        "value": "Faux-en-Périgord",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "907b9bcb-c12f-429a-a685-ca0b5b460d88",
+    "labels": [
+      {
+        "value": "Roche-en-Forez",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "391b2da0-bd0c-4dcd-9604-5027d50e370d",
+    "labels": [
+      {
+        "value": "Saint-Christophe-sur-Dolaizon",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "7526c5e0-b6be-4929-a08c-c3de70dce418",
+    "labels": [
+      {
+        "value": "Le Vigan-en-Quercy",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "55b4b5f9-2b56-45e2-b839-6059e02e1ac9",
+    "labels": [
+      {
+        "value": "Le Cheix-sur-Morge",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "27d94a3b-70c2-4d93-a88b-3d9541755dce",
+    "labels": [
+      {
+        "value": "Grigny-sur-Rhône",
+        "isoCode": "fra"
+      }
+    ]
+  },
+  {
+    "id": "9aa74313-b602-49ac-84ce-868b14d9e89b",
+    "labels": [
+      {
+        "value": "Moncourt-Fromonville",
+        "isoCode": "fra"
+      }
+    ]
+  }
 ]
+}
