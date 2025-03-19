@@ -1,14 +1,14 @@
 #!/usr/bin/env node
+const path = require('path')
+const fetch = require('node-fetch')
+const fs = require('fs-extra')
+const HandleHTTPResponse = require('../lib/util/http-request-handler.cjs')
+// Const {communesAnciennes, communesNouvelles, renamedCommunes,} = require('../data/dataCog2025/updated-communes.js')
 // Import {formatDistrict} from '../lib/api/district/utils.js'
-import fetch from 'node-fetch'
 // Import {getDistrictsFromCog} from '../lib/api/district/models.js'
 // Import {dataCogFusions2025, fixIdNewCommunes} from './dataCog2025/communes_nouvelles_2024_utf8.js'
-import HandleHTTPResponse from '../lib/util/http-request-handler.js'
 // Import {dataCog2025} from './dataCog2025/communes-nouvelles-2024-utf8.js'
-import {communesAnciennes, communesNouvelles, renamedCommunes,} from './dataCog2025/updated-communes.js'
-
 // Import {fixIdNewCommunes} from './dataCog2025/communes-nouvelles-2024-utf8.js'
-// Import fs from 'fs-extra'
 
 const BAN_API_URL = process.env.BAN_API_URL || 'https://plateforme.adresse.data.gouv.fr/api'
 const BAN_API_TOKEN = process.env.BAN_API_AUTHORIZED_TOKENS || ''
@@ -23,6 +23,10 @@ const UPDATE = process.env.UPDATE === 'true' || false
 const PATCH = process.env.PATCH === 'true' || false
 
 async function main() {
+  // Chargement du JSON des communes
+  const filePath = path.join(__dirname, '..', 'data', 'updated-communes.json')
+  const fileData = JSON.parse(await fs.readFile(filePath))
+
   //
   // Méthode de fabrication des données dans le fichier `updatedCommunes.js`
   //
@@ -86,10 +90,10 @@ async function main() {
   //     communesAnciennes.push(oldDistrict)
   // }
 
-  if (TEST_COG && INSERT && UPDATE) {
+  if (TEST_COG && INSERT) {
     // Insert des communes nouvelles
     try {
-      const body = JSON.stringify(communesNouvelles)
+      const body = JSON.stringify(fileData.communesNouvelles)
       const response = await fetch(`${BAN_API_URL}/district/`, {
         method: 'POST',
         headers: defaultHeader,
@@ -106,7 +110,7 @@ async function main() {
   if (TEST_COG && UPDATE) {
     // Update des anciennes communes
     try {
-      const body = JSON.stringify(communesAnciennes)
+      const body = JSON.stringify(fileData.communesAnciennes)
       const response = await fetch(`${BAN_API_URL}/district/`, {
         method: 'PATCH',
         headers: defaultHeader,
@@ -144,7 +148,7 @@ async function main() {
   if (TEST_COG && PATCH) {
     // PATCH des anciennes communes
     try {
-      const body = JSON.stringify(renamedCommunes)
+      const body = JSON.stringify(fileData.renamedCommunes)
       const response = await fetch(`${BAN_API_URL}/district/`, {
         method: 'PATCH',
         headers: defaultHeader,
