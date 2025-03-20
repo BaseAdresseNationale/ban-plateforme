@@ -27,7 +27,18 @@ async function main() {
   const filePath = path.join(__dirname, '..', 'data', 'updated-communes.json')
   const fileData = JSON.parse(await fs.readFile(filePath))
 
-  //
+  const filePath2 = path.join(__dirname, '..', 'data', 'accepted-cog-list.json')
+  const whiteList = JSON.parse(await fs.readFile(filePath2))
+
+
+  const cAnciennes = fileData.communesAnciennes // données extraites du COG 2025
+  const cNouvelles = fileData.communesNouvelles // données extraites du COG 2025
+  const cRenamed = fileData.renamedCommunes
+  
+
+  const cAnciennesWhiteList = cAnciennes.map((commune)=> commune.meta.insee.cog).filter((commune)=>whiteList.includes(commune))
+  console.log(cAnciennesWhiteList)
+//
   // Méthode de fabrication des données dans le fichier `updatedCommunes.js`
   //
 
