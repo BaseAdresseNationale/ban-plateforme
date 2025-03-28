@@ -8,9 +8,9 @@ import {formatDistrict} from '../lib/api/district/utils.js'
 import {getDistrictsFromCog} from '../lib/api/district/models.js'
 
 // Files
-import updatedCommunes from './../data/updated-communes.json' with {type: 'json'}
-import fixIdNewCommunes from './../data/dataCog2025/fixed-ids-new-district.json' with {type: 'json'}
-import data from './../data/dataCog2025/cog-insee-2025.json' with {type: 'json'}
+import updatedCommunes from './../data/dataCog2025/cog-insee-2025-diff-sub2.json' with {type: 'json'}
+//import fixIdNewCommunes from './../data/dataCog2025/fixed-ids-new-district.json' with {type: 'json'}
+//import data from './../data/dataCog2025/cog-insee-2025.json' with {type: 'json'}
 import { log } from 'console'
 
 //env Var
@@ -33,8 +33,8 @@ async function main() {
   // const filePath2 = path.join(__dirname, '..', 'data', 'accepted-cog-list.json')
   // const whiteList = JSON.parse(await fs.readFile(filePath2))
 
-  const cAnciennes = updatedCommunes.communesAnciennes // Données extraites du COG 2025
-  const cNouvelles = updatedCommunes.communesNouvelles // Données extraites du COG 2025
+  // const cAnciennes = updatedCommunes.communesModifiees // Données extraites du COG 2025
+  // const cNouvelles = updatedCommunes.communesNouvelles // Données extraites du COG 2025
   // const cRenamed = fileData.renamedCommunes
   // console.log(cAnciennes)
 
@@ -45,7 +45,7 @@ async function main() {
   //
   // const cog2025JSON = path.join(__dirname, '..', 'data', 'dataCog2025', 'cog-insee-2025.json')
   // const cog2025 = JSON.parse(await fs.readFile(cog2025JSON))
-
+/* 
   const dataCog = data.dataCog2025.filter(value=> value.MOD === "32") // données extraites du COG 2025 :32 === Création nouvelle commune
   const ids = fixIdNewCommunes
   const communesNouvelles = [] // Communes nouvelles à créer
@@ -112,11 +112,11 @@ async function main() {
       }
       communesAnciennes.push(oldDistrict)
   }
-
+ */
   if (TEST_COG && INSERT) {
     // Insert des communes nouvelles
     try {
-      const body = JSON.stringify(fileData.communesNouvelles)
+      const body = JSON.stringify(updatedCommunes.communesNouvelles)
       const response = await fetch(`${BAN_API_URL}/district/`, {
         method: 'POST',
         headers: defaultHeader,
@@ -133,7 +133,7 @@ async function main() {
   if (TEST_COG && UPDATE) {
     // Update des anciennes communes
     try {
-      const body = JSON.stringify(fileData.communesAnciennes)
+      const body = JSON.stringify(updatedCommunes.communesModifiees)
       const response = await fetch(`${BAN_API_URL}/district/`, {
         method: 'PATCH',
         headers: defaultHeader,
@@ -171,7 +171,7 @@ async function main() {
   if (TEST_COG && PATCH) {
     // PATCH des anciennes communes
     try {
-      const body = JSON.stringify(fileData.renamedCommunes)
+      const body = JSON.stringify(updatedCommunes.renamedCommunes)
       const response = await fetch(`${BAN_API_URL}/district/`, {
         method: 'PATCH',
         headers: defaultHeader,
