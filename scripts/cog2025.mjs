@@ -8,7 +8,7 @@ import {formatDistrict} from '../lib/api/district/utils.js'
 import {getDistrictsFromCog} from '../lib/api/district/models.js'
 
 // Files
-import updatedCommunes from './../data/dataCog2025/cog-insee-2025-diff-sub2.json' assert { type: 'json' }
+import updatedCommunes from './../data/dataCog2025/cog-insee-2025-diff.json' assert { type: 'json' }
 //import fixIdNewCommunes from './../data/dataCog2025/fixed-ids-new-district.json' assert { type: 'json' }
 //import data from './../data/dataCog2025/cog-insee-2025.json' assert { type: 'json' }
 
