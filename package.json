@@ -33,7 +33,7 @@
     "seed:up": "npx sequelize-cli db:seed:all",
     "seed:undo": "npx sequelize-cli db:seed:undo",
     "cogToDiff": "node scripts/cogInseeToDiff.mjs",
-    "cog": "node scripts/cog2025.mjs --require=\"./global-proxy-undici.js\""
+    "cog": "node scripts/cog2025.mjs"
   },
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
@@ -41,7 +41,7 @@
     "@ban-team/shared-data": "^1.4.1",
     "@ban-team/validateur-bal": "^3.0.6",
     "@etalab/adresses-util": "^0.8.2",
-    "@etalab/decoupage-administratif": "^4.0.0",
+    "@etalab/decoupage-administratif": "^5.0.0",
     "@etalab/majic": "^0.11.0",
     "@etalab/normadresse": "^1.2.0",
     "@etalab/project-legal": "^0.6.0",
