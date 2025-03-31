@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import path from 'node:path'
-import data from './../data/dataCog2025/cog-insee-2025.json' with {type: 'json'}
-import fixIDs from './../data/dataCog2025/fixed-ids-new-district.json' with {type: 'json'}
+import data from './../data/dataCog2025/cog-insee-2025.json' assert { type: 'json' }
+import fixIDs from './../data/dataCog2025/fixed-ids-new-district.json' assert { type: 'json' }
 
 const ids = new Map() // cog, id
 const workingData = data?.dataCog2025.filter(
