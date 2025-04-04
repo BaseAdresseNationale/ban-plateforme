@@ -1,0 +1,22 @@
+{
+    "communesRenommees": [
+        {
+            "id": "0b518a82-b657-436a-a88a-d46b76937b87",
+            "labels": [
+                {
+                    "value": "Rousset-Serre-Ponçon",
+                    "isoCode": "fra"
+                }
+            ]
+        },
+        {
+            "id": "68786978-b112-42e5-b286-2b68b35dc964",
+            "labels": [
+                {
+                    "value": "Faux-en-Périgord",
+                    "isoCode": "fra"
+                }
+            ]
+        }
+    ]
+}
