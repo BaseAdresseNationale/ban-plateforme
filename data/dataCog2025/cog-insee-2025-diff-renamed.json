@@ -1,5 +1,5 @@
 {
-    "communesRenommees": [
+    "communesModifiees": [
         {
             "id": "0b518a82-b657-436a-a88a-d46b76937b87",
             "labels": [
@@ -82,28 +82,10 @@
             ]
         },
         {
-            "id": "89de7bd9-663e-461e-a31c-e5736cf6e476",
-            "labels": [
-                {
-                    "value": "Oissel-sur-Seine",
-                    "isoCode": "fra"
-                }
-            ]
-        },
-        {
             "id": "e781d343-1ba0-4392-a438-7cb131215661",
             "labels": [
                 {
                     "value": "Peyrolles-en-Cévennes",
-                    "isoCode": "fra"
-                }
-            ]
-        },
-        {
-            "id": "62543039-e0ee-4de3-87a7-12615a27343b",
-            "labels": [
-                {
-                    "value": "Salherm",
                     "isoCode": "fra"
                 }
             ]
@@ -131,6 +113,24 @@
             "labels": [
                 {
                     "value": "Cransac-les-Thermes",
+                    "isoCode": "fra"
+                }
+            ]
+        },
+        {
+            "id": "89de7bd9-663e-461e-a31c-e5736cf6e476",
+            "labels": [
+                {
+                    "value": "Oissel-sur-Seine",
+                    "isoCode": "fra"
+                }
+            ]
+        },
+        {
+            "id": "62543039-e0ee-4de3-87a7-12615a27343b",
+            "labels": [
+                {
+                    "value": "Salherm",
                     "isoCode": "fra"
                 }
             ]
