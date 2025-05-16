@@ -7,7 +7,7 @@ import HandleHTTPResponse from '../lib/util/http-request-handler.cjs'
 //import updatedCommunes from './../data/dataCog2025/cog-insee-2025-diff.json' assert { type: 'json' }
 // import updatedCommunes from './../data/dataCog2025/cog-insee-2025-diff-renamed.json' with { type: 'json'}
 // import updatedCommunes from './../data/dataCog2025/cog-insee-2025-diff-change-code-insee.json' assert { type: 'json' }
-import updatedCommunes from '../dataset/dataCog2025/cog-insee-2025-diff-fusion-assemblage.json' assert { type: 'json' }
+import updatedCommunes from '../dataset/dataCog2025/cog-insee-2025-diff-change-code-insee.json' assert { type: 'json' }
 
 //env Var
 const BAN_API_URL = process.env.BAN_API_URL || 'https://plateforme.adresse.data.gouv.fr/api'

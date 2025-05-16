@@ -1,0 +1,52 @@
+{
+    "communesModifiees": [
+        {
+            "id": "61f0e4db-7a34-4a11-b80f-8014a317c414",
+            "meta": {
+                "insee": {
+                    "cog": "14581",
+                    "isMain": true,
+                    "mainId": "61f0e4db-7a34-4a11-b80f-8014a317c414",
+                    "mainCog": "14581"
+                }
+            }
+        },
+        {
+            "id": "0bfbfb18-922e-442b-96ab-78ce0e8aef29",
+            "meta": {
+                "bal": {
+                    "idRevision": "67fec4701c705e0bb39689b8",
+                    "dateRevision": "2025-04-15T20:41:23.526Z"
+                },
+                "insee": {
+                    "cog": "49126",
+                    "isMain": true,
+                    "mainId": "0bfbfb18-922e-442b-96ab-78ce0e8aef29",
+                    "mainCog": "49126"
+                }
+            }
+        },
+        {
+            "id": "139c63c0-84d5-47ad-be74-52b6f8369001",
+            "meta": {
+                "insee": {
+                    "cog": "12218",
+                    "isMain": true,
+                    "mainId": "139c63c0-84d5-47ad-be74-52b6f8369001",
+                    "mainCog": "12218"
+                }
+            }
+        },
+        {
+            "id": "6b320d50-8140-4b49-851d-d72286e2d6e6",
+            "meta": {
+                "insee": {
+                    "cog": "69114",
+                    "isMain": true,
+                    "mainId": "6b320d50-8140-4b49-851d-d72286e2d6e6",
+                    "mainCog": "69114"
+                }
+            }
+        }
+    ]
+}
