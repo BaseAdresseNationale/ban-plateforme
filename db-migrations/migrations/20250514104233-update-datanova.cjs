@@ -51,71 +51,69 @@ module.exports = {
         }
       }, {transaction})
 
-      
-
       const DATA_FILE_PATH = path.resolve(MIGRATION_DATA_FOLDER_PATH, `${DATANOVA_FILE_NAME}`)
-            if (fs.existsSync(DATA_FILE_PATH)) {
-              const csvFilePath = path.resolve(DATA_FILE_PATH)
-      
-              const csvFileContent = fs.readFileSync(csvFilePath, 'utf8')
-      
-              const dataRaw = Papa.parse(csvFileContent, {
-                header: true,
-                transformHeader(name) {
-                  switch (name.toLowerCase()) {
-                    case 'code_commune_insee':
-                      return 'codeInsee'
-                    case 'nom_de_la_commune':
-                      return 'nomCommune'
-                    case 'code_postal':
-                      return 'codePostal'
-                    case 'libelle_d_acheminement':
-                      return 'libelleAcheminement'
-                    case 'ligne_5':
-                      return 'ligne5'
-                    case '_geopoint':
-                      return 'geopoint'
-                    default:
-                      return name
-                  }
-                },
-                skipEmptyLines: true,
-              })
-      
-              const inseeDataMap = dataRaw.data.reduce((acc, {codeInsee, codePostal, libelleAcheminement}) => {
-                if (!acc[codeInsee]) {
-                  acc[codeInsee] = {
-                    inseeCom: codeInsee,
-                    postalCodes: new Set(),
-                    libelleAcheminementWithPostalCodes: {},
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                  }
-                }
-      
-                acc[codeInsee].postalCodes.add(codePostal)
-                if (!acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal]) {
-                  acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal] = libelleAcheminement
-                }
-      
-                return acc
-              }, {})
-      
-              const formattedData = Object.values(inseeDataMap).map(entry => ({
-                ...entry,
-                postalCodes: [...entry.postalCodes],
-                libelleAcheminementWithPostalCodes: JSON.stringify(entry.libelleAcheminementWithPostalCodes)
-              }))
-      
-              await queryInterface.bulkInsert({schema: 'external', tableName: 'datanova'}, formattedData, {transaction})
-      
-              // Convert the column to JSONB after insertion
-              await queryInterface.sequelize.query(`
+      if (fs.existsSync(DATA_FILE_PATH)) {
+        const csvFilePath = path.resolve(DATA_FILE_PATH)
+
+        const csvFileContent = fs.readFileSync(csvFilePath, 'utf8')
+
+        const dataRaw = Papa.parse(csvFileContent, {
+          header: true,
+          transformHeader(name) {
+            switch (name.toLowerCase()) {
+              case 'code_commune_insee':
+                return 'codeInsee'
+              case 'nom_de_la_commune':
+                return 'nomCommune'
+              case 'code_postal':
+                return 'codePostal'
+              case 'libelle_d_acheminement':
+                return 'libelleAcheminement'
+              case 'ligne_5':
+                return 'ligne5'
+              case '_geopoint':
+                return 'geopoint'
+              default:
+                return name
+            }
+          },
+          skipEmptyLines: true,
+        })
+
+        const inseeDataMap = dataRaw.data.reduce((acc, {codeInsee, codePostal, libelleAcheminement}) => {
+          if (!acc[codeInsee]) {
+            acc[codeInsee] = {
+              inseeCom: codeInsee,
+              postalCodes: new Set(),
+              libelleAcheminementWithPostalCodes: {},
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            }
+          }
+
+          acc[codeInsee].postalCodes.add(codePostal)
+          if (!acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal]) {
+            acc[codeInsee].libelleAcheminementWithPostalCodes[codePostal] = libelleAcheminement
+          }
+
+          return acc
+        }, {})
+
+        const formattedData = Object.values(inseeDataMap).map(entry => ({
+          ...entry,
+          postalCodes: [...entry.postalCodes],
+          libelleAcheminementWithPostalCodes: JSON.stringify(entry.libelleAcheminementWithPostalCodes)
+        }))
+
+        await queryInterface.bulkInsert({schema: 'external', tableName: 'datanova'}, formattedData, {transaction})
+
+        // Convert the column to JSONB after insertion
+        await queryInterface.sequelize.query(`
                 ALTER TABLE external.datanova 
                 ALTER COLUMN "libelleAcheminementWithPostalCodes" 
                 TYPE JSONB USING "libelleAcheminementWithPostalCodes"::JSONB
               `, {transaction})
-            }
+      }
 
       await transaction.commit()
     } catch (error) {

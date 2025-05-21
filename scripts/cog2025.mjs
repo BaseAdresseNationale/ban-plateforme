@@ -22,9 +22,9 @@ const UPDATE = process.env.UPDATE === 'true' || false
 const PATCH = process.env.PATCH === 'true' || false
 
 async function main() {
- 
+
   if (TEST_COG && INSERT) {
-    // Insert des communes nouvelles 
+    // Insert des communes nouvelles
     try {
       const body = JSON.stringify(updatedCommunes.communesNouvelles)
       const response = await fetch(`${BAN_API_URL}/district/`, {
