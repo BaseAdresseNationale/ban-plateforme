@@ -32,8 +32,7 @@
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "seed:up": "npx sequelize-cli db:seed:all",
     "seed:undo": "npx sequelize-cli db:seed:undo",
-    "cogToDiff": "node scripts/cogInseeToDiff.mjs",
-    "cog": "node scripts/cog2025.mjs"
+    "cogToDiff": "node scripts/cogInseeToDiff.mjs"
   },
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
