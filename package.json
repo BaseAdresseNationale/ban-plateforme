@@ -31,7 +31,8 @@
     "migrate:up": "npx sequelize-cli db:migrate",
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "seed:up": "npx sequelize-cli db:seed:all",
-    "seed:undo": "npx sequelize-cli db:seed:undo"
+    "seed:undo": "npx sequelize-cli db:seed:undo",
+    "cogToDiff": "node scripts/cogInseeToDiff.mjs"
   },
   "dependencies": {
     "@ban-team/fantoir": "^0.15.0",
@@ -39,7 +40,7 @@
     "@ban-team/shared-data": "^1.4.1",
     "@ban-team/validateur-bal": "^3.0.6",
     "@etalab/adresses-util": "^0.8.2",
-    "@etalab/decoupage-administratif": "^4.0.0",
+    "@etalab/decoupage-administratif": "^5.0.0",
     "@etalab/majic": "^0.11.0",
     "@etalab/normadresse": "^1.2.0",
     "@etalab/project-legal": "^0.6.0",
@@ -122,9 +123,15 @@
       "n/prefer-global/process": "off",
       "n/prefer-global/buffer": "off",
       "new-cap": 0
-    }
+    },
+    "ignores": [
+      "scripts/cog2025.mjs",
+      "scripts/cogInseeToDiff.mjs",
+      "lib/api/consumers/export-to-exploitation-db-consumer.js"
+    ]
   },
   "engines": {
     "node": ">= 14"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

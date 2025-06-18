@@ -1,0 +1,20 @@
+{
+    "dirty_fix": {
+        "12218": {
+            "codePostal": "12320",
+            "libelleAcheminement": "CONQUES EN ROUERGUE"
+        },
+        "14581": {
+            "codePostal": "14240",
+            "libelleAcheminement": "AURSEULLES"
+        },
+        "49126": {
+            "codePostal": "49270",
+            "libelleAcheminement": "OREE D ANJOU"
+        },
+        "69114": {
+            "codePostal": "69400",
+            "libelleAcheminement": "PORTE DES PIERRES DOREES"
+        }
+    }
+}
