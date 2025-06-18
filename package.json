@@ -6,7 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "preinstall": "node check-root.js",
+    "patch:references": "node scripts/sync-references.cjs",
+    "patch:preinstall": "node scripts/setup-scripts.cjs",
+    "preinstall": "node scripts/check-root.cjs",
     "build": "npm run build -w @tonscope/shared-lib && npm run build -w app-a && npm run build -w app-b",
     "clean": "tsc --build --clean",
     "rebuild": "npm run clean && npm run build",

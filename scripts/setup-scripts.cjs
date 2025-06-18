@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const WORKSPACE_FOLDERS = ['apps', 'packages'];
-const CHECK_SCRIPT = 'node ../../check-root.js';
+const CHECK_SCRIPT = 'node ../../check-root.cjs';
 
 function updatePackageJson(pkgPath) {
   const content = fs.readFileSync(pkgPath, 'utf-8');
@@ -12,7 +12,7 @@ function updatePackageJson(pkgPath) {
 
   const existing = json.scripts.preinstall;
 
-  if (existing && existing.includes('check-root.js')) {
+  if (existing && existing.includes('check-root.cjs')) {
     console.log(`✔️  Déjà OK : ${pkgPath}`);
     return;
   }
@@ -35,9 +35,9 @@ for (const folder of WORKSPACE_FOLDERS) {
   if (!fs.existsSync(absFolder)) continue;
 
   const workspaces = fs.readdirSync(absFolder, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => path.join(absFolder, entry.name, 'package.json'))
-    .filter((pkgPath) => fs.existsSync(pkgPath));
+    .filter(entry => entry.isDirectory())
+    .map(entry => path.join(absFolder, entry.name, 'package.json'))
+    .filter(pkgPath => fs.existsSync(pkgPath));
 
   workspaces.forEach(updatePackageJson);
 }

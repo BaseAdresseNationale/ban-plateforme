@@ -9,6 +9,6 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "preinstall": "node ../../check-root.js"
+    "preinstall": "node ../../scripts/check-root.cjs"
   }
 }

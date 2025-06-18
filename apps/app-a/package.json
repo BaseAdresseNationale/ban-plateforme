@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "ts-node src/index.ts",
-    "preinstall": "node ../../check-root.js"
+    "preinstall": "node ../../scripts/check-root.cjs"
   },
   "dependencies": {
     "@tonscope/shared-lib": "*"
