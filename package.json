@@ -1,0 +1,20 @@
+{
+  "name": "monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "preinstall": "node check-root.js",
+    "build": "npm run build -w @tonscope/shared-lib && npm run build -w app-a && npm run build -w app-b",
+    "clean": "tsc --build --clean",
+    "rebuild": "npm run clean && npm run build",
+    "dev:a": "npm run dev -w app-a",
+    "dev:b": "npm run dev -w app-b"
+  },
+  "devDependencies": {
+    "resolve-workspace-root": "^2.0.0",
+    "typescript": "^5.4.0"
+  }
+}
