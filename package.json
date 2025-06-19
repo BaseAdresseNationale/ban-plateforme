@@ -1,0 +1,42 @@
+{
+  "name": "monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "patch:references": "node scripts/sync-references.cjs",
+    "patch:preinstall": "node scripts/setup-scripts.cjs",
+    "create-package": "node scripts/create-package.mjs",
+    "preinstall": "node scripts/check-root.cjs",
+    "prepare": "husky",
+    "build": "npm run build -w @tonscope/shared-lib && npm run build -w app-a && npm run build -w app-b",
+    "clean": "tsc --build --clean",
+    "rebuild": "npm run clean && npm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "check:types": "tsc -b",
+    "test": "vitest run || test $? -eq 1",
+    "dev:a": "npm run dev -w app-a",
+    "dev:b": "npm run dev -w app-b"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.29.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "husky": "^9.1.7",
+    "inquirer": "^12.6.3",
+    "resolve-workspace-root": "^2.0.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^7.2.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.34.1",
+    "vitest": "^1.5.0"
+  }
+}
