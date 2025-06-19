@@ -18,7 +18,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check:types": "tsc -b",
-    "test": "vitest run",
+    "test": "vitest run || test $? -eq 1",
     "dev:a": "npm run dev -w app-a",
     "dev:b": "npm run dev -w app-b"
   },

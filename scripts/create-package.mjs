@@ -7,7 +7,6 @@ import inquirer from 'inquirer';
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 
-// Charger les variables d'env si présentes
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -71,6 +70,7 @@ const main = async () => {
     name: isLib ? `@${scope}/${name}` : name,
     version: '1.0.0',
     type: 'module',
+    private: !isLib,
     main: isLib ? 'dist/index.js' : 'src/index.ts',
     types: isLib ? 'dist/index.d.ts' : undefined,
     files: isLib ? ['dist'] : undefined,
@@ -80,7 +80,17 @@ const main = async () => {
           dev: 'tsc -w',
           preinstall: 'node ../../scripts/check-root.cjs'
         }
-      : { dev: 'echo "dev script à définir"' }
+      : {
+          build: 'tsc --build',
+          dev: 'ts-node src/index.ts',
+          preinstall: 'node ../../scripts/check-root.cjs'
+        },
+        devDependencies: !isLib
+      ? {
+          'ts-node': '^10.9.1',
+          'typescript': '^5.8.0'
+        }
+      : undefined
   };
   fs.writeFileSync(path.join(dirPath, 'package.json'), JSON.stringify(pkg, null, 2));
 

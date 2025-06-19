@@ -10,13 +10,21 @@
     "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
-      "@tonscope/shared-lib": ["packages/shared-lib/src"]
+      "@tonscope/shared-lib": [
+        "packages/shared-lib/src"
+      ]
     }
   },
   "files": [],
   "references": [
-    { "path": "packages/shared-lib" },
-    { "path": "apps/app-a" },
-    { "path": "apps/app-b" }
+    {
+      "path": "./apps/app-a"
+    },
+    {
+      "path": "./apps/app-b"
+    },
+    {
+      "path": "./packages/shared-lib"
+    }
   ]
 }
