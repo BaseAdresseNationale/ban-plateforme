@@ -16,6 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check:types": "tsc -b",
+    "test": "vitest run",
     "dev:a": "npm run dev -w app-a",
     "dev:b": "npm run dev -w app-b"
   },
@@ -28,7 +29,9 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "resolve-workspace-root": "^2.0.0",
     "ts-node": "^10.9.2",
+    "tsup": "^7.2.0",
     "typescript": "^5.8.0",
-    "typescript-eslint": "^8.34.1"
+    "typescript-eslint": "^8.34.1",
+    "vitest": "^1.5.0"
   }
 }
