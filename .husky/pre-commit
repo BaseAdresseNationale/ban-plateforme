@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "🔍 Lint en cours..."
+npx lint-staged
+
+echo "🧪 Tests en cours..."
+npm test
