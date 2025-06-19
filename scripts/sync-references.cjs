@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = __dirname;
+const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, 'apps');
 const PACKAGES_DIR = path.join(ROOT, 'packages');
 const NAMESPACE = '@tonscope/';
@@ -51,7 +51,7 @@ fs.readdirSync(APPS_DIR, { withFileTypes: true })
   .forEach(dirent => {
     const appDir = path.join(APPS_DIR, dirent.name);
     const pkgPath = path.join(appDir, 'package.json');
-    if (!fs.exists(pkgPath)) return;
+    if (!fs.existsSync(pkgPath)) return;
 
     const pkg = JSON.parse(fs.readFileSync(pkgPath));
     const deps = pkg.dependencies || {};
