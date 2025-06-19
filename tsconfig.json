@@ -16,15 +16,5 @@
     }
   },
   "files": [],
-  "references": [
-    {
-      "path": "./apps/app-a"
-    },
-    {
-      "path": "./apps/app-b"
-    },
-    {
-      "path": "./packages/shared-lib"
-    }
-  ]
+  "references": []
 }
