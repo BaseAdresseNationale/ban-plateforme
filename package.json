@@ -1,6 +1,7 @@
 {
   "name": "monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -12,11 +13,22 @@
     "build": "npm run build -w @tonscope/shared-lib && npm run build -w app-a && npm run build -w app-b",
     "clean": "tsc --build --clean",
     "rebuild": "npm run clean && npm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "check:types": "tsc -b",
     "dev:a": "npm run dev -w app-a",
     "dev:b": "npm run dev -w app-b"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "eslint": "^9.29.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "resolve-workspace-root": "^2.0.0",
-    "typescript": "^5.4.0"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.34.1"
   }
 }
