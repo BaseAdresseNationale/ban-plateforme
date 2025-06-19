@@ -5,7 +5,7 @@ const path = require('path')
 const Papa = require('papaparse')
 
 const {MIGRATION_DATA_FOLDER_PATH} = process.env
-const DATANOVA_FILE_NAME = '20240404142921-datanova.csv'
+const DATANOVA_FILE_NAME = '20250619094120-datanova.csv'
 
 module.exports = {
   async up(queryInterface, Sequelize) {
