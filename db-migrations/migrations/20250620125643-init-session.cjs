@@ -1,16 +1,10 @@
-'use strict';
+'use strict'
 
 const {POSTGRES_BAN_USER} = process.env
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
+  async up(queryInterface, Sequelize) {
     try {
       // Grant permissions to ban user on shema ban
       await queryInterface.sequelize.query(`GRANT USAGE ON SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
@@ -78,7 +72,7 @@ module.exports = {
     }
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface) {
     /**
      * Add reverting commands here.
      *
@@ -91,4 +85,4 @@ module.exports = {
       console.error(error)
     }
   }
-};
+}
