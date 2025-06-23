@@ -28,25 +28,37 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: true,
         },
+        sub: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        name: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        givenName: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        familyName: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        usualName: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        email: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
         siren: {
           type: Sequelize.STRING,
           allowNull: true,
         },
         siret: {
           type: Sequelize.STRING,
-          allowNull: true,
-        },
-        firstName: {
-          type: Sequelize.STRING,
-          allowNull: true,
-        },
-        lastName: {
-          type: Sequelize.STRING,
-          allowNull: true,
-        },
-        email: {
-          type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
         },
         createdAt: {
           type: Sequelize.DATE,
