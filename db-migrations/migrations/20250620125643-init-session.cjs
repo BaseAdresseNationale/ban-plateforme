@@ -20,7 +20,15 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
         },
+        name: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
         givenName: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        familyName: {
           type: Sequelize.STRING,
           allowNull: true,
         },
@@ -30,7 +38,7 @@ module.exports = {
         },
         email: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         siret: {
           type: Sequelize.STRING,
