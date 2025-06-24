@@ -70,7 +70,6 @@ module.exports = {
         }
       }, {
         schema: 'ban',
-        ifNotExists: true,
       })
 
       // Grant permissions to ban user
