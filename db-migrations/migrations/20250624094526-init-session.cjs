@@ -38,7 +38,7 @@ module.exports = {
         },
         email: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         siret: {
           type: Sequelize.STRING,
@@ -49,11 +49,11 @@ module.exports = {
           allowNull: false,
         },
         exp: {
-          type: Sequelize.BIGINT,
+          type: Sequelize.INTEGER,
           allowNull: false,
         },
         iat: {
-          type: Sequelize.BIGINT,
+          type: Sequelize.INTEGER,
           allowNull: false,
         },
         iss: {
@@ -73,7 +73,7 @@ module.exports = {
       })
 
       // Grant permissions to ban user
-      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE ban.session TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
     } catch (error) {
       console.log(error)
     }
