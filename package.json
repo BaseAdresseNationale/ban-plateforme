@@ -1,0 +1,17 @@
+{
+  "name": "ban-platform",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "npm": "please-use-pnpm",
+    "pnpm": ">= 10.12.3",
+    "yarn": "please-use-pnpm"
+  },
+  "scripts": {
+    "dev": "echo 'Run dev script in each app'",
+    "build": "pnpm -r run build",
+    "lint": "eslint . --ext .ts"
+  },
+  "packageManager": "pnpm@10.12.3"
+}
