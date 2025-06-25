@@ -13,5 +13,17 @@
     "build": "pnpm -r run build",
     "lint": "eslint . --ext .ts"
   },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.29.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-stylistic": "0.0.0-0",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
   "packageManager": "pnpm@10.12.3"
 }
