@@ -19,6 +19,10 @@ module.exports = {
         districtID: {
           type: Sequelize.UUID,
           allowNull: false,
+          references: {
+            model: 'district',
+            key: 'id'
+          }
         },
         status: {
           type: Sequelize.BOOLEAN,
