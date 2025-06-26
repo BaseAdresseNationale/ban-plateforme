@@ -34,7 +34,7 @@ module.exports = {
         },
         siren: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
         },
         sessionID: {
           type: Sequelize.UUID,
