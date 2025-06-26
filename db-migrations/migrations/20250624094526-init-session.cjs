@@ -38,7 +38,7 @@ module.exports = {
         },
         email: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
         },
         siret: {
           type: Sequelize.STRING,
