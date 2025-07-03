@@ -49,11 +49,11 @@ module.exports = {
           allowNull: false,
         },
         exp: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.BIGINT,
           allowNull: false,
         },
         iat: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.BIGINT,
           allowNull: false,
         },
         iss: {
