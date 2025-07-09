@@ -21,3 +21,5 @@ fi
 #echo "Exécution des migrations..."
 #npm run migrate:up
 #echo "Migrations terminées."
+echo "Lancement du worker..."
+exec node worker.js
