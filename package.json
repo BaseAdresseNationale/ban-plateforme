@@ -18,8 +18,6 @@
     "import:cadastre": "node lib/import/cli.cjs cadastre",
     "import:ftth": "node lib/import/cli.cjs ftth",
     "dist": "node lib/distribute/cli.cjs",
-    "dist-and-upload": "node scripts/build-dist-upload.cjs",
-    "ban-weekly-snapshot": "node scripts/apply-ban-weekly-snapshot.cjs",
     "compose": "node lib/compose/cli.cjs",
     "askComposeAll": "node lib/compose/ask-compose-all.cjs",
     "lint": "xo",
@@ -34,7 +32,9 @@
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
     "seed:up": "npx sequelize-cli db:seed:all",
     "seed:undo": "npx sequelize-cli db:seed:undo",
-    "cogToDiff": "node scripts/cogInseeToDiff.mjs"
+    "cogToDiff": "node scripts/cogInseeToDiff.mjs",
+    "dist-and-upload": "node scripts/build-dist-upload.cjs",
+    "ban-weekly-snapshot": "node scripts/apply-ban-weekly-snapshot.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.502.0",
