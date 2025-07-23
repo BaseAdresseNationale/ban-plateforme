@@ -1,0 +1,16 @@
+
+usage : ban [--version] [-h | --help] [-c=<value> | --config=<value>] 
+            <source file path> <destination file path> [-s | --silence | --quiet]
+        ban [--version] [-h | --help] [-c=<value> | --config=<value>] 
+            <source file path> <destination directory path> [-s | --silence | --quiet]
+
+parameters :
+   source file path            Path of the BAN files to convert
+   destination file path       Path to the file in which the converted data will be saved.
+   destination directory path  Path to the directory where the file with the converted data will be saved.
+
+options :
+   -v, --version           Display the version number
+   -h, --help              Display this help.
+   -c, --config            Name of the preconfiguration or path to the destination file configuration.
+   -s, --silence, --quiet  The loader and processing information are not displayed during processing.
