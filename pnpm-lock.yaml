@@ -71,6 +71,12 @@ importers:
         specifier: ^5.3.16
         version: 5.3.16
 
+  apps/beautifier:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
   apps/orchestrator:
     dependencies:
       '@ban/config':
