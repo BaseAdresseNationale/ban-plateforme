@@ -77,6 +77,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/config
 
+  apps/merger:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
   apps/orchestrator:
     dependencies:
       '@ban/config':
