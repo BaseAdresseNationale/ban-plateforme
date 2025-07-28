@@ -65,6 +65,8 @@ importers:
         specifier: ^5.3.16
         version: 5.3.16
 
+  apps/beautifier: {}
+
   apps/orchestrator: {}
 
   packages/shared-lib: {}
