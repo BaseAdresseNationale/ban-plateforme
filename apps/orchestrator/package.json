@@ -1,0 +1,14 @@
+{
+  "name": "@ban/orchestrator",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": ["dist"],
+  "dependencies": {
+    "@ban/config": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsx watch src/index.ts || true"
+  }
+}
