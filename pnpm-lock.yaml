@@ -69,6 +69,8 @@ importers:
 
   apps/orchestrator: {}
 
+  apps/target-key: {}
+
   packages/shared-lib: {}
 
 packages:
