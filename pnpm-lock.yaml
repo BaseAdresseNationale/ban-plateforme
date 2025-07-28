@@ -83,6 +83,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/config
 
+  apps/target-key:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
   packages/config:
     dependencies:
       dotenv:
