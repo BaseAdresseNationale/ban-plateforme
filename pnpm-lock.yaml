@@ -67,6 +67,8 @@ importers:
 
   apps/beautifier: {}
 
+  apps/merger: {}
+
   apps/orchestrator: {}
 
   apps/target-key: {}
