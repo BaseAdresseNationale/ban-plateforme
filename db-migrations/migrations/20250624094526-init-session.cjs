@@ -73,7 +73,9 @@ module.exports = {
       })
 
       // Grant permissions to ban user
+
       await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE ban.session TO "${POSTGRES_BAN_USER}";`)
+      
     } catch (error) {
       console.log(error)
     }
