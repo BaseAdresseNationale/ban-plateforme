@@ -9,7 +9,8 @@
     "yarn": "please-use-pnpm"
   },
   "scripts": {
-    "dev": "echo 'Run dev script in each app'",
+    "dev:infra:up": "docker compose -f docker-compose.full.ban.yml up -d",
+    "dev:infra:down": "docker compose -f docker-compose.full.ban.yml down",
     "build": "pnpm -r run build",
     "lint": "eslint . --ext .ts"
   },
@@ -25,5 +26,5 @@
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
-  "packageManager": "pnpm@10.12.3"
+  "packageManager": "pnpm@10.12.4"
 }
