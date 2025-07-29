@@ -1,6 +1,31 @@
+import '@ban/config'; // pour exécuter le chargement du .env
+
 import rascal from 'rascal';
 import { MongoClient } from 'mongodb';
 import pg from 'pg';
+
+import { env } from '@ban/config';
+
+const rabbitConfig = {
+  hostname: env.RABBIT.host,
+  port: Number(env.RABBIT.port),
+  user: env.RABBIT.user,
+  password: env.RABBIT.password,
+};
+
+const mongoConfig = {
+  host: env.MONGO.host,
+  port: Number(env.MONGO.port),
+  db: env.MONGO.db,
+};
+
+const pgConfig = {
+  host: env.PG.host,
+  port: Number(env.PG.port),
+  user: env.PG.user,
+  password: env.PG.password,
+  database: env.PG.db,
+};
 
 type Label = {
   isoCode: string;
@@ -15,10 +40,7 @@ const config = {
     '/': {
       connection: {
         protocol: 'amqp',
-        hostname: 'localhost',
-        user: 'guest',
-        password: 'guest',
-        port: 5672,
+        ...rabbitConfig,
       },
       exchanges: [
         { name: 'bal.events', type: 'topic' as const }
@@ -43,15 +65,8 @@ const config = {
 };
 
 const { Pool } = pg;
-const mongoUrl = 'mongodb://localhost:27017';
-const mongoDbName = 'ban';
-const pgConfig = {
-  host: 'localhost',
-  port: 5432,
-  user: 'ban_user',
-  password: 'ban_pass',
-  database: 'ban',
-};
+const mongoUrl = `mongodb://${mongoConfig.host}:${mongoConfig.port}`;
+const mongoDbName = mongoConfig.db;
 
 const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
   const labels: Labels = row[colName] ? [{ isoCode: defaultIsoCode, value: row[colName] }] : [];
@@ -108,7 +123,6 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         districtID: row.id_ban_commune,
         district: districts[row.id_ban_commune] || {},
         labels: getterLabels('voie_nom') || [],
-        // certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune), // TODO: Add certified field if available
         geometry: {
           type: 'Point',
           coordinates: [row.long, row.lat],
