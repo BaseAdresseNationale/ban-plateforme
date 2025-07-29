@@ -1,0 +1,9 @@
+{
+  "name": "@ban/target-key",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts || true",
+    "build": "tsup src/index.ts"
+  }
+}

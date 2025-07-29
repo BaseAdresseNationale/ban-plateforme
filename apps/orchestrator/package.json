@@ -1,0 +1,10 @@
+{
+  "name": "@ban/orchestrator",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "tsx watch src/index.ts || true"
+  }
+}

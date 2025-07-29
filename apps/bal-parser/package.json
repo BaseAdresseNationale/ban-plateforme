@@ -1,0 +1,17 @@
+{
+  "name": "@ban/bal-parser",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts || true",
+    "build": "tsup src/index.ts"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "papaparse": "^5.4.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.16"
+  }
+}
