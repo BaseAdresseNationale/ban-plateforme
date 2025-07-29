@@ -4,7 +4,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx src/index.ts || true",
-    "build": "tsup src/index.ts"
+    "OLD-build": "tsup src/index.ts",
+    "FIX-build": "tsup src/index.ts --format esm --dts",
+    "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",

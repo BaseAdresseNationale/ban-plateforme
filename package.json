@@ -15,7 +15,7 @@
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
-    "@types/node": "^24.0.4",
+    "@types/node": "^24.1.0",
     "@types/rascal": "^10.2.1",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
@@ -29,7 +29,9 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "rascal": "^20.1.1"
+    "dotenv": "^17.2.1",
+    "rascal": "^20.1.1",
+    "zod": "^3.25.76"
   },
   "packageManager": "pnpm@10.12.4"
 }
