@@ -37,6 +37,8 @@ services:
   api:
     build:
       dockerfile: docker-resources/api/Dockerfile.dev
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     depends_on:
       db-mongo: 
         condition: service_healthy
