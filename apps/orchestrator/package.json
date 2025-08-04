@@ -4,7 +4,8 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "OLD-build": "tsup src/index.ts --format esm --dts",
+    "build": "tsc --project tsconfig.json",
     "dev": "tsx watch src/index.ts || true"
   }
 }

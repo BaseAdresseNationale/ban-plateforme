@@ -5,7 +5,8 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup src --dts"
+    "OLD-build": "tsup src --dts",
+    "build": "tsup src --format esm --dts"
   },
   "dependencies": {
     "dotenv": "^16.3.1",

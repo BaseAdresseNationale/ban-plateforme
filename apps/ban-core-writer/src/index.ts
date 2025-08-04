@@ -103,6 +103,145 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
 
   const defaultIsoCode = DEFAULT_ISO_CODE; // TODO: replace by district default ISO code if available
 
+  // // Example of a district object
+  // const district = {
+  //   "id": null,
+  //   "labels": [
+  //     {
+  //       "isoCode": "fra",
+  //       "value": "Breux-sur-Avre"
+  //     }
+  //   ],
+  //   "config": null,
+  //   "meta": {
+  //     "ban": {
+  //       "DEPRECATED_id": "27115",
+  //       "type": "commune-actuelle",
+  //       "region": {
+  //         "nom": "Normandie",
+  //         "code": "28"
+  //       },
+  //       "departement": {
+  //         "nom": "Eure",
+  //         "code": "27"
+  //       },
+  //       "composedAt": "2024-05-22T16:00:44.180Z",
+  //       "dateRevision": "2024-03-05T18:12:30.982Z",
+  //       "withBanId": false,
+  //       "hashIdFix": "?????"
+  //     },
+  //     "insee": {
+  //       "cog": "27115",
+  //       "mainCog": "?????",
+  //       "isMainCog": "?????"
+  //     },
+  //     "laPoste": {
+  //       "codePostal": ["27570"]
+  //     }
+  //   },
+  //   "legalityDate": "?????",
+  //   "lastRecordDate": "?????"
+  // }
+
+  // // Example of a toponym object
+  // const mainToponyme = {
+  //   "id": null,
+  //   "districtID": null,
+  //   "labels": [
+  //     {
+  //       "isoCode": "fra",
+  //       "value": "Chemin du Couty Fourny"
+  //     }
+  //   ],
+  //   "geometry": {
+  //     "type": "Point",
+  //     "coordinates": [1.09334, 48.759172]
+  //   },
+  //   "meta": {
+  //     "ban": {
+  //       "DEPRECATED_id": "27115_e3sorf",
+  //       "DEPRECATED_groupId": "slug-00000-chemin-couty-fourny",
+  //       "DEPRECATED_cleInteropBAN": null,
+  //       "cleInterop": "?????",
+  //       "category": "voie",
+  //       "sources": ["bal"],
+  //       "sourceNomVoie": "bal",
+  //       "hashIdFix": "?????"
+  //     },
+  //     "dgfip": {
+  //       "cadastre": "?????",
+  //       "codeFantoir": "?????"
+  //     },
+  //     "insee": {
+  //       "cog": "27115",
+  //       "mainCog": "?????",
+  //       "isMainCog": "?????"
+  //     },
+  //     "laPoste": {
+  //       "codePostal": ["27570"]
+  //     }
+  //   },
+  //   "legalityDate": "?????",
+  //   "lastRecordDate": "?????"
+  // }
+
+  // // Example of an address object
+  // const address = {
+  //   "id": null,
+  //   "mainCommonToponymID": null,
+  //   "secondaryCommonToponymIDs": null,
+  //   "districtID": null,
+  //   "labels": [
+  //     {
+  //       "isoCode": "fra",
+  //       "value": null
+  //     }
+  //   ],
+  //   "number": 1,
+  //   "suffix": null,
+  //   "certified": true,
+  //   "positions": [
+  //     {
+  //       "type": "entrée",
+  //       "geometry": {
+  //         "type": "Point",
+  //         "coordinates": [1.09334, 48.759172]
+  //       }
+  //     },
+  //     {
+  //       "type": "entrée",
+  //       "geometry": {
+  //         "type": "Point",
+  //         "coordinates": [1.09334, 48.759172]
+  //       }
+  //     }
+  //   ],
+  //   "meta": {
+  //     "ban": {
+  //       "DEPRECATED_id": "27115_e3sorf_00001",
+  //       "DEPRECATED_cleInteropBAN": "27115_e3sorf_00001",
+  //       "cleInterop": "?????",
+  //       "sources": ["bal"],
+  //       "sourcePosition": "bal",
+  //       "hashIdFix": ""
+  //     },
+  //     "dgfip": {
+  //       "cadastre": ["271150000D0231", "271150000D0297"],
+  //       "fantoir": "?????"
+  //     },
+  //     "insee": {
+  //       "cog": "27115",
+  //       "mainCog": "?????",
+  //       "isMainCog": "?????"
+  //     },
+  //     "laPoste": {
+  //       "codePostal": "27570"
+  //     }
+  //   },
+  //   "legalityDate": "2021-09-06",
+  //   "lastRecordDate": "?????"
+  // }
+
   rows.forEach((row: any) => {
     const getterLabels = getLabelsFromRow(row, defaultIsoCode);
 
@@ -123,6 +262,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         districtID: row.id_ban_commune,
         district: districts[row.id_ban_commune] || {},
         labels: getterLabels('voie_nom') || [],
+        // certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune), // TODO: Add certified field if available
         geometry: {
           type: 'Point',
           coordinates: [row.long, row.lat],
@@ -165,6 +305,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         secondaryCommonToponymIDs: row.id_ban_toponymes_secondaires ? row.id_ban_toponymes_secondaires.split('|') : [],
         districtID: row.id_ban_commune,
         mainCommonToponym: mainToponymes[row.id_ban_toponyme] || {},
+        // secondaryCommonToponyms: (row.id_ban_toponymes_secondaires || '').split('|').map(id => mainToponymes[id] || {}),
         districts: districts[row.id_ban_commune] || {},
         labels: getterLabels('lieudit_complement_nom') || [],
         number: row.numero,
@@ -210,6 +351,7 @@ async function main() {
   await mongoClient.connect();
   const mongoDb = mongoClient.db(mongoDbName);
 
+  // const mongoCollectionBal = mongoDb.collection('bal');
   const mongoCollectionDistricts = mongoDb.collection('districts');
   const mongoCollectionMainToponyms = mongoDb.collection('mainToponyms');
   const mongoCollectionAddresses = mongoDb.collection('addresses');
@@ -231,6 +373,7 @@ async function main() {
       if (hasAllIds) {
         // Écriture PostgreSQL simulée (à remplacer par du vrai SQL)
         console.log(`[writer] Enregistrement PostgreSQL de ${parsed.rows.length} lignes`);
+        // await pgPool.query(...);
       } else {
         console.log(`[writer] Données incomplètes pour PostgreSQL, passage MongoDB`);
       }
@@ -242,6 +385,7 @@ async function main() {
       console.log(`[writer] Suppression des documents existants pour BAL ${parsed.id}`);
       const parsedDistrictsIds = Object.keys(banObjects.districts);
       await Promise.all([
+        // mongoCollectionBal.deleteMany({ id: parsed.id }),
         mongoCollectionAddresses.deleteMany({ districtID: { $in: parsedDistrictsIds } }),
         mongoCollectionMainToponyms.deleteMany({ districtID: { $in: parsedDistrictsIds } }),
         mongoCollectionDistricts.deleteMany({ id: { $in: parsedDistrictsIds } }),
@@ -252,6 +396,10 @@ async function main() {
       const currentTimestamp = new Date().toISOString();
       console.log(`[writer] Enregistrement MongoDB de BAL ${parsed.id} avec ${Object.keys(banObjects.districts).length} districts, ${Object.keys(banObjects.mainToponymes).length} toponymes et ${Object.keys(banObjects.addresses).length} adresses`);
       await Promise.all([
+        // mongoCollectionBal.insertOne({
+        //   ...parsed,
+        //   storedAt: currentTimestamp,
+        // }),
         mongoCollectionDistricts.insertMany(
           Object.values(banObjects?.districts).map(doc => ({
             ...doc,
