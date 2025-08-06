@@ -50,6 +50,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build all packages
+        run: pnpm --filter "./packages/**" run build
+
       - name: Build service (${{ matrix.service }})
         run: pnpm --filter ./${{ matrix.service }} build
 

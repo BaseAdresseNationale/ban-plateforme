@@ -4,5 +4,6 @@
     "module": "NodeNext",
     "outDir": "dist"
   },
+  "composite": true,
   "include": ["src"]
 }

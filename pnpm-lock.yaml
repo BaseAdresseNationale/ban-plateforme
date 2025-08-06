@@ -84,13 +84,27 @@ importers:
         specifier: ^8.15.5
         version: 8.15.5
 
-  apps/beautifier: {}
+  apps/beautifier:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
 
   apps/merger: {}
 
-  apps/orchestrator: {}
+  apps/old-district: {}
 
-  apps/target-key: {}
+  apps/orchestrator:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
+  apps/target-key:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
 
   packages/config:
     dependencies:

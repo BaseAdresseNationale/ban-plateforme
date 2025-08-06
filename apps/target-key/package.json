@@ -5,5 +5,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts || true",
     "build": "tsup src/index.ts"
+  },
+  "dependencies": {
+    "@ban/config": "workspace:*"
   }
 }

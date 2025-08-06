@@ -1,15 +1,30 @@
 import { BrokerConfig } from 'rascal';
 import rascal from 'rascal';
 
+import '@ban/config';
+import { env } from '@ban/config';
+
+console.log('env', env);
+
+const rabbitConfig = {
+  hostname: env.RABBIT.host,
+  port: Number(env.RABBIT.port),
+  user: env.RABBIT.user,
+  password: env.RABBIT.password,
+};
+
+console.log('rabbitConfig', rabbitConfig);
+
 const config: BrokerConfig = {
   vhosts: {
     '/': {
       connection: {
         protocol: 'amqp',
-        hostname: 'localhost',
-        user: 'guest',
-        password: 'guest',
-        port: 5672,
+        // hostname: 'localhost',
+        // user: 'guest',
+        // password: 'guest',
+        // port: 5672,
+        ...rabbitConfig,
       },
       exchanges: [
         { name: 'bal.events', type: "topic" as "topic" }
