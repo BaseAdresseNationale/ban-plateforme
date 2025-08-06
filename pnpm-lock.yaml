@@ -57,6 +57,9 @@ importers:
 
   apps/bal-parser:
     dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -73,6 +76,9 @@ importers:
 
   apps/ban-core-writer:
     dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       mongodb:
         specifier: ^6.18.0
         version: 6.18.0
@@ -84,13 +90,31 @@ importers:
         specifier: ^8.15.5
         version: 8.15.5
 
-  apps/beautifier: {}
+  apps/beautifier:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
 
-  apps/merger: {}
+  apps/merger:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
 
-  apps/orchestrator: {}
+  apps/old-district: {}
 
-  apps/target-key: {}
+  apps/orchestrator:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
+  apps/target-key:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../../packages/config
 
   packages/config:
     dependencies:

@@ -1,14 +1,20 @@
 import rascal from 'rascal';
 
+import { env } from '@ban/config';
+
+const rabbitConfig = {
+  hostname: env.RABBIT.host,
+  port: Number(env.RABBIT.port),
+  user: env.RABBIT.user,
+  password: env.RABBIT.password,
+};
+
 const config = {
   vhosts: {
     '/': {
       connection: {
         protocol: 'amqp',
-        hostname: 'localhost',
-        user: 'guest',
-        password: 'guest',
-        port: 5672,
+        ...rabbitConfig,
       },
       exchanges: [
         { name: 'bal.events', type: 'topic' as const }

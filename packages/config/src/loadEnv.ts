@@ -12,6 +12,35 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 console.log('[config] Variables chargées depuis .env');
 
+const {
+  PG_HOST,
+  PG_PORT,
+  PG_DB,
+  PG_USER,
+  PG_PASSWORD,
+  MONGO_HOST,
+  MONGO_PORT,
+  MONGO_DB,
+  RABBITMQ_HOST,
+  RABBITMQ_PORT,
+  RABBITMQ_USER,
+  RABBITMQ_PASSWORD,
+} = process.env;
+console.log('[config] Variables:', {
+  PG_HOST,
+  PG_PORT,
+  PG_DB,
+  PG_USER,
+  PG_PASSWORD,
+  MONGO_HOST,
+  MONGO_PORT,
+  MONGO_DB,
+  RABBITMQ_HOST,
+  RABBITMQ_PORT,
+  RABBITMQ_USER,
+  RABBITMQ_PASSWORD,
+});
+
 // Définir le schéma attendu pour valider les variables d'environnement
 const envSchema = z.object({
   PG_HOST: z.string(),

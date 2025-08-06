@@ -4,18 +4,21 @@ import Papa from 'papaparse';
 import { v4 as uuidv4 } from 'uuid';
 import rascal from 'rascal';
 
-const inputFile = process.argv[2] || 'input/bal-96001-cocorico.1.4.fra.geo.csv'; // TODO : remove the default input test file
-const csvFilePath = path.resolve(inputFile);
+import { env } from '@ban/config';
+
+const rabbitConfig = {
+  hostname: env.RABBIT.host,
+  port: Number(env.RABBIT.port),
+  user: env.RABBIT.user,
+  password: env.RABBIT.password,
+};
 
 const config = {
   vhosts: {
     '/': {
       connection: {
         protocol: 'amqp',
-        hostname: 'localhost',
-        user: 'guest',
-        password: 'guest',
-        port: 5672,
+        ...rabbitConfig,
       },
       exchanges: [
         { name: 'bal.events', type: 'topic' as const }
@@ -29,6 +32,9 @@ const config = {
     }
   }
 };
+
+const inputFile = process.argv[2] || 'input/bal-96001-cocorico.1.4.fra.geo.csv'; // TODO : remove the default input test file
+const csvFilePath = path.resolve(inputFile);
 
 async function parseAndPublish() {
   try {

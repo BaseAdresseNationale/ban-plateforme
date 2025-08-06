@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "NodeNext",
-    "outDir": "dist"
+    "outDir": "dist",
+    "rootDir": "src"
   },
+  "composite": true,
   "include": ["src"]
 }

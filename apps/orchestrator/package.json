@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@ban/config": "workspace:*"
+  },
   "scripts": {
     "OLD-build": "tsup src/index.ts --format esm --dts",
     "build": "tsc --project tsconfig.json",

@@ -1,29 +1,13 @@
 import rascal from 'rascal';
 
-// Une ligne enrichie, de structure libre
-type EnrichedRow = Record<string, any>;
+import { env } from '@ban/config';
 
-// Buffer local pour stocker les enrichissements ligne par ligne
-type EnrichmentBuffer = {
-  [rowId: string]: EnrichedRow;
+const rabbitConfig = {
+  hostname: env.RABBIT.host,
+  port: Number(env.RABBIT.port),
+  user: env.RABBIT.user,
+  password: env.RABBIT.password,
 };
-
-// Données agrégées pour une BAL donnée
-type PendingBAL = {
-  receivedFrom: Set<string>;         // Quels enrichisseurs ont déjà répondu ?
-  rows: EnrichmentBuffer;            // Lignes fusionnées par row.id
-  meta: any;                         // Métadonnées (parsedAt, filename...)
-  timeout?: NodeJS.Timeout;          // Pour éviter l’attente infinie
-};
-
-// Liste des enrichisseurs qu’on attend
-const expectedEnrichers = ['beautifier', 'target-key'];
-
-// Durée maximale d’attente avant fallback (en ms)
-const timeoutMs = 5000;
-
-// État mémoire tampon : Map balId => données partielles
-const state = new Map<string, PendingBAL>();
 
 // Config Rascal pour RabbitMQ
 const config = {
@@ -31,10 +15,7 @@ const config = {
     '/': {
       connection: {
         protocol: 'amqp',
-        hostname: 'localhost',
-        user: 'guest',
-        password: 'guest',
-        port: 5672,
+        ...rabbitConfig,
       },
       exchanges: [
         { name: 'bal.events', type: 'topic' as const }
@@ -63,6 +44,31 @@ const config = {
     }
   }
 };
+
+// Une ligne enrichie, de structure libre
+type EnrichedRow = Record<string, any>;
+
+// Buffer local pour stocker les enrichissements ligne par ligne
+type EnrichmentBuffer = {
+  [rowId: string]: EnrichedRow;
+};
+
+// Données agrégées pour une BAL donnée
+type PendingBAL = {
+  receivedFrom: Set<string>;         // Quels enrichisseurs ont déjà répondu ?
+  rows: EnrichmentBuffer;            // Lignes fusionnées par row.id
+  meta: any;                         // Métadonnées (parsedAt, filename...)
+  timeout?: NodeJS.Timeout;          // Pour éviter l’attente infinie
+};
+
+// Liste des enrichisseurs qu’on attend
+const expectedEnrichers = ['beautifier', 'target-key'];
+
+// Durée maximale d’attente avant fallback (en ms)
+const timeoutMs = 5000;
+
+// État mémoire tampon : Map balId => données partielles
+const state = new Map<string, PendingBAL>();
 
 // Fusionne les nouvelles lignes avec les existantes
 function mergeRows(existing: EnrichmentBuffer, newRows: EnrichedRow[]): EnrichmentBuffer {
