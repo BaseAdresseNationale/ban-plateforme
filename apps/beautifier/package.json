@@ -1,0 +1,13 @@
+{
+  "name": "@ban/beautifier",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "OLD-build": "tsup src/index.ts --format esm --dts",
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsx watch src/index.ts || true"
+  },
+  "dependencies": {
+    "@ban/config": "workspace:*"
+  }
+}
