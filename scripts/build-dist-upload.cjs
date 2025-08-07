@@ -232,7 +232,7 @@ async function uploadFile(filePath, bucket, key) {
 async function main() {
   try {
     console.log('Suppression du répertoire dist')
-    await removeDirectory(config.localDistPath)
+    //await removeDirectory(config.localDistPath)
 
     console.log('Génération des fichiers départementaux')
     await runYarn('dist')
