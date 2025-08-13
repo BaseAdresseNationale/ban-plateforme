@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ban-rabbitmq
+    ports:
+      - "5672:5672"     # Port AMQP
+      - "15672:15672"   # UI de gestion
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - ban-net
+
+  mongo:
+    image: mongo:6
+    container_name: ban-mongo
+    ports:
+      - "27017:27017"   # pour accès local (robo3T, Compass...)
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ban-net
+
+  postgres:
+    image: postgres:15
+    container_name: ban-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ban
+      POSTGRES_USER: ban_user
+      POSTGRES_PASSWORD: ban_pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - ban-net
+
+volumes:
+  mongo_data:
+  pg_data:
+
+networks:
+  ban-net:
+    driver: bridge

@@ -1,0 +1,22 @@
+{
+  "name": "@ban/bal-parser",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": ["dist"],
+  "scripts": {
+    "dev": "tsx src/index.ts || true",
+    "OLD-build": "tsup src/index.ts",
+    "FIX-build": "tsup src/index.ts --format esm --dts",
+    "build": "tsc --project tsconfig.json"
+  },
+  "dependencies": {
+    "@ban/config": "workspace:*",
+    "@types/uuid": "^10.0.0",
+    "papaparse": "^5.4.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.16"
+  }
+}

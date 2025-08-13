@@ -1,0 +1,50 @@
+name: Build & Package BAN Services (All-in-One)
+
+on:
+  push:
+    branches:
+      - main
+      - feat/init-ban-platform-monorepo
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js (v24.x)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Package all services
+        run: |
+          mkdir artifacts
+          for dir in apps/* packages/*; do
+            if [ -f "$dir/package.json" ]; then
+              service=$(basename $dir)
+              echo "Packaging $service..."
+              mkdir -p artifacts/$service
+              cp -r $dir/dist/* artifacts/$service/
+              tar -czf artifacts/$service.tar.gz -C artifacts $service
+            fi
+          done
+
+      - name: Upload artifact (All Services)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ban-services
+          path: artifacts/*.tar.gz
