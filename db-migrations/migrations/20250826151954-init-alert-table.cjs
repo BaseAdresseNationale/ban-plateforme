@@ -8,191 +8,112 @@ const {POSTGRES_BAN_USER} = process.env
 module.exports = {
   async up(queryInterface, Sequelize) {
     try {
-      // Table principale : toutes les révisions avec leurs statuts/erreurs
-      await queryInterface.createTable('revision_status', {
-        revisionId: {
+      // Table unique : revisions avec ID technique
+      await queryInterface.createTable('revisions', {
+        id: {
           type: Sequelize.UUID,
-          allowNull: false,
           primaryKey: true,
-          comment: 'ID de la révision (clé primaire)'
+          defaultValue: Sequelize.UUIDV4,
+          allowNull: false,
+          comment: 'ID technique de la ligne'
         },
-        codeCommune: {
+        revisionId: {
+          type: Sequelize.STRING(255),
+          allowNull: false,
+          comment: 'ID de la révision du dump-api'
+        },
+        cog: {
           type: Sequelize.STRING(5),
           allowNull: false,
-          index: true,
+          comment: 'Code commune (COG)'
         },
-        communeName: {
+        districtName: {
           type: Sequelize.STRING(100),
           allowNull: true,
-          comment: 'Nom de la commune pour faciliter les recherches'
+          comment: 'Nom de la commune'
         },
-        submissionDate: {
-          type: Sequelize.DATE,
-          allowNull: false,
-          index: true,
-          comment: 'Date de soumission de cette révision'
+        districtId: {
+          type: Sequelize.UUID,
+          allowNull: true,
+          comment: 'ID du district BAN'
         },
         status: {
           type: Sequelize.ENUM('success', 'error', 'warning', 'info'),
           allowNull: false,
-          index: true,
-          comment: 'Statut global de la révision'
-        },
-        isIntegratedInBan: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-          index: true,
-          comment: 'Cette révision est-elle actuellement dans la BAN ?'
-        },
-        integrationDate: {
-          type: Sequelize.DATE,
-          allowNull: true,
-          comment: 'Date d\'intégration dans la BAN (si applicable)'
-        },
-        errorType: {
-          type: Sequelize.STRING(100),
-          allowNull: true,
-          comment: 'Type d\'erreur principal'
+          comment: 'Statut de traitement'
         },
         message: {
           type: Sequelize.TEXT,
           allowNull: true,
-          comment: 'Message d\'erreur/warning principal'
-        },
-        details: {
-          type: Sequelize.JSONB,
-          allowNull: true,
-          comment: 'Tous les détails : erreurs, seuils, statistiques, logs, etc.'
-        },
-        notificationsSent: {
-          type: Sequelize.JSONB,
-          allowNull: true,
-          defaultValue: [],
-          comment: 'Array des IDs subscribers qui ont été notifiés + status'
+          comment: 'Message brut complet'
         },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          allowNull: false,
+          defaultValue: Sequelize.NOW
         }
       }, {
-        indexes: [
-          {
-            fields: ['codeCommune', 'submissionDate'],
-            name: 'idx_commune_date'
-          },
-          {
-            fields: ['isIntegratedInBan'],
-          },
-          {
-            fields: ['status'],
-          }
-        ],
         schema: 'ban',
         ifNotExists: true,
       })
 
-      // Table des abonnés aux alertes
-      await queryInterface.createTable('alert_subscribers', {
+      // Table des abonnés simplifiée
+      await queryInterface.createTable('subscribers', {
         id: {
           type: Sequelize.UUID,
-          allowNull: false,
           primaryKey: true,
           defaultValue: Sequelize.UUIDV4,
-        },
-        identifier: {
-          type: Sequelize.STRING(100),
-          allowNull: false,
-          unique: true,
-          comment: 'Identifiant libre choisi par l\'utilisateur'
+          allowNull: false
         },
         webhookUrl: {
           type: Sequelize.STRING(500),
           allowNull: false,
+          unique: true,
           comment: 'URL de réception des webhooks'
         },
-        communesToFollow: {
+        districtsToFollow: {
           type: Sequelize.ARRAY(Sequelize.STRING),
           allowNull: false,
           defaultValue: [],
-          comment: 'Liste des codes commune à suivre (vide = toutes)'
+          comment: 'Codes commune à suivre (vide = toutes)'
         },
         statusesToFollow: {
           type: Sequelize.ARRAY(Sequelize.STRING),
           allowNull: false,
           defaultValue: ['error', 'warning'],
-          comment: 'Liste des statuts à suivre'
+          comment: 'Statuts à suivre'
         },
         isActive: {
           type: Sequelize.BOOLEAN,
           allowNull: false,
-          defaultValue: true,
-        },
-        lastNotificationAt: {
-          type: Sequelize.DATE,
-          allowNull: true,
-        },
-        failedAttemptsCount: {
-          type: Sequelize.INTEGER,
-          allowNull: false,
-          defaultValue: 0,
-        },
-        config: {
-          type: Sequelize.JSONB,
-          allowNull: true,
-          comment: 'Config avancée : retry policy, timeout, filtres custom, etc.'
+          defaultValue: true
         },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          allowNull: false,
+          defaultValue: Sequelize.NOW
         }
       }, {
-        indexes: [
-          {
-            fields: ['identifier'],
-            unique: true,
-          },
-          {
-            fields: ['isActive'],
-          },
-          {
-            fields: ['communesToFollow'],
-            using: 'gin',
-          }
-        ],
         schema: 'ban',
         ifNotExists: true,
       })
 
       // Grant permissions to ban user
       await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
-      await queryInterface.sequelize.query(`GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
 
     } catch (error) {
-      console.error('Erreur lors de la création des tables d\'alertes BAN:', error)
+      console.error('Erreur lors de la création des tables simplifiées:', error)
       throw error
     }
   },
 
   async down(queryInterface) {
     try {
-      await queryInterface.sequelize.query('DROP TABLE IF EXISTS ban.alert_subscribers CASCADE;')
-      await queryInterface.sequelize.query('DROP TABLE IF EXISTS ban.revision_status CASCADE;')
-      
-      // Drop les types ENUM créés
-      await queryInterface.sequelize.query('DROP TYPE IF EXISTS ban."enum_revision_status_status" CASCADE;')
-      await queryInterface.sequelize.query('DROP TYPE IF EXISTS ban."enum_alert_subscribers_statusesToFollow" CASCADE;')
-      
+      await queryInterface.sequelize.query('DROP TABLE IF EXISTS ban.subscribers CASCADE;')
+      await queryInterface.sequelize.query('DROP TABLE IF EXISTS ban.revisions CASCADE;')
+      await queryInterface.sequelize.query('DROP TYPE IF EXISTS ban."enum_revisions_status" CASCADE;')
     } catch (error) {
-      console.error('Erreur lors de la suppression des tables d\'alertes BAN:', error)
+      console.error('Erreur lors de la suppression des tables:', error)
       throw error
     }
   }
