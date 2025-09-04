@@ -1,17 +1,23 @@
 {
   "name": "ban-platform",
   "private": true,
-  "version": "0.1.0",
+  "version": "2.0.0-alpha.1",
   "type": "module",
   "engines": {
+    "node": ">=24.0.0",
     "npm": "please-use-pnpm",
-    "pnpm": ">= 10.12.3",
+    "pnpm": ">= 10.12.0",
     "yarn": "please-use-pnpm"
   },
+  "packageManager": "pnpm@10.12.4",
   "scripts": {
-    "dev": "pnpm run -r --filter '!@ban/bal-parser' --parallel dev || true",
-    "dev:infra:up": "docker compose -f docker-compose.full.ban.yml up -d",
-    "dev:infra:down": "docker compose -f docker-compose.full.ban.yml down",
+    "ban:start": "scripts/dev-run-artifacts.sh",
+    "ban:stop": "scripts/stop-ban.sh",
+    "dev": "pnpm run -r --filter '!@ban/old-district' --parallel dev || true",
+    "dev:infra:up": "docker compose -f docker-compose.dev.ban.yml up -d",
+    "dev:infra:down": "docker compose -f docker-compose.dev.ban.yml down",
+    "dev:start": "pnpm run dev:infra:up && pnpm run dev",
+    "dev:stop": "pnpm run dev:infra:down",
     "build": "pnpm -r run build",
     "lint": "eslint . --ext .ts"
   },
@@ -33,6 +39,5 @@
     "dotenv": "^17.2.1",
     "rascal": "^20.1.1",
     "zod": "^3.25.76"
-  },
-  "packageManager": "pnpm@10.12.4"
+  }
 }

@@ -24,43 +24,139 @@ ban-platform/
 
 ---
 
-## 🛠️ Installation (une seule fois)
+## 🔧 Installation
 
-Assurez-vous d’avoir Node.js ≥ 20 et [pnpm](https://pnpm.io) :
+Assurez-vous d’avoir installé :
+- [Node.js 24+](https://nodejs.org/)
+- [PNPM](https://pnpm.io/)
 
+Puis :
 ```bash
 pnpm install
 ```
 
 ---
 
-## 🧪 Commandes principales
+## 💻 Développement classique
 
-### 🔍 Dev d’un service
-
-Exemple : lancer `bal-parser` en mode développement (watch)
+Pour développer un service en direct avec hot-reload :
 
 ```bash
-pnpm --filter @ban/bal-parser run dev
+pnpm --filter @ban/bal-parser dev
 ```
 
-> Cette commande utilise `tsx` pour exécuter le fichier source avec rechargement automatique.
+> Utilise `tsx` pour exécuter les fichiers sources avec rechargement automatique.
 
-### 🏗️ Build complet (toutes les apps/libs)
+---
 
+## 🚀 Démarrage local complet via artifacts CI
+
+Cette approche permet de récupérer automatiquement les artifacts produits par la CI et de lancer un environnement complet BAN (RabbitMQ, PostgreSQL, MongoDB et tous les services BAN) en local.
+
+### 🛠️ Prérequis supplémentaires
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mac/Win) ou Docker Engine (Linux)
+- [GitHub CLI (`gh`)](https://cli.github.com/) + authentification :
+  ```bash
+  gh auth login
+  ```
+- [fzf (menu interactif CLI)](https://github.com/junegunn/fzf)
+- `tar` et `unzip` (présents par défaut sur Mac/Linux).
+
+---
+
+### ▶️ Lancer BAN
 ```bash
-pnpm build
+pnpm ban:start
 ```
 
-### 🧪 Tests (à venir)
+Ce script :
+1. Vérifie les prérequis (Docker, gh, etc.)
+2. Liste les derniers runs CI GitHub (workflow **Build & Package BAN Services**)
+3. Télécharge les artifacts `.tar.gz`
+4. Extrait les services BAN dans `.services/`
+5. Propose un démarrage :
+   - **Docker** : chaque service dans un container Node
+   - **Local** : chaque service lancé via `node dist/index.js`
+6. Lance RabbitMQ, PostgreSQL, MongoDB
 
+**Accès RabbitMQ UI** : [http://localhost:15672](http://localhost:15672)  
+*(login : guest / pass : guest)*
+
+---
+
+### 🛑 Arrêter BAN
 ```bash
-pnpm test
+pnpm ban:stop
+```
+Ce script stoppe :
+- RabbitMQ, PostgreSQL, MongoDB
+- Les containers BAN (mode Docker)
+- Les processus Node locaux (mode Local)
+
+---
+
+### 🔗 Flux CI → Artifacts → Script
+
+```mermaid
+flowchart LR
+    A[CI GitHub Actions<br/>(Build Matrix)] --> B[Artifacts<br/>(.tar.gz)]
+    B --> C[Script<br/>(dev-run-artifacts.sh)]
+    C --> D[Docker<br/>(Containers Node)]
+    C --> E[Local<br/>(Process Node.js)]
+
+    style A fill:#4CAF50,stroke:#333,stroke-width:1px,color:#fff
+    style B fill:#FF9800,stroke:#333,stroke-width:1px,color:#fff
+    style C fill:#03A9F4,stroke:#333,stroke-width:1px,color:#fff
+    style D fill:#9C27B0,stroke:#333,stroke-width:1px,color:#fff
+    style E fill:#9C27B0,stroke:#333,stroke-width:1px,color:#fff
+
+    linkStyle default stroke:#333,stroke-width:1.5px
 ```
 
 ---
 
-## 📦 Ajouter un nouveau service
+### 🔎 Structure générée
+Le script crée deux dossiers ignorés par Git :
+```
+.artifacts/      # Artifacts CI téléchargés
+.services/       # Microservices extraits + docker-compose généré
+  ├─ apps/
+  │   ├─ bal-parser/
+  │   └─ beautifier/
+  └─ packages/
+      ├─ shared-lib/
+      └─ config/
+```
+
+---
+
+## 🧩 Mode Docker vs Mode Local
+
+- **Docker** → environnement isolé proche de la prod (containers Node).
+- **Local** → exécution directe en Node.js (pratique pour debug rapide).
+
+---
+
+## 🛠️ Outils dev
+
+### 🧹 Linter
+```bash
+pnpm lint
+```
+> Utilise [eslint-stylistic](https://eslint.style/) sans Prettier.
+
+### 🏗️ Build manuel
+```bash
+pnpm build
+```
+*(La CI se charge déjà de builder à chaque push sur `main`.)*
+
+### 🧪 Tests
+À venir.
+
+---
+
+## ➕ Ajouter un nouveau service
 
 ```bash
 mkdir -p apps/mon-nouveau-service/src
@@ -68,8 +164,7 @@ cd apps/mon-nouveau-service
 pnpm init -y
 ```
 
-Ajoutez dans `package.json` :
-
+Dans `package.json` :
 ```json
 {
   "name": "@ban/mon-nouveau-service",
@@ -82,8 +177,7 @@ Ajoutez dans `package.json` :
 }
 ```
 
-Et un `tsconfig.json` :
-
+Puis un `tsconfig.json` :
 ```json
 {
   "extends": "../../tsconfig.base.json",
@@ -96,53 +190,7 @@ Et un `tsconfig.json` :
 
 ---
 
-## 🧹 Linter
-
-```bash
-pnpm lint
-```
-
-> Utilise [eslint-stylistic](https://eslint.style/) sans Prettier.
-
----
-
-## 🔎 Quelques rappels sur pnpm
-
-### Installer une dépendance dans une app
-
-```bash
-pnpm add ma-dependance --filter @ban/mon-app
-```
-
-### Ajouter une devDependency partagée au monorepo
-
-```bash
-pnpm add -Dw nom-du-paquet
-```
-
-### Exécuter une commande dans tous les workspaces
-
-```bash
-pnpm -r run build     # build toutes les apps/libs
-pnpm -r run test      # (plus tard) run tous les tests
-```
-
----
-
-## 🔄 Conventions
-
-- Les packages sont nommés sous la forme `@ban/<nom>`
-- Tout est en ESM (`"type": "module"`)
-- Les alias TypeScript sont disponibles via `@ban/` dans `tsconfig.base.json`
-
----
-
-## ✨ Astuce dev
-
-Si vous quittez une commande avec `Ctrl+C`, `pnpm` peut afficher un warning inutile — vous pouvez l’ignorer.
-
----
-
 ## ✅ Prêt pour démarrer !
 
-> 🚀 N’hésitez pas à pinguer Nicolas pour ajouter un nouveau service ou une nouvelle lib.
+- Dev classique : `pnpm --filter @ban/mon-service dev`
+- Environnement complet (CI artifacts) : `pnpm ban:start`
