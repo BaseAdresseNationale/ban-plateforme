@@ -1,0 +1,98 @@
+name: Build & Package BAN Services (Dynamic Matrix)
+
+on:
+  push:
+    branches:
+      - main
+      - feat/init-ban-platform-monorepo
+  workflow_dispatch:
+
+jobs:
+  discover-services:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate service list
+        id: set-matrix
+        run: |
+          # Trouver uniquement les dossiers contenant un package.json
+          services=$(find apps packages -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/package.json" ';' -print | jq -R . | jq -s -c '{service: .}')
+          echo "=== 📦 Services détectés ==="
+          echo "$services" | jq -r '.service[]' | while read svc; do
+            echo " - $svc"
+          done
+          echo "==========================="
+          echo "matrix=$services" >> $GITHUB_OUTPUT
+
+  build:
+    needs: discover-services
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.discover-services.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm --filter "./packages/**" run build
+
+      - name: Build service (${{ matrix.service }})
+        run: pnpm --filter ./${{ matrix.service }} build
+
+      - name: Install production dependencies & prepare deploy folder
+        run: |
+          pnpm deploy --filter ./${{ matrix.service }} --prod --legacy deploy
+          # Flag --legacy (temporaire) pour conserver le comportement de PNPM 9
+          # qui copie les dépendances de workspace dans le dossier deploy
+          # PNPM 10+ injecte les dépendances de workspace dans le deploy par défaut
+
+      - name: Include runtime files (compose overrides, env examples)
+        run: |
+          svc="${{ matrix.service }}"
+          # compose.override.yml à la racine du service (ex: apps/ban-core-api/compose.override.yml)
+          if [ -f "$svc/compose.override.yml" ]; then
+            echo "➕ copy $svc/compose.override.yml -> deploy/"
+            cp "$svc/compose.override.yml" deploy/
+          fi
+          # optionnel : embarquer un .env.example
+          if [ -f "$svc/.env.example" ]; then
+            echo "➕ copy $svc/.env.example -> deploy/"
+            cp "$svc/.env.example" deploy/
+          fi
+
+      - name: Package service
+        id: package
+        run: |
+          service=$(basename ${{ matrix.service }})
+          safe_name=$(echo "${{ matrix.service }}" | tr '/' '-')
+          echo "✅ Packaging service $service avec deps prod isolées..."
+          mkdir -p artifacts
+          tar_path="$safe_name.tar.gz"
+          tar -C deploy -czf "artifacts/$tar_path" .
+          echo "has_dist=true" >> $GITHUB_OUTPUT
+          echo "tar_path=$tar_path" >> $GITHUB_OUTPUT
+          echo "safe_name=$safe_name" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact (${{ matrix.service }})
+        if: steps.package.outputs.has_dist == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.safe_name }}
+          path: artifacts/${{ steps.package.outputs.tar_path }}
