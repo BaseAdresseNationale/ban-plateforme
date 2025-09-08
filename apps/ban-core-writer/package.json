@@ -1,0 +1,19 @@
+{
+  "name": "@ban/ban-core-writer",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": ["dist"],
+  "scripts": {
+    "dev": "tsx watch src/index.ts || true",
+    "build": "tsc --project tsconfig.json"
+  },
+  "dependencies": {
+    "@ban/config": "workspace:*",
+    "mongodb": "^6.18.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@ban/shared-lib",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup src --format esm --dts"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@ban/merger",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": ["dist"],
+  "scripts": {
+    "dev": "tsx watch src/index.ts || true",
+    "build": "tsc --project tsconfig.json"
+  },
+  "dependencies": {
+    "@ban/config": "workspace:*"
+  }
+}

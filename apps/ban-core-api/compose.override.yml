@@ -1,0 +1,4 @@
+services:
+  ban-core-api:   # doit correspondre à la clé générée (ici le dossier .services/apps/ban-core-api => 'ban-core-api')
+    ports:
+      - "${BAN_CORE_API_PORT:-3001}:3000"
