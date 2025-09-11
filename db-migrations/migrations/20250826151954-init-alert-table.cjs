@@ -65,6 +65,11 @@ module.exports = {
           defaultValue: Sequelize.UUIDV4,
           allowNull: false
         },
+        subscriptionName: {
+          type: Sequelize.STRING(255),
+          allowNull: true,
+          comment: 'Nom optionnel donné par l\'utilisateur'
+        },
         webhookUrl: {
           type: Sequelize.STRING(500),
           allowNull: false,
@@ -88,6 +93,16 @@ module.exports = {
           allowNull: false,
           defaultValue: true
         },
+        createdBy: {
+          type: Sequelize.STRING,
+          allowNull: true,
+          comment: 'sub utilisateur (optionnel)'
+        },
+        createdByEmail: {
+          type: Sequelize.STRING,
+          allowNull: true,
+          comment: 'email utilisateur (optionnel)'
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
@@ -100,7 +115,6 @@ module.exports = {
 
       // Grant permissions to ban user
       await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
-
     } catch (error) {
       console.error('Erreur lors de la création des tables simplifiées:', error)
       throw error
