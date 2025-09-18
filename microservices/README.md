@@ -31,6 +31,21 @@ $ curl http://localhost:6000/consume
 // microservice f + nestjs using tcp math-service :8001, string-service :9001
 $ curl http://localhost:9000/sum
 $ curl http://localhost:9000/capitalize
+
+// microservices publisher-app et subscriber-app
+curl -X POST http://localhost:14000/messages -d '{"message": "Hello RabbitMQ"}'  -H "Content-Type: application/json"
+
+// you should see on docker logs
+
+// publisher-app 
+send messages controller
+send messages service
+
+// subscriber-app
+Received message controller: Hello RabbitMQ
+Received message service: Hello RabbitMQ
+Received message controller: Hello RabbitMQ
+Received message service: Hello RabbitMQ
 ```
 
 

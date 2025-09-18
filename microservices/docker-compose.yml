@@ -1,106 +1,146 @@
 services:
-  microservice-a:
-    build:
-      context: ./microservice-a
-      dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
-    depends_on:
-      - microservice-b
-    networks:
-      - micronetwork
-  microservice-b:
-    build:
-      context: ./microservice-b
-      dockerfile: Dockerfile
-    ports:
-      - '4000:4000'
-    networks:
-      - micronetwork
-  microservice-c:
-    build:
-      context: ./microservice-c-event-based
-      dockerfile: Dockerfile
-    ports:
-      - '8083:8083'
-    networks:
-      - micronetwork
+  # microservice-a:
+  #   build:
+  #     context: ./microservice-a
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - microservice-b
+  #   networks:
+  #     - micronetwork
+  # microservice-b:
+  #   build:
+  #     context: ./microservice-b
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "4000:4000"
+  #   networks:
+  #     - micronetwork
+  # microservice-c:
+  #   build:
+  #     context: ./microservice-c-event-based
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8083:8083"
+  #   networks:
+  #     - micronetwork
   rabbitmq:
-    image: 'rabbitmq:4.0-management'
+    image: "rabbitmq:4.0-management"
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - ~/.docker-conf/rabbitmq/data:/var/lib/rabbitmq/
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
       - micronetwork
-  microservice-d:
+  # microservice-d:
+  #   build:
+  #     context: ./microservice-d
+  #     #target: dev
+  #     dockerfile: Dockerfile
+  #   # volumes:
+  #   #   - .:/usr/src/app
+  #   ports:
+  #     - "5000:5000"
+  #   networks:
+  #     - micronetwork
+  #   depends_on:
+  #     - rabbitmq
+  # microservice-e:
+  #   build:
+  #     context: ./microservice-e
+  #     # target: dev
+  #     dockerfile: Dockerfile
+  #   # volumes:
+  #   #   - .:/usr/src/app
+  #   ports:
+  #     - "6000:6000"
+  #   networks:
+  #     - micronetwork
+  #   depends_on:
+  #     - rabbitmq
+  # client-app:
+  #   build:
+  #     context: ./microservice-f-nestjs/client-app
+  #     # target: dev
+  #     dockerfile: Dockerfile
+  #   # volumes:
+  #   #   - .:/usr/src/app
+  #   ports:
+  #     - "9000:9000"
+  #   networks:
+  #     - micronetwork
+  #   depends_on:
+  #     - math-service
+  #     - string-service
+  # math-service:
+  #   build:
+  #     context: ./microservice-f-nestjs/math-service
+  #     # target: dev
+  #     dockerfile: Dockerfile
+  #   # volumes:
+  #   #   - .:/usr/src/app
+  #   ports:
+  #     - "8001:8001"
+  #   expose:
+  #     - "8001/tcp"
+  #   networks:
+  #     - micronetwork
+  # string-service:
+  #   build:
+  #     context: ./microservice-f-nestjs/string-service
+  #     # target: dev
+  #     dockerfile: Dockerfile
+  #   # volumes:
+  #   #   - .:/usr/src/app
+  #   ports:
+  #     - "9001:9001"
+  #   expose:
+  #     - "9001/tcp"
+  #   networks:
+  #     - micronetwork
+  # user-microservice:
+  #   build:
+  #     context: ./user-microservice
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "12000:12000"
+  #   networks:
+  #     - micronetwork
+  #   depends_on:
+  #     - rabbitmq
+  # email-microservice:
+  #   build:
+  #     context: ./email-microservice
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "13000:13000"
+  #   networks:
+  #     - micronetwork
+  #   depends_on:
+  #     - rabbitmq
+  publisher-app:
     build:
-      context: ./microservice-d
-      #target: dev
+      context: ./publisher-app
       dockerfile: Dockerfile
-    # volumes:
-    #   - .:/usr/src/app
     ports:
-      - '5000:5000'
+      - "14000:14000"
     networks:
       - micronetwork
     depends_on:
       - rabbitmq
-  microservice-e:
+  subscriber-app:
     build:
-      context: ./microservice-e
-      # target: dev
+      context: ./subscriber-app
       dockerfile: Dockerfile
-    # volumes:
-    #   - .:/usr/src/app
     ports:
-      - '6000:6000'
+      - "15000:15000"
     networks:
       - micronetwork
     depends_on:
       - rabbitmq
-  client-app:
-    build:
-      context: ./microservice-f-nestjs/client-app
-      # target: dev
-      dockerfile: Dockerfile
-    # volumes:
-    #   - .:/usr/src/app
-    ports:
-      - '9000:9000'
-    networks:
-      - micronetwork
-    depends_on:
-      - math-service
-      - string-service
-  math-service:
-    build:
-      context: ./microservice-f-nestjs/math-service
-      # target: dev
-      dockerfile: Dockerfile
-    # volumes:
-    #   - .:/usr/src/app
-    ports:
-      - '8001:8001'
-    expose:
-      - '8001/tcp'
-    networks:
-      - micronetwork
-  string-service:
-    build:
-      context: ./microservice-f-nestjs/string-service
-      # target: dev
-      dockerfile: Dockerfile
-    # volumes:
-    #   - .:/usr/src/app
-    ports:
-      - '9001:9001'
-    expose:
-      - '9001/tcp'
-    networks:
-      - micronetwork
 networks:
   micronetwork:
     driver: bridge
