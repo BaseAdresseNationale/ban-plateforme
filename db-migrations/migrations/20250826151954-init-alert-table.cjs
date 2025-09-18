@@ -8,7 +8,6 @@ const {POSTGRES_BAN_USER} = process.env
 module.exports = {
   async up(queryInterface, Sequelize) {
     try {
-      // Table unique : revisions avec ID technique
       await queryInterface.createTable('revisions', {
         id: {
           type: Sequelize.UUID,
@@ -57,7 +56,6 @@ module.exports = {
         ifNotExists: true,
       })
 
-      // Table des abonnés simplifiée
       await queryInterface.createTable('subscribers', {
         id: {
           type: Sequelize.UUID,
@@ -114,7 +112,9 @@ module.exports = {
       })
 
       // Grant permissions to ban user
-      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT USAGE ON SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ban.revisions TO "${POSTGRES_BAN_USER}";`)
+      await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON ban.subscribers TO "${POSTGRES_BAN_USER}";`)
     } catch (error) {
       console.error('Erreur lors de la création des tables simplifiées:', error)
       throw error
