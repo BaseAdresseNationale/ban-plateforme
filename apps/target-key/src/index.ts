@@ -62,17 +62,21 @@ async function main() {
       const enriched = {
         ...content,
         rows: content.rows.map((row: any) => {
-          const suffix = row.suffix ? `_${row.suffix}` : '';
-          const voie_afnor = normalizeAFNOR(row.voie || '');
+          const suffix = row.suffix ? `.${row.suffix}` : '';
+          const voie_afnor = normalizeAFNOR(row.voie_nom || '');
+          const district = row.commune_insee || 'CC';
+          const toponym = voie_afnor || 'VA';
+          const address = (!row.numero) && row.lieudit_complement_nom
+            ? row.lieudit_complement_nom
+            : `${row.numero || ''}${suffix}`;
           return {
             ...row,
             ban_enrich_deprecated_cle_interop: `${row.commune_insee}_${row.id_voie}_${row.numero}${suffix}`,
-            // TODO : Check type of line
-            ban_enrich_ban_target_key: `${row.commune_insee || 'CC'}::${voie_afnor ||'VA'}::${row.numero || ''}${suffix || ''}`
+            ban_enrich_ban_target_key: `${district}~${toponym}~${address}`
           };
         })
       };
-
+      console.log('[target-key] data : ', enriched.rows[0]);
       await broker.publish('withTargetKey', JSON.stringify(enriched), {
         options: { contentType: 'application/json' }
       });
