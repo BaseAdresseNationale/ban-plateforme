@@ -1,5 +1,6 @@
 import rascal from 'rascal';
 
+import { normalize } from '@nivalis/normadresse';
 import { env } from '@ban/config';
 
 const rabbitConfig = {
@@ -44,13 +45,7 @@ const config = {
   }
 };
 
-function normalizeAFNOR(input: string): string {
-  return input
-    .toLowerCase()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '') // enlever accents
-    .replace(/[^a-z0-9 ]/g, '') // caractères spéciaux
-    .replace(/\s+/g, '_'); // espaces -> "_"
-}
+const normalizeAFNOR = (input: string): string => normalize(input).replace(/\s+/g, '-');
 
 async function main() {
   try {
@@ -62,13 +57,13 @@ async function main() {
       const enriched = {
         ...content,
         rows: content.rows.map((row: any) => {
-          const suffix = row.suffix ? `.${row.suffix}` : '';
+          const suffix = row.suffixe ? `.${normalizeAFNOR(row.suffixe)}` : '';
           const voie_afnor = normalizeAFNOR(row.voie_nom || '');
-          const district = row.commune_insee || 'CC';
-          const toponym = voie_afnor || 'VA';
+          const district = row.commune_insee || 'DISTRICT';
+          const toponym = voie_afnor || 'TOPONYM';
           const address = (!row.numero) && row.lieudit_complement_nom
-            ? row.lieudit_complement_nom
-            : `${row.numero || ''}${suffix}`;
+            ? normalizeAFNOR(row.lieudit_complement_nom)
+            : `${row.numero || 'ADDRESS'}${suffix}`;
           return {
             ...row,
             ban_enrich_deprecated_cle_interop: `${row.commune_insee}_${row.id_voie}_${row.numero}${suffix}`,
@@ -76,7 +71,7 @@ async function main() {
           };
         })
       };
-      console.log('[target-key] data : ', enriched.rows[0]);
+
       await broker.publish('withTargetKey', JSON.stringify(enriched), {
         options: { contentType: 'application/json' }
       });
