@@ -57,6 +57,9 @@ async function main() {
       const enriched = {
         ...content,
         rows: content.rows.map((row: any) => {
+          // TODO : récupérer les anciennes clés adresses et toponymes si elles existent
+          const oldTargetKeyAddress: string[] = []
+          const oldTargetKeyToponym: string[] = []
           const suffix = row.suffixe ? `.${normalizeAFNOR(row.suffixe)}` : '';
           const voie_afnor = normalizeAFNOR(row.voie_nom || '');
           const district = row.commune_insee || 'DISTRICT';
@@ -67,7 +70,8 @@ async function main() {
           return {
             ...row,
             ban_enrich_deprecated_cle_interop: `${row.commune_insee}_${row.id_voie}_${row.numero}${suffix}`,
-            ban_enrich_ban_target_key: `${district}~${toponym}~${address}`
+            ban_enrich_ban_target_key_address: [`${district}~${toponym}~${address}`, ...oldTargetKeyAddress],
+            ban_enrich_ban_target_key_toponym: [`${district}~${toponym}`, ...oldTargetKeyToponym]
           };
         })
       };

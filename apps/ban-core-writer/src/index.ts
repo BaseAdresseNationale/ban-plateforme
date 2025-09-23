@@ -129,6 +129,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
             DEPRECATED_groupId: row.slug || '',
             DEPRECATED_cleInterop: row.cle_interop || '',
             DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
+            targetKey: row.ban_enrich_ban_target_key_toponym || ['']
           },
           dgfip: {
             cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
@@ -170,6 +171,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
             hashIdFix: row.ban_enrich_hash_id_fix || '',
             DEPRECATED_cleInterop: row.cle_interop || '',
             DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
+            targetKey: row.ban_enrich_ban_target_key_address || ['']
           },
           dgfip: {
             cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
