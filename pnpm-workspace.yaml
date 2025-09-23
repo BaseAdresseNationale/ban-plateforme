@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Active l'injection des dépendances de workspace dans le deploy (nouveau comportement PNPM 10)
+inject-workspace-packages: true
+
+ignoredBuiltDependencies:
+  - core-js-pure
+
+onlyBuiltDependencies:
+  - esbuild

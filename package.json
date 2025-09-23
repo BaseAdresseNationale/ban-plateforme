@@ -1,0 +1,43 @@
+{
+  "name": "ban-platform",
+  "private": true,
+  "version": "2.0.0-alpha.1",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": "please-use-pnpm",
+    "pnpm": ">= 10.12.0",
+    "yarn": "please-use-pnpm"
+  },
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "ban:start": "scripts/dev-run-artifacts.sh",
+    "ban:stop": "scripts/stop-ban.sh",
+    "dev": "pnpm run -r --filter '!@ban/old-district' --parallel dev || true",
+    "dev:infra:up": "docker compose -f docker-compose.dev.ban.yml up -d",
+    "dev:infra:down": "docker compose -f docker-compose.dev.ban.yml down",
+    "dev:start": "pnpm run dev:infra:up && pnpm run dev",
+    "dev:stop": "pnpm run dev:infra:down",
+    "build": "pnpm -r run build",
+    "lint": "eslint . --ext .ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/rascal": "^10.2.1",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript-eslint/parser": "^8.35.0",
+    "eslint": "^9.29.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-stylistic": "0.0.0-0",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "rascal": "^20.1.1",
+    "zod": "^3.25.76"
+  }
+}
