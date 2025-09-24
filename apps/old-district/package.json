@@ -11,6 +11,7 @@
     "dev": "tsx watch src/index.ts || true"
   },
   "dependencies": {
+    "@ban-team/gazetteer": "^3.2.0",
     "@ban/config": "workspace:*"
   }
 }
