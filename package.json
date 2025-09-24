@@ -13,7 +13,7 @@
   "scripts": {
     "ban:start": "scripts/dev-run-artifacts.sh",
     "ban:stop": "scripts/stop-ban.sh",
-    "dev": "pnpm run -r --filter '!@ban/old-district' --parallel dev || true",
+    "dev": "pnpm run -r --parallel dev || true",
     "dev:infra:up": "docker compose -f docker-compose.dev.ban.yml up -d",
     "dev:infra:down": "docker compose -f docker-compose.dev.ban.yml down",
     "dev:start": "pnpm run dev:infra:up && pnpm run dev",
