@@ -85,3 +85,6 @@ deploy/
 .artifacts/
 .services/
 .docker-compose.ban.generated.yml
+
+# Dépendance à Gazetteer à supprimer quand on aura une vraie base de données
+*.sqlite
