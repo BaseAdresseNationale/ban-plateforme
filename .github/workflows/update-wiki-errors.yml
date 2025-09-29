@@ -1,0 +1,107 @@
+# .github/workflows/update-wiki-errors.yml
+name: Update Wiki Errors Board
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Toutes les heures
+  workflow_dispatch:  # Lancement manuel
+  push:  # Sur tous les push de toutes les branches
+  pull_request:  # Sur toutes les PR
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: wiki
+      
+      - name: Fetch errors and generate board
+        run: |
+          # Récupérer les données
+          curl -s "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary" > errors.json
+          
+          # Date de mise à jour
+          TIMESTAMP=$(date -u +"%d/%m/%Y à %H:%M:%S UTC")
+          
+          # Compter les erreurs
+          TOTAL=$(jq '.response.communes | length' errors.json)
+          
+          # Créer le tableau
+          cat > wiki/Errors-Board.md << 'EOF'
+          # 🚨 Errors Board
+          
+          EOF
+          
+          echo "**Dernière mise à jour du markdown :** ${TIMESTAMP}" >> wiki/Errors-Board.md
+          echo "" >> wiki/Errors-Board.md
+          echo "**Total :** ${TOTAL} erreurs" >> wiki/Errors-Board.md
+          echo "" >> wiki/Errors-Board.md
+          echo "| Commune | COG | District ID | Date | Message d'erreur |" >> wiki/Errors-Board.md
+          echo "|---------|-----|-------------|------|------------------|" >> wiki/Errors-Board.md
+          
+          # Fonction de parsing en jq (similaire au code React)
+          jq -r '.response.communes[] | 
+          . as $item |
+          ($item.message | ascii_downcase) as $lower |
+          
+          # Parser le message
+          (if ($lower | contains("job") and contains("échoué")) then
+            if ($item.message | contains("updateDate is a required field")) then
+              "🔴 Date mise à jour manquante"
+            else
+              "🔴 Erreur interne - contacter le support"
+            end
+          elif ($lower | contains("droits manquants")) then
+            "🔴 Droits manquants"
+          elif ($lower | contains("opération non autorisée")) then
+            "🔴 Opération non autorisée - Identifiants déjà utilisés"
+          elif ($lower | contains("seuil de suppression") or contains("exceeded")) then
+            "🟠 Seuil de suppression dépassé"
+          elif ($lower | contains("addressid manquant")) then
+            "🟡 addressID manquant - Consulter rapport de validation"
+          elif ($lower | contains("districtid manquant")) then
+            "🟡 districtID manquant - Consulter rapport de validation"
+          elif ($lower | contains("maintopoid manquant")) then
+            "🟡 mainTopoID manquant - Consulter rapport de validation"
+          elif ($lower | contains("ids manquants")) then
+            "🟡 IDs manquants - Consulter rapport de validation"
+          elif ($lower | contains("enregistrement de la bal sans les identifiants")) then
+            "🟡 Enregistrement sans identifiants - Consulter rapport"
+          elif ([$lower | contains("api ban"), contains("api dump"), contains("timeout")] | any) then
+            "🔴 Erreur interne - contactez le support"
+          else
+            "⚠️ " + ($item.message | split("\n")[0] | .[0:80])
+          end) as $parsed |
+          
+          "| \($item.districtName) | `\($item.cog)` | `\($item.districtId[0:8])...` | \($item.createdAt[0:10]) | \($parsed) |"
+          ' errors.json >> wiki/Errors-Board.md
+          
+          echo "" >> wiki/Errors-Board.md
+          echo "---" >> wiki/Errors-Board.md
+          echo "" >> wiki/Errors-Board.md
+          echo "## Détails des erreurs" >> wiki/Errors-Board.md
+          echo "" >> wiki/Errors-Board.md
+          
+          # Ajouter les détails
+          jq -r '.response.communes[] | 
+          "<details>\n<summary><b>\(.districtName) (\(.cog))</b></summary>\n\n" +
+          "**District ID :** `\(.districtId)`\n\n" +
+          "**Date :** \(.createdAt)\n\n" +
+          "```\n\(.message)\n```\n\n</details>\n"' \
+          errors.json >> wiki/Errors-Board.md
+      
+      - name: Commit and push
+        working-directory: wiki
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Errors-Board.md
+          git diff --quiet && git diff --staged --quiet || (
+            git commit -m "Mise à jour automatique du board"
+            git push
+          )
