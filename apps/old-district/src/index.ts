@@ -82,8 +82,8 @@ async function main() {
         ...content,
         rows: content.rows.map((row: any, index: number) => ({
           ...row,
-          BAN_enrich_old_district_name: oldDistricts[index]?.old_district_name,
-          BAN_enrich_old_district_code: oldDistricts[index]?.old_district_code,
+          ban_enrich_old_district_name: oldDistricts[index]?.old_district_name,
+          ban_enrich_old_district_code: oldDistricts[index]?.old_district_code,
         }))
       };
 
