@@ -23,7 +23,7 @@ jobs:
       - name: Fetch errors and generate board
         run: |
           # Récupérer les données
-          curl -s "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary" > errors.json
+          curl -s "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary?limit=50" > errors.json
           
           # Date de mise à jour
           TIMESTAMP=$(date -u +"%d/%m/%Y à %H:%M:%S UTC")
@@ -37,12 +37,14 @@ jobs:
           
           EOF
           
+          echo "**Dernière mise à jour :** ${TIMESTAMP}" >> wiki/Errors-Board.md
+          echo "" >> wiki/Errors-Board.md
           echo "**Dernière mise à jour du markdown :** ${TIMESTAMP}" >> wiki/Errors-Board.md
           echo "" >> wiki/Errors-Board.md
           echo "**Total :** ${TOTAL} erreurs" >> wiki/Errors-Board.md
           echo "" >> wiki/Errors-Board.md
-          echo "| Commune | COG | District ID | Date | Message d'erreur |" >> wiki/Errors-Board.md
-          echo "|---------|-----|-------------|------|------------------|" >> wiki/Errors-Board.md
+          echo "| Commune | COG | Date | Message d'erreur |" >> wiki/Errors-Board.md
+          echo "|---------|-----|------|------------------|" >> wiki/Errors-Board.md
           
           # Fonction de parsing en jq (similaire au code React)
           jq -r '.response.communes[] | 
@@ -78,7 +80,7 @@ jobs:
             "⚠️ " + ($item.message | split("\n")[0] | .[0:80])
           end) as $parsed |
           
-          "| \($item.districtName) | `\($item.cog)` | `\($item.districtId[0:8])...` | \($item.createdAt[0:10]) | \($parsed) |"
+          "| \($item.districtName) | `\($item.cog)` | \($item.createdAt[0:10]) | \($parsed) |"
           ' errors.json >> wiki/Errors-Board.md
           
           echo "" >> wiki/Errors-Board.md
@@ -89,10 +91,10 @@ jobs:
           
           # Ajouter les détails
           jq -r '.response.communes[] | 
-          "<details>\n<summary><b>\(.districtName) (\(.cog))</b></summary>\n\n" +
+          "### \(.districtName) (\(.cog))\n\n" +
           "**District ID :** `\(.districtId)`\n\n" +
           "**Date :** \(.createdAt)\n\n" +
-          "```\n\(.message)\n```\n\n</details>\n"' \
+          "**Message complet :**\n\n```\n\(.message)\n```\n\n---\n\n"' \
           errors.json >> wiki/Errors-Board.md
       
       - name: Commit and push
