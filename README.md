@@ -45,17 +45,28 @@ pnpm install
 
 ---
 
-## 💻 Développement
+## 💻 Développement classique
 
-### Démarrer BAN-Platform avec l'environnement de développement (avec hot-reload)
 
-Pour démarrer l'ensemble de la plateforme (tous les services) dans /ban-plateforme :
+### pour lancer tous les services
+Installer toutes les dépendances
+```bash
+pnpm install
+```
 
+Pour lancer tout les services dans /ban-plateforme :
 ```bash
 pnpm dev:start
 ```
 
-#### Pour ne démarrer qu'un unique service de BAN-Platform (avec hot-reload)
+la connexion à rabbitMQ nécessite d'attendre que rabbitMQ soit lancé prêt.
+
+faire un Ctl+C pour arrêter le process pnpm dev:start
+et relancer pnpm dev:start
+
+la connexion a rabbitMQ est désormais réalisé dans les messages de log de la commande
+
+### Pour développer un service en direct avec hot-reload :
 
 ```bash
 pnpm --filter @ban/bal-parser dev
@@ -254,3 +265,30 @@ Puis ajouter un `tsconfig.json` :
   "include": ["src"]
 }
 ```
+
+---
+
+## ✅ Prêt pour démarrer !
+
+- Dev classique : `pnpm --filter @ban/mon-service dev`
+- Environnement complet (CI artifacts) : `pnpm ban:start`
+
+## Initialiser les données
+
+Copier le contenu d'un des fichiers csv du dossier /ban-plateforme/apps/bal-parser/input-samples/ 
+
+Copier par example bal-96001-cocorico.1.4.fra.geo.csv
+
+Après que les containers soient lancés
+
+Lancer le curl suivant :
+```
+curl --location 'http://localhost:3000/bal/text' \
+--header 'Content-Type: text/plain' \
+--data '
+ici coller le contenu du csv
+'
+```
+ou utiliser un client http comme postman pour lancer la requête
+
+dans mongo express http://localhost:8081/, une nouvelle base 'ban' est ajoutée avec les collections addresses, districts, mainToponyms
