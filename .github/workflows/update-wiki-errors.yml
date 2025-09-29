@@ -63,40 +63,26 @@ jobs:
           elif ($lower | contains("opération non autorisée")) then
             "🔴 Opération non autorisée - Identifiants déjà utilisés"
           elif ($lower | contains("seuil de suppression") or contains("exceeded")) then
-            "🟠 Seuil de suppression dépassé"
+            "🔴 Seuil de suppression dépassé"
           elif ($lower | contains("addressid manquant")) then
-            "🟡 addressID manquant - Consulter rapport de validation"
+            "🔴 addressID manquant - Consulter rapport de validation"
           elif ($lower | contains("districtid manquant")) then
-            "🟡 districtID manquant - Consulter rapport de validation"
+            "🔴 districtID manquant - Consulter rapport de validation"
           elif ($lower | contains("maintopoid manquant")) then
-            "🟡 mainTopoID manquant - Consulter rapport de validation"
+            "🔴 mainTopoID manquant - Consulter rapport de validation"
           elif ($lower | contains("ids manquants")) then
-            "🟡 IDs manquants - Consulter rapport de validation"
+            "🔴 IDs manquants - Consulter rapport de validation"
           elif ($lower | contains("enregistrement de la bal sans les identifiants")) then
-            "🟡 Enregistrement sans identifiants - Consulter rapport"
+            "🔴 Enregistrement sans identifiants - Consulter rapport"
           elif ([$lower | contains("api ban"), contains("api dump"), contains("timeout")] | any) then
             "🔴 Erreur interne - contactez le support"
           else
-            "⚠️ " + ($item.message | split("\n")[0] | .[0:80])
+            "🔴 " + ($item.message | split("\n")[0] | .[0:80])
           end) as $parsed |
           
           "| \($item.districtName) | `\($item.cog)` | \($item.createdAt[0:10]) | \($parsed) |"
           ' errors.json >> wiki/Errors-Board.md
           
-          echo "" >> wiki/Errors-Board.md
-          echo "---" >> wiki/Errors-Board.md
-          echo "" >> wiki/Errors-Board.md
-          echo "## Détails des erreurs" >> wiki/Errors-Board.md
-          echo "" >> wiki/Errors-Board.md
-          
-          # Ajouter les détails
-          jq -r '.response.communes[] | 
-          "### \(.districtName) (\(.cog))\n\n" +
-          "**District ID :** `\(.districtId)`\n\n" +
-          "**Date :** \(.createdAt)\n\n" +
-          "**Message complet :**\n\n```\n\(.message)\n```\n\n---\n\n"' \
-          errors.json >> wiki/Errors-Board.md
-      
       - name: Commit and push
         working-directory: wiki
         run: |
