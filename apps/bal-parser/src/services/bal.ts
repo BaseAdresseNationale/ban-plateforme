@@ -1,7 +1,7 @@
 import { getDistrictFromCOG } from './cog.js';
 import { BanDistrict } from '@ban/ban-types.js';
 import { getRevisionData } from "../helpers/dump-api/index.js";
-import validator from './validator.js';
+import validator from '../helpers/validator.js';
 import csvBalToJsonBal from '../helpers/csv-bal-to-json-bal.js';
 import getBalVersion from '../helpers/get-bal-version.js';
 const getDistrictIDsFromDB = async (cog: string) => {
