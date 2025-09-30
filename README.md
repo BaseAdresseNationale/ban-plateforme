@@ -171,7 +171,10 @@ pnpm build
 *(La CI se charge déjà de builder à chaque push sur `main`.)*
 
 ### 🧪 Tests
-À venir.
+dans le dossier /ban-plateforme, lancer la commande
+```
+npx vitest apps/**/*.test.*
+```
 
 ---
 
