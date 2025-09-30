@@ -19,7 +19,8 @@
     "dev:start": "pnpm run dev:infra:up && pnpm run dev",
     "dev:stop": "pnpm run dev:infra:down",
     "build": "pnpm -r run build",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "test": "vitest"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
