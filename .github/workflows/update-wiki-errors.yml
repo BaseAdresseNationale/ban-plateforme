@@ -1,16 +1,18 @@
-# .github/workflows/update-wiki-errors.yml
 name: Update Wiki Errors Board
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Toutes les heures
+    - cron: '0 * * * *'  # Toutes les heures sur master uniquement
   workflow_dispatch:  # Lancement manuel
-  push:  # Sur tous les push de toutes les branches
-  pull_request:  # Sur toutes les PR
+  pull_request:  # Se lance sur les PR pour tester
+    branches:
+      - master
 
 jobs:
   update-wiki:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout wiki
@@ -82,8 +84,10 @@ jobs:
           
           "| \($item.districtName) | `\($item.cog)` | \($item.createdAt[0:10]) | \($parsed) |"
           ' errors.json >> wiki/Errors-Board.md
-          
+      
+      # Ne commit que sur master (pas sur les PR)
       - name: Commit and push
+        if: github.ref == 'refs/heads/master'
         working-directory: wiki
         run: |
           git config user.name "github-actions[bot]"
@@ -93,3 +97,11 @@ jobs:
             git commit -m "Mise à jour automatique du board"
             git push
           )
+      
+      # Affiche juste un aperçu sur les PR
+      - name: Preview on PR
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "✅ Le board a été généré avec succès !"
+          echo "Aperçu des 5 premières lignes :"
+          head -n 15 wiki/Errors-Board.md
