@@ -168,6 +168,8 @@ importers:
 
   packages/shared-lib: {}
 
+  packages/types: {}
+
 packages:
 
   '@babel/runtime-corejs3@7.28.2':
