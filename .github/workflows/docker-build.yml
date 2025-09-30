@@ -1,0 +1,164 @@
+name: Build & Push Docker Images
+on:
+  push:
+    branches:
+      - main
+      - feat/add-docker-build-workflow
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/ban
+  NODE_VERSION: 24
+
+jobs:
+  discover-services:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate service list
+        id: set-matrix
+        run: |
+          services=$(find apps -mindepth 1 -maxdepth 1 -type d -exec test -f "{}/package.json" ';' -print | jq -R . | jq -s -c '{service: .}')
+          echo "=== Services to dockerize ==="
+          echo "$services" | jq -r '.service[]'
+          echo "=============================="
+          echo "matrix=$services" >> $GITHUB_OUTPUT
+
+  build-and-push:
+    needs: discover-services
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix: ${{ fromJSON(needs.discover-services.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm --filter "./packages/**" run build
+
+      - name: Build service (${{ matrix.service }})
+        run: pnpm --filter ./${{ matrix.service }} build
+
+      - name: Prepare deploy folder with prod dependencies
+        run: |
+          pnpm deploy --filter ./${{ matrix.service }} --prod --legacy deploy
+          
+          svc="${{ matrix.service }}"
+          if [ -f "$svc/compose.override.yml" ]; then
+            cp "$svc/compose.override.yml" deploy/
+          fi
+          if [ -f "$svc/.env.example" ]; then
+            cp "$svc/.env.example" deploy/
+          fi
+
+      - name: Generate Dockerfile if not exists
+        run: |
+          svc="${{ matrix.service }}"
+          
+          if [ ! -f "$svc/Dockerfile" ]; then
+            echo "Generating Dockerfile for $svc..."
+            
+            cat > deploy/Dockerfile <<'EOF'
+          FROM node:${{ env.NODE_VERSION }}-alpine
+
+          WORKDIR /app
+
+          COPY . .
+
+          RUN mkdir -p data dist uploads && chown -R node:node /app
+
+          USER node
+
+          EXPOSE 3000
+
+          CMD ["node", "dist/index.js"]
+          EOF
+          else
+            echo "Using existing Dockerfile from $svc/Dockerfile"
+            cp "$svc/Dockerfile" deploy/Dockerfile
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract service name and generate tags
+        id: meta
+        run: |
+          service_name=$(basename ${{ matrix.service }})
+          echo "service_name=$service_name" >> $GITHUB_OUTPUT
+          
+          base_image="${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/${service_name}"
+          
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            version=${GITHUB_REF#refs/tags/}
+            tags="${base_image}:${version}"
+            tags="${tags},${base_image}:latest"
+            echo "Tag detected: $version"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            tags="${base_image}:latest"
+            tags="${tags},${base_image}:main-${GITHUB_SHA::7}"
+            echo "Main branch build"
+          else
+            branch_name=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+            tags="${base_image}:${branch_name}-${GITHUB_SHA::7}"
+            tags="${tags},${base_image}:${branch_name}-latest"
+            echo "Feature branch build: ${branch_name}"
+          fi
+          
+          echo "tags=$tags" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./deploy
+          file: ./deploy/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            org.opencontainers.image.title=${{ steps.meta.outputs.service_name }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+      - name: Output image info
+        run: |
+          echo "Image pushed successfully"
+          echo ""
+          echo "Service: ${{ steps.meta.outputs.service_name }}"
+          echo "Tags:"
+          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | sed 's/^/  - /'
+          echo ""
+          echo "Pull command:"
+          first_tag=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1)
+          echo "  docker pull $first_tag"
