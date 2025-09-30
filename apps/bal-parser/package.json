@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ban/config": "workspace:*",
+    "@ban/types": "workspace:*",
     "papaparse": "^5.4.1",
     "uuid": "^9.0.0"
   },
