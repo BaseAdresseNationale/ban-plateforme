@@ -10,7 +10,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository_owner }}/ban
   NODE_VERSION: 24
 
 jobs:
@@ -112,10 +111,12 @@ jobs:
       - name: Extract service name and generate tags
         id: meta
         run: |
-          service_name=$(basename ${{ matrix.service }})
+          service_path="${{ matrix.service }}"
+          service_name=$(basename "$service_path")
           echo "service_name=$service_name" >> $GITHUB_OUTPUT
           
-          base_image="${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/${service_name}"
+          repo_lower=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          base_image="${{ env.REGISTRY }}/${repo_lower}/${service_path}"
           
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             version=${GITHUB_REF#refs/tags/}
