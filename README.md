@@ -180,7 +180,19 @@ pnpm build
 
 ### 🧪 Tests
 
-À venir.
+dans le dossier /ban-plateforme, lancer la commande pour lancer les tests de toutes les apps
+
+```bash
+pnpm test
+```
+
+ou pour lancer les tests d'une seule app
+
+```bash
+pnpm test:bal-parser
+```
+
+Il peut y avoir besoin de supprimer les dossiers node_modules/ racine et des dossiers apps/
 
 ---
 
