@@ -3,15 +3,18 @@ import rascal from 'rascal';
 import { env } from '@ban/config';
 
 import parseBalForBan from './parseBalForBan.js';
+import { getBalDataAndCheckIntegrity } from './services/bal.js';
+import { RabbitConfig } from './types/rabbitConfig.js';
+import { AMQPConfig } from './types/AMQPConfig.js';
 
-const rabbitConfig = {
+const rabbitConfig: RabbitConfig = {
   hostname: env.RABBIT.host,
   port: Number(env.RABBIT.port),
   user: env.RABBIT.user,
   password: env.RABBIT.password,
 };
 
-const config = {
+const config: AMQPConfig = {
   vhosts: {
     '/': {
       connection: {
@@ -40,7 +43,7 @@ async function main() {
   try {
     const broker = await rascal.BrokerAsPromised.create(config);
     const subscription = await broker.subscribe('balUploaded');
-    subscription.on('message', async (message, content, ackOrNack) => {
+    subscription.on('message', async (message:any, content:any, ackOrNack) => {
       try {
         const parsedRows = await parseBalForBan(content.payload);
         console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
