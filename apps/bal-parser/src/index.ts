@@ -47,7 +47,10 @@ async function main() {
       try {
         const parsedRows = await parseBalForBan(content.payload);
         console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
-        await broker.publish('balParsed', { id: content.id, rows: parsedRows });
+
+        const useBanId = await getBalDataAndCheckIntegrity(parsedRows);
+
+        await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
         ackOrNack();
       } catch (err) {
         console.error('[bal-parser] Erreur:', err);
