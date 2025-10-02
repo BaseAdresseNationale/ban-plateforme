@@ -1,64 +1,100 @@
+# docker-compose.dev.ban.yml
+# Stack DEV BAN — services infra + outils
+#
+# Points clés:
+# - Healthchecks sur RabbitMQ, PostgreSQL et MongoDB
+# - depends_on avec condition: service_healthy pour mongo-express et pgadmin
+# - container_name stables (ban_rabbitmq, ban_postgres, ban_mongo, …)
+
 services:
   rabbitmq:
-    image: rabbitmq:3-management
-    container_name: ban-rabbitmq
+    image: rabbitmq:3.13-management
+    container_name: ban_rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # UI management
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
     networks:
       - ban-net
 
   mongo:
     image: mongo:6
-    container_name: ban-mongo
+    container_name: ban_mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      # Retourne 1 si OK, on grep 1
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
     networks:
       - ban-net
 
   mongo-express:
-    image: mongo-express
-    container_name: ban-mongo-express
+    image: mongo-express:1
+    container_name: ban_mongo_express
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
+      # Utilise le container_name pour éviter les surprises
+      ME_CONFIG_MONGODB_SERVER: ban_mongo
+      ME_CONFIG_SITE_BASEURL: /
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - ban-net
 
   postgres:
-    image: postgres:15
-    container_name: ban-postgres
+    image: postgres:17
+    container_name: ban_postgres
     ports:
       - "5432:5432"
     environment:
       POSTGRES_DB: ban
       POSTGRES_USER: ban_user
       POSTGRES_PASSWORD: ban_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -h 127.0.0.1 -p 5432"]
+      interval: 2s        # ⏱️ on réduit l’attente
+      timeout: 3s         # si pas de réponse en 3s → échec
+      retries: 30         # ~1 min max
+      start_period: 15s   # laisse Postgres init ses catalogues au début
+    restart: unless-stopped
     networks:
       - ban-net
 
+
   pgadmin:
-    image: dpage/pgadmin4
-    container_name: ban-pgadmin
+    image: dpage/pgadmin4:8
+    container_name: ban_pgadmin
     ports:
       - "8082:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@ban.fr
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - ban-net
 
