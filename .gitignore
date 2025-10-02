@@ -85,3 +85,5 @@ deploy/
 .artifacts/
 .services/
 .docker-compose.ban.generated.yml
+
+docker-compose.*.generated.yml

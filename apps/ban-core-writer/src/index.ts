@@ -49,14 +49,14 @@ const config = {
 };
 
 const { Pool } = pg;
-const mongoUrl = 'mongodb://localhost:27017';
-const mongoDbName = 'ban';
+const mongoUrl = `mongodb://${env.MONGO.host}:${env.MONGO.port}`;
+const mongoDbName = env.MONGO.db;
 const pgConfig = {
-  host: 'localhost',
-  port: 5432,
-  user: 'ban_user',
-  password: 'ban_pass',
-  database: 'ban',
+  host: env.PG.host,
+  port: env.PG.port,
+  user: env.PG.user,
+  password: env.PG.password,
+  database: env.PG.db,
 };
 
 const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
