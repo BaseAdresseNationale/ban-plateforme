@@ -194,3 +194,63 @@ Puis un `tsconfig.json` :
 
 - Dev classique : `pnpm --filter @ban/mon-service dev`
 - Environnement complet (CI artifacts) : `pnpm ban:start`
+
+---
+
+### Mode DEV - Build local (`deploy-dev.sh`)
+
+**Pour développer et tester vos modifications en local**
+
+Ce mode build les images Docker directement depuis votre code source local.
+
+#### Prérequis
+- Docker en cours d'exécution
+- PNPM installé
+- Fichier `.env.docker` ou `.env` configuré
+
+#### Commandes
+
+```bash
+# Voir ce qui sera généré (Dockerfiles + docker-compose)
+./deploy-dev.sh plan
+
+# Build les images localement et démarrer tous les services
+./deploy-dev.sh apply
+
+# Arrêter tous les services
+./deploy-dev.sh down
+```
+---
+
+### Mode PROD - Images depuis GitHub Registry (`deploy-prod.sh`)
+
+**Pour utiliser les images de production depuis GitHub Container Registry**
+
+Ce mode pull les images Docker pré-buildées par la CI/CD GitHub Actions.
+
+#### Prérequis
+- Docker en cours d'exécution
+- Accès au GitHub Container Registry (ghcr.io)
+- Fichier `.env.docker` ou `.env` configuré
+
+#### Commandes
+
+```bash
+# Voir ce qui sera généré avec le tag "latest"
+./deploy-prod.sh latest plan
+
+# Pull les images et démarrer tous les services
+./deploy-prod.sh latest apply
+
+# Utiliser un tag spécifique (branche, version)
+./deploy-prod.sh feat-add-docker-latest apply
+./deploy-prod.sh v1.2.3 apply
+
+# Arrêter tous les services
+./deploy-prod.sh down
+```
+
+**Tags disponibles :**
+- `latest` : Dernière version de la branche `main`
+- `feat-branch-name-latest` : Dernière version d'une feature branch
+- `v1.2.3` : Version taguée spécifique
