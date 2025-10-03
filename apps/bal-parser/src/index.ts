@@ -2,10 +2,15 @@ import rascal from 'rascal';
 
 import { env } from '@ban/config';
 
-import parseBalForBan from './parseBalForBan.js';
-import { getBalDataAndCheckIntegrity } from './services/bal.js';
+
+import { getDistrictIDsFromDB } from './services/bal.js';
 import { RabbitConfig } from './types/rabbitConfig.js';
 import { AMQPConfig } from './types/AMQPConfig.js';
+
+import { getRevisionData } from "./helpers/dump-api/index.js";
+import validator from './helpers/validator.js';
+import getBalVersion from './helpers/get-bal-version.js';
+import csvBalToJsonBal from './helpers/csv-bal-to-json-bal.js';
 
 const rabbitConfig: RabbitConfig = {
   hostname: env.RABBIT.host,
@@ -45,10 +50,25 @@ async function main() {
     const subscription = await broker.subscribe('balUploaded');
     subscription.on('message', async (message:any, content:any, ackOrNack) => {
       try {
-        const parsedRows = await parseBalForBan(content.payload);
+        
+        // Convert csv to json
+        const dataBal = content.payload;
+        const parsedRows = await csvBalToJsonBal(dataBal);
+        
+        // Detect BAL version
+        const version = getBalVersion(parsedRows);
+        
         console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
+        
+        // Get BAL text data from dump-api
+        // const { revision, balTextData: balCsvData } = await getRevisionData(cog);
 
-        const useBanId = await getBalDataAndCheckIntegrity(parsedRows);
+        // @todo: manage multiple cogs
+        const cog = parsedRows[0].commune_insee;
+        const districtIDsFromDB = await getDistrictIDsFromDB(cog);
+
+        let useBanId = false;
+        useBanId = await validator(districtIDsFromDB, parsedRows, version, { cog });
 
         await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
         ackOrNack();
