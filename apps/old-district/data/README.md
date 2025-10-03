@@ -1,0 +1,1 @@
+Télécharger le fichier `gazetteer.sqlite` [ici](https://adresse.data.gouv.fr/data/db/gazetteer/2024) et le placer dans un dossier `/data` à la racine du service.

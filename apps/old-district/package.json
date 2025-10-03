@@ -1,0 +1,17 @@
+{
+  "name": "@ban/old-district",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsx watch src/index.ts || true"
+  },
+  "dependencies": {
+    "@ban-team/gazetteer": "^3.2.0",
+    "@ban/config": "workspace:*"
+  }
+}
