@@ -194,10 +194,18 @@ pnpm build
 *(La CI se charge déjà de builder à chaque push sur `main`.)*
 
 ### 🧪 Tests
-dans le dossier /ban-plateforme, lancer la commande
+dans le dossier /ban-plateforme, lancer la commande pour lancer les tests de toutes les apps
 ```
-npx vitest apps/**/*.test.*
+$ pnpm test
 ```
+
+ou pour lancer les tests d'une seule app
+
+```
+$ pnpm test:bal-parser
+```
+
+Il peut y avoir besoin de supprimer les dossiers node_modules/ racine et des dossiers apps/
 
 ---
 
