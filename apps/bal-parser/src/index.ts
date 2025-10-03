@@ -1,25 +1,23 @@
-import rascal from 'rascal';
+import rascal, { BrokerConfig, ConnectionAttributes } from 'rascal';
 
 import { env } from '@ban/config';
 
-
 import { getDistrictIDsFromDB } from './services/bal.js';
-import { RabbitConfig } from './types/rabbitConfig.js';
-import { AMQPConfig } from './types/AMQPConfig.js';
 
-import { getRevisionData } from "./helpers/dump-api/index.js";
+
+// import { getRevisionData } from "./helpers/dump-api/index.js";
 import validator from './helpers/validator.js';
 import getBalVersion from './helpers/get-bal-version.js';
 import csvBalToJsonBal from './helpers/csv-bal-to-json-bal.js';
 
-const rabbitConfig: RabbitConfig = {
+const rabbitConfig: ConnectionAttributes = {
   hostname: env.RABBIT.host,
   port: Number(env.RABBIT.port),
   user: env.RABBIT.user,
   password: env.RABBIT.password,
 };
 
-const config: AMQPConfig = {
+const config: BrokerConfig = {
   vhosts: {
     '/': {
       connection: {
