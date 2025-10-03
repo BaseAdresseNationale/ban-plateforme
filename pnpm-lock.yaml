@@ -60,6 +60,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       papaparse:
         specifier: ^5.4.1
         version: 5.5.3
@@ -167,6 +170,8 @@ importers:
         version: 3.25.76
 
   packages/shared-lib: {}
+
+  packages/types: {}
 
 packages:
 

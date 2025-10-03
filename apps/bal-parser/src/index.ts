@@ -1,17 +1,23 @@
-import rascal from 'rascal';
+import rascal, { BrokerConfig, ConnectionAttributes } from 'rascal';
 
 import { env } from '@ban/config';
 
-import parseBalForBan from './parseBalForBan.js';
+import { getDistrictIDsFromDB } from './services/bal.js';
 
-const rabbitConfig = {
+
+// import { getRevisionData } from "./helpers/dump-api/index.js";
+import validator from './helpers/validator.js';
+import getBalVersion from './helpers/get-bal-version.js';
+import csvBalToJsonBal from './helpers/csv-bal-to-json-bal.js';
+
+const rabbitConfig: ConnectionAttributes = {
   hostname: env.RABBIT.host,
   port: Number(env.RABBIT.port),
   user: env.RABBIT.user,
   password: env.RABBIT.password,
 };
 
-const config = {
+const config: BrokerConfig = {
   vhosts: {
     '/': {
       connection: {
@@ -40,11 +46,29 @@ async function main() {
   try {
     const broker = await rascal.BrokerAsPromised.create(config);
     const subscription = await broker.subscribe('balUploaded');
-    subscription.on('message', async (message, content, ackOrNack) => {
+    subscription.on('message', async (message:any, content:any, ackOrNack) => {
       try {
-        const parsedRows = await parseBalForBan(content.payload);
+        
+        // Convert csv to json
+        const dataBal = content.payload;
+        const parsedRows = await csvBalToJsonBal(dataBal);
+        
+        // Detect BAL version
+        const version = getBalVersion(parsedRows);
+        
         console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
-        await broker.publish('balParsed', { id: content.id, rows: parsedRows });
+        
+        // Get BAL text data from dump-api
+        // const { revision, balTextData: balCsvData } = await getRevisionData(cog);
+
+        // @todo: manage multiple cogs
+        const cog = parsedRows[0].commune_insee;
+        const districtIDsFromDB = await getDistrictIDsFromDB(cog);
+
+        let useBanId = false;
+        useBanId = await validator(districtIDsFromDB, parsedRows, version, { cog });
+
+        await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
         ackOrNack();
       } catch (err) {
         console.error('[bal-parser] Erreur:', err);

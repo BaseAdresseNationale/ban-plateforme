@@ -1,0 +1,13 @@
+{
+  "name": "@ban/types",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "OLD-build": "tsup src --dts",
+    "build": "tsup src --format esm --dts"
+  },
+  "dependencies": {
+  }
+}
