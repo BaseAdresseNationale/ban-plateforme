@@ -5,7 +5,6 @@
   "type": "module",
   "types": "dist/index.d.ts",
   "scripts": {
-    "OLD-build": "tsup src --dts",
     "build": "tsup src --format esm --dts"
   },
   "dependencies": {
