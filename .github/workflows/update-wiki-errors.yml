@@ -25,7 +25,7 @@ jobs:
       - name: Fetch errors and generate board
         run: |
           # Récupérer les données
-          curl -s "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary?limit=50" > errors.json
+          curl -s "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary?limit=500" > errors.json
           
           # Date de mise à jour
           TIMESTAMP=$(date -u +"%d/%m/%Y à %H:%M:%S UTC")
