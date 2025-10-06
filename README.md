@@ -2,24 +2,29 @@
 
 Ce dépôt contient les services et librairies de la plateforme **Base Adresse Nationale (BAN)**.
 
-Il est structuré en **monorepo** avec [`pnpm`](https://pnpm.io), utilise **TypeScript**, **ESM**, et suit une approche modulaire :  
-chaque service et chaque lib est dans un dossier indépendant.
+Il est structuré en **monorepo** avec [`pnpm`](https://pnpm.io), utilise **TypeScript**, **ESM**, et suit une approche modulaire :
+chaque service ou librairie se trouve dans un dossier indépendant.
 
 ---
 
 ## 📁 Structure du projet
 
-```
+```shell
 ban-platform/
 ├── apps/
 │   ├── bal-parser/         # Service d'import des fichiers BAL
 │   └── ...                 # Autres services
 ├── packages/
 │   ├── shared-lib/         # Librairie partagée (utils, helpers, etc.)
-│   └── ...                 # Autres libs
-├── tsconfig.base.json      # Config TypeScript partagée
+│   └── ...                 # Autres Librairies partagées
+├── boilerplate/
+│   ├── app/                # Exemple de services
+│   └── package/            # Exemple de Librairie partagée
+│
+├── .env.                   # Variable d'environement
 ├── .eslintrc.cjs           # Config ESLint partagée
 ├── pnpm-workspace.yaml     # Déclaration des workspaces
+└── tsconfig.base.json       # Config TypeScript partagée
 ```
 
 ---
@@ -27,68 +32,88 @@ ban-platform/
 ## 🔧 Installation
 
 Assurez-vous d’avoir installé :
-- [Node.js 24+](https://nodejs.org/)
-- [PNPM](https://pnpm.io/)
 
-Puis :
+- [Node.js (v24+)](https://nodejs.org/)
+- [PNPM (v10.12+)](https://pnpm.io/)
+- [Docker (v4+)](https://www.docker.com/)
+
+Puis, installer toutes les dépendances requises :
+
 ```bash
 pnpm install
 ```
 
 ---
 
-## 💻 Développement classique
+## 💻 Développement
 
-Pour développer un service en direct avec hot-reload :
+### Démarrer BAN-Platform avec l'environnement de développement (avec hot-reload)
+
+Pour démarrer l'ensemble de la plateforme (tous les services) dans /ban-plateforme :
+
+```bash
+pnpm dev:start
+```
+
+#### Pour ne démarrer qu'un unique service de BAN-Platform (avec hot-reload)
 
 ```bash
 pnpm --filter @ban/bal-parser dev
 ```
 
-> Utilise `tsx` pour exécuter les fichiers sources avec rechargement automatique.
+> Note : Les environnements de développement utilisent `tsx` pour exécuter les fichiers sources avec rechargement automatique.
 
 ---
 
-## 🚀 Démarrage local complet via artifacts CI
+## 🚀 Démarrage local complet à partir des `artifacts` de CI
 
-Cette approche permet de récupérer automatiquement les artifacts produits par la CI et de lancer un environnement complet BAN (RabbitMQ, PostgreSQL, MongoDB et tous les services BAN) en local.
+Cette approche permet de récupérer automatiquement les artefacts produits par la CI et de lancer un environnement complet BAN (RabbitMQ, PostgreSQL, MongoDB et tous les services BAN) en local tout en étant au plus proche des environnements de production.
 
 ### 🛠️ Prérequis supplémentaires
+
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mac/Win) ou Docker Engine (Linux)
 - [GitHub CLI (`gh`)](https://cli.github.com/) + authentification :
-  ```bash
-  gh auth login
-  ```
 - [fzf (menu interactif CLI)](https://github.com/junegunn/fzf)
 - `tar` et `unzip` (présents par défaut sur Mac/Linux).
 
+L'authentification est obligatoire pour récupérer les artefacts depuis GitHub :
+
+  ```bash
+  gh auth login
+  ```
+
 ---
 
-### ▶️ Lancer BAN
+### ▶️ Télécharger et démarrer BAN-Platform
+
 ```bash
 pnpm ban:start
 ```
 
 Ce script :
+
 1. Vérifie les prérequis (Docker, gh, etc.)
 2. Liste les derniers runs CI GitHub (workflow **Build & Package BAN Services**)
-3. Télécharge les artifacts `.tar.gz`
+3. Télécharge les artefacts `.tar.gz`
 4. Extrait les services BAN dans `.services/`
 5. Propose un démarrage :
    - **Docker** : chaque service dans un container Node
    - **Local** : chaque service lancé via `node dist/index.js`
 6. Lance RabbitMQ, PostgreSQL, MongoDB
 
-**Accès RabbitMQ UI** : [http://localhost:15672](http://localhost:15672)  
+**Accès RabbitMQ UI** : [http://localhost:15672](http://localhost:15672)
 *(login : guest / pass : guest)*
 
 ---
 
-### 🛑 Arrêter BAN
+### 🛑 Arrêter BAN-Platform
+
 ```bash
 pnpm ban:stop
 ```
-Ce script stoppe :
+
+Ce script stop :
+
 - RabbitMQ, PostgreSQL, MongoDB
 - Les containers BAN (mode Docker)
 - Les processus Node locaux (mode Local)
@@ -116,10 +141,12 @@ flowchart LR
 ---
 
 ### 🔎 Structure générée
+
 Le script crée deux dossiers ignorés par Git :
-```
-.artifacts/      # Artifacts CI téléchargés
-.services/       # Microservices extraits + docker-compose généré
+
+```shell
+.artifacts/      # Artifacts CI téléchargés et téléchargé depuis Github
+.services/       # Microservices extraits depuis les artifacts apres leurs téléchargements + docker-compose généré
   ├─ apps/
   │   ├─ bal-parser/
   │   └─ beautifier/
@@ -132,31 +159,69 @@ Le script crée deux dossiers ignorés par Git :
 
 ## 🧩 Mode Docker vs Mode Local
 
-- **Docker** → environnement isolé proche de la prod (containers Node).
-- **Local** → exécution directe en Node.js (pratique pour debug rapide).
+- **Docker** → À privilégier : environnement isolé proche de la prod (containers Node)
+- **Local** → Exécution directe en Node.js (pour un debug rapide).
 
 ---
 
 ## 🛠️ Outils dev
 
 ### 🧹 Linter
+
 ```bash
 pnpm lint
 ```
-> Utilise [eslint-stylistic](https://eslint.style/) sans Prettier.
+
+> Utilise `[eslint-stylistic`](https://eslint.style/) sans `Prettier`.
 
 ### 🏗️ Build manuel
+
 ```bash
 pnpm build
 ```
+
 *(La CI se charge déjà de builder à chaque push sur `main`.)*
 
 ### 🧪 Tests
+
 À venir.
 
 ---
 
-## ➕ Ajouter un nouveau service
+## ➕ Ajouter un nouveau service 
+
+### À partir des boilerplate
+
+Le dossier `/boilerplate` contient un exemple d'application (`/boilerplate/app`) et de package (`/boilerplate/package`).
+Vous pouvez les récupérer et les copier dans le dossier adéquat (`/apps` ou `/packages`).
+
+```bash
+cp -r /boilerplate/app apps/mon-nouveau-service
+cd apps/mon-nouveau-service
+```
+
+Dans le fichier `package.json`, renommer le nouveau service (sur la clé `name`) :
+
+```json
+{
+  "name": "@ban/mon-nouveau-service",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsx watch src/index.ts || true"
+  }
+}
+```
+
+Si besoin, ajouter des dépendances spécifiques à ce service :
+
+```bash
+pnpm install --filter @ban/mon-nouveau-service ma-dependance
+# exemple : pnpm install --filter @ban/mon-nouveau-service lodash
+```
+
+### Vanilia
 
 ```bash
 mkdir -p apps/mon-nouveau-service/src
@@ -164,20 +229,22 @@ cd apps/mon-nouveau-service
 pnpm init -y
 ```
 
-Dans `package.json` :
+Dans `package.json`, personnaliser le nom du service (sur la clé `name`) et ajouter les scripts essentiels :
+
 ```json
 {
   "name": "@ban/mon-nouveau-service",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
-    "dev": "tsx watch src/index.ts"
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsx watch src/index.ts || true"
   }
 }
 ```
 
-Puis un `tsconfig.json` :
+Puis ajouter un `tsconfig.json` :
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
@@ -187,10 +254,3 @@ Puis un `tsconfig.json` :
   "include": ["src"]
 }
 ```
-
----
-
-## ✅ Prêt pour démarrer !
-
-- Dev classique : `pnpm --filter @ban/mon-service dev`
-- Environnement complet (CI artifacts) : `pnpm ban:start`
