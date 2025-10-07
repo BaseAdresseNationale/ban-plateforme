@@ -62,7 +62,8 @@ async function main() {
           cog = content.payload.cog;
 
           // Get BAL text data from dump-api
-          const { revision, balTextData: dataBal } = await getRevisionData(cog);
+          const { revision, balTextData } = await getRevisionData(cog);
+          dataBal = balTextData;
           console.log(`[bal-parser] Récupéré la BAL COG ${cog} (révision ${revision}) depuis dump-api`, typeof dataBal);
         } else if(type === 'text/csv') {
           dataBal = content.payload;
@@ -72,9 +73,6 @@ async function main() {
         }
 
         // Convert csv to json
-        // const dataBal = content.payload;
-        // const messageData = content.payload;
-
         const parsedRows = await csvBalToJsonBal(dataBal);
         
         // Detect BAL version
