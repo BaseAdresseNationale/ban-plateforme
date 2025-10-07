@@ -49,7 +49,12 @@ const config = {
 };
 
 const { Pool } = pg;
-const mongoUrl = `mongodb://${env.MONGO.host}:${env.MONGO.port}`;
+
+const mongoUrl =
+  env.MONGO.username && env.MONGO.password
+    ? `mongodb://${env.MONGO.username}:${env.MONGO.password}@${env.MONGO.host}:${env.MONGO.port}/${env.MONGO.db}?authSource=admin`
+    : `mongodb://${env.MONGO.host}:${env.MONGO.port}`;
+    
 const mongoDbName = env.MONGO.db;
 const pgConfig = {
   host: env.PG.host,

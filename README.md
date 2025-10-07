@@ -220,7 +220,7 @@ Ce mode build les images Docker directement depuis votre code source local.
 # Arrêter tous les services
 ./deploy-dev.sh down
 ```
----
+-
 
 ### Mode PROD - Images depuis GitHub Registry (`deploy-prod.sh`)
 
