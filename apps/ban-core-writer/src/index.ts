@@ -52,7 +52,7 @@ const { Pool } = pg;
 
 const mongoUrl =
   env.MONGO.username && env.MONGO.password
-    ? `mongodb+srv://${env.MONGO.username}:${env.MONGO.password}@${env.MONGO.host}/${env.MONGO.db}?replicaSet=replicaset&tls=true&authSource=admin&readPreference=primary`
+    ? `mongodb+srv://${env.MONGO.username}:${env.MONGO.password}@${env.MONGO.host}?replicaSet=replicaset&tls=true&authSource=admin&readPreference=primary`
     : `mongodb://${env.MONGO.host}:${env.MONGO.port}`;
 console.log(`[ban-writer] Mongo URL: ${mongoUrl}`);
 const mongoDbName = env.MONGO.db;
