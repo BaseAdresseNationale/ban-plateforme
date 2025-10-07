@@ -1,6 +1,6 @@
-import type { Identifier } from '@ban/types/bal-parser-type.js';
+import type { Identifier } from '@ban/types';
 
-import { idsIdentifier } from './bal-converter.config.js';
+import { idsIdentifier } from '@ban/types';
 
 const digestIDsFromBalUIDs = (ids?: string) => {
   const regExpIds = new RegExp(

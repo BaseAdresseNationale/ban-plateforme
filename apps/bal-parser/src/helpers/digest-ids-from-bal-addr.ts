@@ -1,4 +1,4 @@
-import type { BalAdresse, BalVersion } from '@ban/types/bal-types.js';
+import type { BalAdresse, BalVersion } from '@ban/types';
 
 import digestIDsFromBalUIDs from './digest-ids-from-bal-uids.js';
 

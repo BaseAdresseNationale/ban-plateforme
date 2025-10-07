@@ -1,4 +1,4 @@
-import type { IdsIdentifierKey } from '@ban/types/bal-parser-type.js';
+import type { IdsIdentifierKey } from '@ban/types';
 
 export const numberForTopo = '99999';
 

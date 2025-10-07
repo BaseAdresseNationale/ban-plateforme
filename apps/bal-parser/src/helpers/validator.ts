@@ -1,6 +1,6 @@
-import { Bal, BalVersion } from '@ban/types/bal-types.js';
+import { Bal, BalVersion } from '@ban/types';
 import digestIDsFromBalAddr from './digest-ids-from-bal-addr.js';
-import { numberForTopo as IS_TOPO_NB } from './bal-converter.config.js';
+import { numberForTopo as IS_TOPO_NB } from '@ban/types';
 
 const validator = async (
   districtIDsFromDB: string[],

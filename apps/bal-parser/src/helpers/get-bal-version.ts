@@ -1,4 +1,4 @@
-import { Bal } from '@ban/types/bal-types';
+import { Bal } from '@ban/types';
 
 const getBalVersion = (bal: Bal) => {
   const { id_ban_commune: districtID } = bal[0];
