@@ -41,7 +41,7 @@ export type BalAdresse = {
   source: string;
   date_der_maj: DateISO8601;
   certification_commune: boolean;
-  [key?: MultilingualBalKey]: string;
+  [key: MultilingualBalKey]: string;
 };
 
 export type Bal = BalAdresse[];

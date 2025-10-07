@@ -1,7 +1,10 @@
 import rascal, { BrokerConfig, ConnectionAttributes } from 'rascal';
+
 import { env } from '@ban/config';
-import { Bal } from '@ban/types/bal-types';
+
 import { getDistrictIDsFromDB } from './services/bal.js';
+
+
 import { getRevisionData } from "./helpers/dump-api/index.js";
 import validator from './helpers/validator.js';
 import getBalVersion from './helpers/get-bal-version.js';
@@ -45,35 +48,54 @@ async function main() {
     const subscription = await broker.subscribe('balUploaded');
     subscription.on('message', async (message:any, content:any, ackOrNack) => {
       try {
-        // Convert csv to json
-        const data = content.payload;
+        let cog;
+        let dataBal;
+        const {type} = content;
 
-        // bal
-        if (typeof data === Bal){
-          const parsedRows = await csvBalToJsonBal(data);
-        
-          // Detect BAL version
-          const version = getBalVersion(parsedRows);
-          
-          console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
-          
-          
-          // @todo: manage multiple cogs
-          const cog = parsedRows[0].commune_insee;
-          const districtIDsFromDB = await getDistrictIDsFromDB(cog);
-          
-          let useBanId = false;
-          useBanId = await validator(districtIDsFromDB, parsedRows, version, { cog });
-          
-          await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
-          ackOrNack();          
-          
-        // code insee
-        } else if (typeof data === 'string') {
+        console.log(`[bal-parser] Nouveau message BAL reçu (type: ${type}) :`, content);
+
+        if(
+          type === 'application/json'
+          && typeof content.payload === 'object'
+          && content?.payload?.cog
+        ) {
+          cog = content.payload.cog;
+
           // Get BAL text data from dump-api
-          const { balTextData: balCsvData } = await getRevisionData(data);
-          await broker.publish('balParsed', { id: content.id, meta: { source: 'BAL' }, rows: balCsvData });
+          const { revision, balTextData: dataBal } = await getRevisionData(cog);
+          console.log(`[bal-parser] Récupéré la BAL COG ${cog} (révision ${revision}) depuis dump-api`, typeof dataBal);
+        } else if(type === 'text/csv') {
+          dataBal = content.payload;
+          console.log(`[bal-parser] BAL CSV reçue via API`, typeof dataBal);
+        } else {
+          throw new Error('Type de contenu non supporté. Veuillez fournir du CSV ou un JSON avec un champ "cog".');
         }
+
+        // Convert csv to json
+        // const dataBal = content.payload;
+        // const messageData = content.payload;
+
+        const parsedRows = await csvBalToJsonBal(dataBal);
+        
+        // Detect BAL version
+        const version = getBalVersion(parsedRows);
+        
+        console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
+        
+        // Get BAL text data from dump-api
+        // const { revision, balTextData: balCsvData } = await getRevisionData(cog);
+
+        // @todo: manage multiple cogs
+        // const cog = parsedRows[0].commune_insee;
+        cog = parsedRows[0].commune_insee;
+        let districtIDsFromDB;
+        districtIDsFromDB = await getDistrictIDsFromDB(cog);
+
+        let useBanId = false;
+        useBanId = await validator(districtIDsFromDB || [], parsedRows, version, { cog });
+
+        await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
+        ackOrNack();
       } catch (err) {
         console.error('[bal-parser] Erreur:', err);
         ackOrNack(err as Error);

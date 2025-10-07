@@ -1,18 +1,18 @@
 import { getDistrictFromCOG } from './cog.js';
-import { BanDistrict } from '@ban/ban-types.js';
+import { BanDistrict } from '@ban/types';
 
-const getDistrictIDsFromDB = async (cog: string) => {
-
+export async function getDistrictIDsFromDB(cog: string, throwError: boolean = false): Promise<string[] | null> {
   const districts: BanDistrict[] = await getDistrictFromCOG(cog);
+
   if (!districts.length) {
-    throw new Error(`No district found with cog ${cog}`);
+    if (throwError) {
+      throw new Error(`No district found with cog ${cog}`);
+    } else {
+      return null;
+    }
   }
-  
+
   const districtIDsFromDB = districts.map((district) => district.id);
 
-  return districtIDsFromDB
-}
-
-export {
-  getDistrictIDsFromDB,
+  return districtIDsFromDB;
 }
