@@ -1,4 +1,4 @@
-/* eslint-disable , semi, eol-last */
+/* eslint-disable semi */
 'use strict'
 
 /** @type {import('sequelize-cli').Migration} */
