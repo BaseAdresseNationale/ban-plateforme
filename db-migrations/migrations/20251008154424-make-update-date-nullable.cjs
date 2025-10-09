@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case, semi, eol-last */
+/* eslint-disable , semi, eol-last */
 'use strict'
 
 /** @type {import('sequelize-cli').Migration} */
