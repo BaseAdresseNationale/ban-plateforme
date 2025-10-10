@@ -1,18 +1,26 @@
-import { getDistrictFromCOG } from './cog.js';
 import { BanDistrict } from '@ban/types';
+import HandleHTTPResponse from "../utils/http-request-handler.js";
 
-export async function getDistrictIDsFromDB(cog: string, throwError: boolean = false): Promise<string[] | null> {
-  const districts: BanDistrict[] = await getDistrictFromCOG(cog);
+const BAN_API_URL = process.env.BAN_API_URL || '';
 
-  if (!districts.length) {
-    if (throwError) {
+export async function getDistrictIDs(cog: string, shouldThrowError: boolean = true): Promise<string[] | null | undefined> {
+  try {
+    const response = await fetch(`${BAN_API_URL}/district/cog/${cog}`, {});
+    const responseJson = await HandleHTTPResponse(response);
+    const districts: BanDistrict[] = responseJson?.response;
+    
+    if (!districts?.length) {
       throw new Error(`No district found with cog ${cog}`);
+    }
+    
+    const districtIDs = districts.map((district) => district.id);  
+    return districtIDs;
+  } catch (error) {
+    if (shouldThrowError) {
+      const { message } = error as Error;
+      throw new Error(`Error on getting district - ${message}`);
     } else {
       return null;
     }
   }
-
-  const districtIDsFromDB = districts.map((district) => district.id);
-
-  return districtIDsFromDB;
 }

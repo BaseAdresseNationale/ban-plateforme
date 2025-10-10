@@ -2,13 +2,15 @@ import rascal, { BrokerConfig, ConnectionAttributes } from 'rascal';
 
 import { env } from '@ban/config';
 
-import { getDistrictIDsFromDB } from './services/bal.js';
+import { getDistrictIDs } from './services/bal.js';
 
 
 import { getRevisionData } from "./helpers/dump-api/index.js";
 import validator from './helpers/validator.js';
 import getBalVersion from './helpers/get-bal-version.js';
 import csvBalToJsonBal from './helpers/csv-bal-to-json-bal.js';
+
+const FIND_OR_CREATE_AUTHORIZED = true;
 
 const rabbitConfig: ConnectionAttributes = {
   hostname: env.RABBIT.host,
@@ -85,12 +87,21 @@ async function main() {
 
         // @todo: manage multiple cogs
         // const cog = parsedRows[0].commune_insee;
+        
         cog = parsedRows[0].commune_insee;
-        let districtIDsFromDB;
-        districtIDsFromDB = await getDistrictIDsFromDB(cog);
+        let districtIDs;
+        const shouldThrowError = !FIND_OR_CREATE_AUTHORIZED;
+        districtIDs = await getDistrictIDs(cog, shouldThrowError);
 
+        if (FIND_OR_CREATE_AUTHORIZED && !districtIDs) {
+          districtIDs = [...(new Set(parsedRows.map(({ id_ban_commune }) => id_ban_commune)))]
+          
+          //@todo: create districtIDs in database
+          console.log('[bal-parser] todo: create districtIDs in database.')
+        }
+        
         let useBanId = false;
-        useBanId = await validator(districtIDsFromDB || [], parsedRows, version, { cog });
+        useBanId = await validator(districtIDs || [], parsedRows, version, { cog });
 
         await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
         ackOrNack();

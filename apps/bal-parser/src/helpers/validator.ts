@@ -3,7 +3,7 @@ import digestIDsFromBalAddr from './digest-ids-from-bal-addr.js';
 import { numberForTopo as IS_TOPO_NB } from '@ban/types';
 
 const validator = async (
-  districtIDsFromDB: string[],
+  districtIDs: string[],
   bal: Bal,
   version: BalVersion,
   { cog }: { cog: string }
@@ -48,15 +48,15 @@ const validator = async (
 
   if (balAdresseUseBanId === bal.length) {
     // Check district IDs consistency
-    if (!districtIDsExtracted.every(districtIDExtracted => districtIDsFromDB.includes(districtIDExtracted))) {
-      const unauthorizedDistrictIDs = districtIDsExtracted.filter(districtIDExtracted => !districtIDsFromDB.includes(districtIDExtracted));
+    if (!districtIDsExtracted.every(districtIDExtracted => districtIDs.includes(districtIDExtracted))) {
+      const unauthorizedDistrictIDs = districtIDsExtracted.filter(districtIDExtracted => !districtIDs.includes(districtIDExtracted));
       throw new Error(`**Missing rights** \ndistrictIDs ${unauthorizedDistrictIDs} are not part of the authorized districts to be updated`);
     }
     return true;
   } else if (balAddressDoNotUseBanId === bal.length) {
     return false;
   } else {
-    throw new Error(`**Missing IDs** \nBAL from cog : \`${cog}\` \nSome BAL address lines are using BanIDs and some are not`);
+    throw new Error(`**Missing IDs** \nBAL : \`${cog}\` \nSome BAL address lines are using BanIDs and some are not`);
   }
 };
 
