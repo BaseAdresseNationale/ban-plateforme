@@ -1,9 +1,9 @@
-import rascal from 'rascal';
+import rascal, { BrokerConfig, ConnectionAttributes } from 'rascal';
 
 // @ts-ignore // Remove this comment when you use the boilerplate
 import { env } from '@ban/config';
 
-const rabbitConfig = {
+const rabbitConfig: ConnectionAttributes = {
   hostname: env.RABBIT.host,
   port: Number(env.RABBIT.port),
   user: env.RABBIT.user,
@@ -22,7 +22,7 @@ const publicationName = 'beautified'; // Nom de la publication, peut être perso
 // pour se connecter à RabbitMQ et configurer les échanges, files d'attente et liaisons.
 // Le fichier de configuration est importé depuis le module @ban/config.
 // Mettre à jour le fichier de configuration si nécessaire pour adapter les échanges, files d'attente et liaisons.
-const config = {
+const config: BrokerConfig = {
   vhosts: {
     '/': {
       connection: {
