@@ -67,7 +67,7 @@ async function main() {
           console.log(`[bal-parser] Récupéré la BAL COG ${cog} (révision ${revision}) depuis dump-api`, typeof dataBal);
         } else if(type === 'text/csv') {
           dataBal = content.payload;
-          console.log(`[bal-parser] BAL CSV reçue via API`, typeof dataBal);
+          console.log(`[bal-parser] BAL CSV reçue via CSV message`, typeof dataBal);
         } else {
           throw new Error('Type de contenu non supporté. Veuillez fournir du CSV ou un JSON avec un champ "cog".');
         }
