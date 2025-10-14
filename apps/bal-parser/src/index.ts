@@ -5,7 +5,7 @@ import { env } from '@ban/config';
 import { getDistrictIDs } from './services/bal.js';
 
 
-import { getRevisionData } from "./helpers/dump-api/index.js";
+import { getBalAssembly, getRevisionData } from "./helpers/dump-api/index.js";
 import validator from './helpers/validator.js';
 import getBalVersion from './helpers/get-bal-version.js';
 import csvBalToJsonBal from './helpers/csv-bal-to-json-bal.js';
@@ -52,6 +52,7 @@ async function main() {
       try {
         let cog;
         let dataBal;
+        let source;
         const {type} = content;
 
         console.log(`[bal-parser] Nouveau message BAL reçu (type: ${type}) :`, content);
@@ -71,7 +72,9 @@ async function main() {
           dataBal = content.payload;
           console.log(`[bal-parser] BAL CSV reçue via CSV message`, typeof dataBal);
         } else {
-          throw new Error('Type de contenu non supporté. Veuillez fournir du CSV ou un JSON avec un champ "cog".');
+          dataBal = await getBalAssembly(cog);
+          source = 'assemblage'
+          // throw new Error('Type de contenu non supporté. Veuillez fournir du CSV ou un JSON avec un champ "cog".');
         }
 
         // Convert csv to json
@@ -103,7 +106,14 @@ async function main() {
         let useBanId = false;
         useBanId = await validator(districtIDs || [], parsedRows, version, { cog });
 
-        await broker.publish('balParsed', { id: content.id, meta: { useBanId }, rows: parsedRows });
+        await broker.publish('balParsed', {
+          id: content.id,
+          meta: {
+            useBanId,
+            ...(source ? { source } : {}) // add source only if defined
+          },
+          rows: parsedRows
+        });
         ackOrNack();
       } catch (err) {
         console.error('[bal-parser] Erreur:', err);

@@ -2,6 +2,7 @@
 import HandleHTTPResponse from '../../utils/http-request-handler.js';
 
 const API_DEPOT_URL = process.env.API_DEPOT_URL || '';
+const API_BAL_ASSEMBLY_URL = process.env.API_BAL_ASSEMBLY_URL || '';
 
 export const getRevisionData = async (cog: string) => {
   const revision = await getRevisionFromDistrictCOG(cog);
@@ -29,5 +30,16 @@ const getRevisionFileText = async (revisionId: string) => {
   } catch (error) {
     const { message } = error as Error;
     throw new Error(`Dump API - Get Revision File Text - ${error} ${message} (${url})`);
+  }
+};
+
+export const getBalAssembly = async (codeInsee: any) => {
+  const url = `${API_BAL_ASSEMBLY_URL}/bal/codeInsee/${codeInsee}/`;
+  try {
+    const response = await fetch(url);
+    return await HandleHTTPResponse(response);
+  } catch (error) {
+    const { message } = error as Error;
+    throw new Error(`BAL ASSEMBLY API - Get BAL Assembly - ${message} ${url}`);
   }
 };
