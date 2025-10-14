@@ -133,7 +133,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
             targetKey: row.ban_enrich_ban_target_key_toponym || ['']
           },
           dgfip: {
-            cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
+            cadastre: row.cadastre_parcelles || row.cad_parcelles || [],
             DEPRECATED_codeFantoir: row.ban_enrich_code_fantoir || '',
           },
           insee: {
@@ -184,7 +184,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
               : addresses[row.id_ban_adresse]?.meta?.ban?.oldDistrict || null,
           },
           dgfip: {
-            cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
+            cadastre: row.cadastre_parcelles || row.cad_parcelles || [],
             DEPRECATED_codeFantoir: row.ban_enrich_code_fantoir || '',
           },
           insee: {

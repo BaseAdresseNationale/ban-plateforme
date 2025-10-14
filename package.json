@@ -20,7 +20,15 @@
     "dev:all": "pnpm --recursive --parallel run dev || true",
     "dev": "pnpm dev:start || true",
     "build": "pnpm --recursive run build",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "test": "vitest",
+    "test:bal-parser": "vitest --project bal-parser",
+    "test:ban-core-api": "vitest --project ban-core-api",
+    "test:ban-core-writer": "vitest --project ban-core-writer",
+    "test:beautifier": "vitest --project beautifier",
+    "test:merger": "vitest --project merger",
+    "test:orchestrator": "vitest --project orchestrator",
+    "test:target-key": "vitest --project target-key"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
