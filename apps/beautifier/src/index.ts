@@ -1,4 +1,6 @@
 import rascal from 'rascal';
+import utils from './string.js'
+import { normalize } from '@nivalis/normadresse';
 
 import { env } from '@ban/config';
 
@@ -44,19 +46,45 @@ const config = {
   }
 };
 
+const DEFAULT_ISO_CODE = 'fra'; // Default ISO code for labels
+
+type Label = {
+  isoCode: string;
+  value: string;
+};
+type Labels = Label[];
+
+const getLabelsFromRow = (row: Record<string, any>, colName: string, defaultIsoCode: string = DEFAULT_ISO_CODE) => {
+  const labels: Labels = row[colName] ? [{ isoCode: defaultIsoCode, value: utils.beautifyUppercased(row[colName]) }] : [];
+  Object.entries(row).forEach(([key, value]) => {
+    if (key.startsWith(`${colName}_`)) {
+      const isoCode = key.replace(new RegExp(`^(${colName})_`, 'i'), '');
+      labels.push({ isoCode, value });
+    }
+  });
+  return labels;
+};
+
+const normalizeAFNOR = (input: string): string => normalize(input).replace(/\s+/g, '-');
+
+
 async function main() {
   try {
     const broker = await rascal.BrokerAsPromised.create(config);
 
     const subscription = await broker.subscribe('balToBeautify');
     subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
+      const defaultIsoCode = DEFAULT_ISO_CODE; // TODO: replace by district default ISO code if available
 
       const enriched = {
         ...content,
         rows: content.rows.map((row: any) => ({
           ...row,
-          ban_enrich_beautified_voie_nom: row.voie_nom?.toUpperCase(),
-          ban_enrich_voie_nom_afnor: row.voie_nom?.toUpperCase()
+          ban_enrich_beautified_suffixe: row.suffixe ? utils.normalizeSuffixe(row.suffixe) : '',
+          ban_enrich_beautified_voie_nom_afnor: row.voie_nom ? normalizeAFNOR(row.voie_nom) : '', // Non utilisées : TODO: à garder ?
+          ban_enrich_beautified_labels_voie_nom: getLabelsFromRow(row, 'voie_nom', defaultIsoCode),
+          ban_enrich_beautified_labels_lieudit_complement_nom: getLabelsFromRow(row, 'lieudit_complement_nom', defaultIsoCode),
+          ban_enrich_beautified_labels_commune_nom: getLabelsFromRow(row, 'commune_nom', defaultIsoCode),
         }))
       };
 
