@@ -11,14 +11,6 @@ const rabbitConfig = {
   password: env.RABBIT.password,
 };
 
-type Label = {
-  isoCode: string;
-  value: string;
-};
-type Labels = Label[];
-
-const DEFAULT_ISO_CODE = 'fra'; // Default ISO code for labels
-
 const config = {
   vhosts: {
     '/': {
@@ -59,17 +51,6 @@ const pgConfig = {
   database: 'ban',
 };
 
-const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
-  const labels: Labels = row[colName] ? [{ isoCode: defaultIsoCode, value: row[colName] }] : [];
-  Object.entries(row).forEach(([key, value]) => {
-    if (key.startsWith(`${colName}_`)) {
-      const isoCode = key.replace(new RegExp(`^(${colName})_`, 'i'), '');
-      labels.push({ isoCode, value });
-    }
-  });
-  return labels;
-};
-
 const getItemPositions = (item: Record<string, any> | undefined, row: Record<string, any>) => {
   const position = item?.positions || [];
   position.push({
@@ -92,10 +73,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
   const mainToponymes: Record<string, any> = {};
   const districts: Record<string, any> = {};
 
-  const defaultIsoCode = DEFAULT_ISO_CODE; // TODO: replace by district default ISO code if available
-
   rows.forEach((row: any) => {
-    const getterLabels = getLabelsFromRow(row, defaultIsoCode);
     // TODO: Gérer les fusions profondes (plusieurs lignes pour une même entité) cf. oldDistrict
 
     // District
@@ -103,7 +81,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
       districts[row.id_ban_commune] = {
         ...districts?.[row.id_ban_commune] || {},
         id: row.id_ban_commune,
-        labels: getterLabels('commune_nom') || [],
+        labels: row.ban_enrich_beautified_labels_commune_nom || [],
       };
     }
 
@@ -114,7 +92,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         id: row.id_ban_toponyme,
         districtID: row.id_ban_commune,
         district: districts[row.id_ban_commune] || {},
-        labels: getterLabels('voie_nom') || [],
+        labels: row.ban_enrich_beautified_labels_voie_nom || [],
         // certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune), // TODO: Add certified field if available
         geometry: {
           type: 'Point',
@@ -160,9 +138,9 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         districtID: row.id_ban_commune,
         mainCommonToponym: mainToponymes[row.id_ban_toponyme] || {},
         districts: districts[row.id_ban_commune] || {},
-        labels: getterLabels('lieudit_complement_nom') || [],
+        labels: row.ban_enrich_beautified_labels_lieudit_complement_nom || [],
         number: row.numero,
-        suffix: row.suffixe,
+        suffix: row.ban_enrich_beautified_suffixe,
         certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune),
         positions: getItemPositions(addresses[row.id_ban_adresse], row),
         meta: {
