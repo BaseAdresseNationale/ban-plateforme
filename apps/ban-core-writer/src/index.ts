@@ -81,7 +81,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
       districts[row.id_ban_commune] = {
         ...districts?.[row.id_ban_commune] || {},
         id: row.id_ban_commune,
-        labels: row.ban_enrich_beautified_labels_commune_nom || [],
+        labels: row.ban_enrich_beautified_labels_commune_nom,
       };
     }
 
@@ -92,7 +92,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         id: row.id_ban_toponyme,
         districtID: row.id_ban_commune,
         district: districts[row.id_ban_commune] || {},
-        labels: row.ban_enrich_beautified_labels_voie_nom || [],
+        labels: row.ban_enrich_beautified_labels_voie_nom,
         // certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune), // TODO: Add certified field if available
         geometry: {
           type: 'Point',
@@ -138,9 +138,11 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         districtID: row.id_ban_commune,
         mainCommonToponym: mainToponymes[row.id_ban_toponyme] || {},
         districts: districts[row.id_ban_commune] || {},
-        labels: row.ban_enrich_beautified_labels_lieudit_complement_nom || [],
+        labels: row.ban_enrich_beautified_labels_lieudit_complement_nom,
         number: row.numero,
-        suffix: row.ban_enrich_beautified_suffixe,
+        suffix: row.ban_enrich_beautified_suffixe
+          ? row.ban_enrich_beautified_suffixe
+          : addresses[row.id_ban_adresse]?.suffix || '',
         certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune),
         positions: getItemPositions(addresses[row.id_ban_adresse], row),
         meta: {
