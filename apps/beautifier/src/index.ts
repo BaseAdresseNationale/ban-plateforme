@@ -1,6 +1,5 @@
 import rascal from 'rascal';
-import utils from './string.js'
-import { normalize } from '@nivalis/normadresse';
+import { beautifyUppercased, normalizeSuffixe, DEFAULT_ISO_CODE } from './string.js'
 
 import { env } from '@ban/config';
 
@@ -46,26 +45,22 @@ const config = {
   }
 };
 
-const DEFAULT_ISO_CODE = 'fra'; // Default ISO code for labels
-
 type Label = {
   isoCode: string;
   value: string;
 };
 type Labels = Label[];
 
-const getLabelsFromRow = (row: Record<string, any>, colName: string, defaultIsoCode: string = DEFAULT_ISO_CODE) => {
-  const labels: Labels = row[colName] ? [{ isoCode: defaultIsoCode, value: utils.beautifyUppercased(row[colName]) }] : [];
-  Object.entries(row).forEach(([key, value]) => {
+const getLabelsFromRow = (row: Record<string, any>, colName: string, defaultIsoCode: string) => {
+  const labels: Labels = row[colName] ? [{ isoCode: defaultIsoCode, value: beautifyUppercased(row[colName], defaultIsoCode) }] : [];
+  Object.entries(row).forEach(([key, value]: [string, string], index: number) => {
     if (key.startsWith(`${colName}_`)) {
       const isoCode = key.replace(new RegExp(`^(${colName})_`, 'i'), '');
-      labels.push({ isoCode, value });
+      labels.push({ isoCode, value: beautifyUppercased(value, isoCode) });
     }
   });
   return labels;
 };
-
-const normalizeAFNOR = (input: string): string => normalize(input).replace(/\s+/g, '-');
 
 
 async function main() {
@@ -80,8 +75,7 @@ async function main() {
         ...content,
         rows: content.rows.map((row: any) => ({
           ...row,
-          ban_enrich_beautified_suffixe: row.suffixe ? utils.normalizeSuffixe(row.suffixe) : '',
-          ban_enrich_beautified_voie_nom_afnor: row.voie_nom ? normalizeAFNOR(row.voie_nom) : '', // Non utilisées : TODO: à garder ?
+          ban_enrich_beautified_suffixe: row.suffixe ? normalizeSuffixe(row.suffixe) : '',
           ban_enrich_beautified_labels_voie_nom: getLabelsFromRow(row, 'voie_nom', defaultIsoCode),
           ban_enrich_beautified_labels_lieudit_complement_nom: getLabelsFromRow(row, 'lieudit_complement_nom', defaultIsoCode),
           ban_enrich_beautified_labels_commune_nom: getLabelsFromRow(row, 'commune_nom', defaultIsoCode),

@@ -1,22 +1,22 @@
 import { beautify } from '@etalab/adresses-util/lib/voies'
-import { trim, deburr } from 'lodash-es/lodash.js'
-// import { normalize } from '@nivalis/normadresse'
 
-function slugify(str: string) {
-    return trim(deburr(str).toLowerCase().replace(/\W+/g, '-'), ' -')
+export const DEFAULT_ISO_CODE = 'fra'; // Default ISO code for labels
+
+export function beautifyUppercased(str: string, lang: string = DEFAULT_ISO_CODE): string {
+    if (str !== str.toUpperCase()) {
+        return str
+    }
+    switch (lang) {
+        case DEFAULT_ISO_CODE:
+            return beautify(str)
+        default:
+            return str
+    }
 }
 
-function beautifyUppercased(str: string) {
-    return str === str.toUpperCase()
-        ? beautify(str)
-        : str
-}
-
-function normalizeSuffixe(suffixe: string) {
+export function normalizeSuffixe(suffixe: string) {
     if (!suffixe) {
         return undefined
     }
     return suffixe.toLowerCase()
 }
-
-export default { slugify, beautifyUppercased, normalizeSuffixe }
