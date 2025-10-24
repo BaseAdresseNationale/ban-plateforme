@@ -117,7 +117,7 @@ app.post('/bal/file', upload.single('file'), async (req, res) => {
 });
 
 app.post('/bal/text', express.text(), async (req, res) => {
-  const body = req.body;
+  const body: string = req.body;
   if (!body) return res.status(400).send('No BAL data provided');
 
   try {
@@ -125,16 +125,39 @@ app.post('/bal/text', express.text(), async (req, res) => {
       id: `bal-${Date.now()}`,
       payload: body,
       filename: 'via-text-body.csv',
+      type: 'text/csv'
     };
     // TODO AFTER
     await broker.publish('balUploaded', message);
-    // await broker.publish('bal.uploaded', message);
-    // console.log('>>> bal.uploaded', message);
     console.log('[ban-core-api] BAL texte envoyée');
     res.status(202).json({ status: 'queued', source: 'text' });
   } catch (err) {
     console.error('[ban-core-api] Erreur text :', err);
-    res.status(500).json({ error: 'Erreur traitement BAL' });
+    res.status(500).json({ error: 'Erreur traitement BAL depuis le texte CSV' });
+  }
+});
+
+interface CogRequest {
+  cog: string;
+}
+app.post('/bal/cog', async (req, res) => {
+  const body: CogRequest = req.body;
+  if (!body) return res.status(400).send('No BAL data provided');
+
+  try {
+    const message = {
+      id: `bal-${Date.now()}`,
+      payload: body,
+      filename: 'via-text-body.csv',
+      type: 'application/json'
+    };
+    // TODO AFTER
+    await broker.publish('balUploaded', message);
+    console.log('[ban-core-api] BAL COG envoyée');
+    res.status(202).json({ status: 'queued', source: 'text' });
+  } catch (err) {
+    console.error('[ban-core-api] Erreur COG :', err);
+    res.status(500).json({ error: 'Erreur traitement BAL depuis le COG' });
   }
 });
 
