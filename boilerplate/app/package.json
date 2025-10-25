@@ -6,7 +6,8 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "dev": "tsx watch src/index.ts || true"
+    "dev": "tsx watch src/index.ts || true",
+    "test": "vitest"
   },
   "dependencies": {
     "@ban/config": "workspace:*"
