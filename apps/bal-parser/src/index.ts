@@ -3,7 +3,7 @@ import type { BrokerConfig, ConnectionAttributes } from 'rascal';
 import rascal from 'rascal';
 
 import { env } from '@ban/config';
-import { getDistrictIDs, getRevisionData } from '@ban/shared-lib';
+import { getDistrictIDs, getAssembledBal, getRevisionData } from '@ban/shared-lib';
 
 import validator from './helpers/validator.js';
 import getBalVersion from './helpers/get-bal-version.js';
@@ -75,8 +75,10 @@ async function main() {
                 mandataire = revision.client || {};
                 console.log(`[bal-parser]  BAL récupéré depuis depuis API-Depot pour le cog ${cog} via message de type [${type}]`);
               } else {
-                // Aucune révision trouvée pour le COG. Erreur.
-                throw new Error(`Aucune révision trouvée pour le COG ${cog}`);
+                // Aucune révision trouvée pour le COG. Récupération depuis l'assemblage
+                dataBal = await getAssembledBal(cog);
+                source = 'assemblage';
+                console.log(`[bal-parser]  BAL récupéré depuis bal-assembly pour le cog ${cog} via message de type [${type}]`);
               }
             } else {
               throw new Error('JSON payload must contain a "cog" field.');
