@@ -47,9 +47,9 @@ pnpm install
 
 ## 💻 Développement
 
-### Démarrer BAN-Platform avec l'environnement de développement (avec hot-reload)
+### Démarrer BAN-Platform dans l'environnement de développement (avec hot-reload)
 
-Pour démarrer l'ensemble de la plateforme (tous les services) dans /ban-plateforme :
+Pour démarrer l'ensemble de la plateforme (tous les services) depuis `/ban-plateforme` :
 
 ```bash
 pnpm dev:start
@@ -82,8 +82,6 @@ L'authentification est obligatoire pour récupérer les artefacts depuis GitHub 
   gh auth login
   ```
 
----
-
 ### ▶️ Télécharger et démarrer BAN-Platform
 
 ```bash
@@ -102,9 +100,7 @@ Ce script :
 6. Lance RabbitMQ, PostgreSQL, MongoDB
 
 **Accès RabbitMQ UI** : [http://localhost:15672](http://localhost:15672)
-*(login : guest / pass : guest)*
-
----
+*(Par défaut > login : guest / pass : guest)*
 
 ### 🛑 Arrêter BAN-Platform
 
@@ -172,7 +168,7 @@ Le script crée deux dossiers ignorés par Git :
 pnpm lint
 ```
 
-> Utilise `[eslint-stylistic`](https://eslint.style/) sans `Prettier`.
+> Utilise [`eslint-stylistic`](https://eslint.style/) sans `Prettier`.
 
 ### 🏗️ Build manuel
 
@@ -188,9 +184,9 @@ pnpm build
 
 ---
 
-## ➕ Ajouter un nouveau service 
+## ➕ Ajouter un nouveau service
 
-### À partir des boilerplate
+### À partir des boilerplate (conseillé)
 
 Le dossier `/boilerplate` contient un exemple d'application (`/boilerplate/app`) et de package (`/boilerplate/package`).
 Vous pouvez les récupérer et les copier dans le dossier adéquat (`/apps` ou `/packages`).
@@ -221,7 +217,7 @@ pnpm install --filter @ban/mon-nouveau-service ma-dependance
 # exemple : pnpm install --filter @ban/mon-nouveau-service lodash
 ```
 
-### Vanilia
+### En partant de zéro (Méthode Vanilla)
 
 ```bash
 mkdir -p apps/mon-nouveau-service/src
@@ -254,3 +250,23 @@ Puis ajouter un `tsconfig.json` :
   "include": ["src"]
 }
 ```
+
+---
+
+## Initialiser des données dans l'application
+
+Une fois la plateforme démarrée, vous pouvez utiliser le endpoint API `/bal/text` pour envoyer des données.
+
+La plateforme fournit des données de test, présenté dans le dossier `/ban-plateforme/apps/bal-parser/input-samples/` qui peuvent être utilisées avec cette API.
+
+**Exemple utilisant CURL :**
+
+```bash
+curl --location 'http://localhost:3000/bal/text' \
+--header 'Content-Type: text/plain' \
+--data '
+ici coller le contenu du csv
+'
+```
+
+Le résultat est visible au sein de la base Mongo : Dans `Mongo Express` (<http://localhost:8081/>), une nouvelle base 'ban' est ajoutée contenant les collections districts, mainToponyms et addresses, contenant les données envoyées.
