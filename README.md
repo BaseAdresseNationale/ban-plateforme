@@ -217,7 +217,7 @@ pnpm install --filter @ban/mon-nouveau-service ma-dependance
 # exemple : pnpm install --filter @ban/mon-nouveau-service lodash
 ```
 
-### En partant de zéro (Methode Vanilia)
+### En partant de zéro (Méthode Vanilla)
 
 ```bash
 mkdir -p apps/mon-nouveau-service/src
