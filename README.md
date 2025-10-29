@@ -257,7 +257,7 @@ Puis ajouter un `tsconfig.json` :
 
 Une fois la plateforme démarrée, vous pouvez utiliser le endpoint API `/bal/text` pour envoyer des données.
 
-La plateforme fournit des données de test, présenté dans le dossier `/ban-plateforme/apps/bal-parser/input-samples/` qui peuvent etre utilisées avec cette API.
+La plateforme fournit des données de test, présenté dans le dossier `/ban-plateforme/apps/bal-parser/input-samples/` qui peuvent être utilisées avec cette API.
 
 **Exemple utilisant CURL :**
 
