@@ -100,7 +100,7 @@ Ce script :
 6. Lance RabbitMQ, PostgreSQL, MongoDB
 
 **Accès RabbitMQ UI** : [http://localhost:15672](http://localhost:15672)
-*(Par defaut > login : guest / pass : guest)*
+*(Par défaut > login : guest / pass : guest)*
 
 ### 🛑 Arrêter BAN-Platform
 
