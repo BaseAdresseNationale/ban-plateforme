@@ -169,7 +169,11 @@ importers:
         specifier: ^3.22.4
         version: 3.25.76
 
-  packages/shared-lib: {}
+  packages/shared-lib:
+    dependencies:
+      '@ban/types':
+        specifier: workspace:*
+        version: link:../types
 
   packages/types: {}
 
