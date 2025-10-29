@@ -154,7 +154,7 @@ app.post('/bal/cog', async (req, res) => {
     // TODO AFTER
     await broker.publish('balUploaded', message);
     console.log('[ban-core-api] BAL COG envoyée');
-    res.status(202).json({ status: 'queued', source: 'text' });
+    res.status(202).json({ status: 'queued', source: 'cog' });
   } catch (err) {
     console.error('[ban-core-api] Erreur COG :', err);
     res.status(500).json({ error: 'Erreur traitement BAL depuis le COG' });
