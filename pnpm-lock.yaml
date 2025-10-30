@@ -60,6 +60,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/shared-lib':
+        specifier: workspace:*
+        version: link:../../packages/shared-lib
       '@ban/types':
         specifier: workspace:*
         version: link:../../packages/types

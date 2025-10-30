@@ -1,9 +1,7 @@
 import rascal, { BrokerConfig, ConnectionAttributes } from 'rascal';
 
 import { env } from '@ban/config';
-
-import { getDistrictIDs } from './services/bal.js';
-
+import { getDistrictIDs } from '@ban/shared-lib';
 
 import validator from './helpers/validator.js';
 import getBalVersion from './helpers/get-bal-version.js';
