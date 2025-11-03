@@ -26,7 +26,7 @@ type PendingBAL = {
 };
 
 // Liste des enrichisseurs qu’on attend
-const expectedEnrichers = ['beautifier', 'target-key'];
+const expectedEnrichers = ['beautifier', 'target-key', 'old-district'];
 
 // Durée maximale d’attente avant fallback (en ms)
 const timeoutMs = 5000;

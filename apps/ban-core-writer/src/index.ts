@@ -101,6 +101,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
 
   rows.forEach((row: any) => {
     const getterLabels = getLabelsFromRow(row, defaultIsoCode);
+    // TODO: Gérer les fusions profondes (plusieurs lignes pour une même entité) cf. oldDistrict
 
     // District
     if (row.id_ban_commune) {
@@ -176,7 +177,16 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
             hashIdFix: row.ban_enrich_hash_id_fix || '',
             DEPRECATED_cleInterop: row.cle_interop || '',
             DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKey: row.ban_enrich_ban_target_key_address || ['']
+            targetKey: row.ban_enrich_ban_target_key_address || [''],
+            oldDistrict: row.ban_enrich_old_district_code && row.ban_enrich_old_district_name
+              ? {
+                "labels": [{
+                  "isoCode": "fra",
+                  "value": row.ban_enrich_old_district_name
+                }],
+                "code": row.ban_enrich_old_district_code
+              }
+              : addresses[row.id_ban_adresse]?.meta?.ban?.oldDistrict || null,
           },
           dgfip: {
             cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
