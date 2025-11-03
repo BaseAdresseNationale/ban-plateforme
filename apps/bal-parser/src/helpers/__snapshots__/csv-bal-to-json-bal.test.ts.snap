@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`csvBalToJsonBal > should convert BAL CSV list into BAL JSON list 1`] = `Promise {}`;
