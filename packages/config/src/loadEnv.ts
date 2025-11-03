@@ -22,6 +22,8 @@ const envSchema = z.object({
   MONGO_HOST: z.string(),
   MONGO_PORT: z.string(),
   MONGO_DB: z.string(),
+  MONGO_USER: z.string().optional().default(''),
+  MONGO_PASSWORD: z.string().optional().default(''),
   RABBITMQ_HOST: z.string(),
   RABBITMQ_PORT: z.string(),
   RABBITMQ_USER: z.string(),
@@ -43,6 +45,8 @@ export const env = {
     host: process.env.MONGO_HOST!,
     port: parseInt(process.env.MONGO_PORT!, 10),
     db: process.env.MONGO_DB!,
+    username: process.env.MONGO_USER,
+    password: process.env.MONGO_PASSWORD,
   },
   RABBIT: {
     host: process.env.RABBITMQ_HOST!,

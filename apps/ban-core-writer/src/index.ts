@@ -49,14 +49,19 @@ const config = {
 };
 
 const { Pool } = pg;
-const mongoUrl = 'mongodb://localhost:27017';
-const mongoDbName = 'ban';
+
+const mongoUrl =
+  env.MONGO.username && env.MONGO.password
+    ? `mongodb+srv://${env.MONGO.username}:${env.MONGO.password}@${env.MONGO.host}?replicaSet=replicaset&tls=true&authSource=admin&readPreference=primary`
+    : `mongodb://${env.MONGO.host}:${env.MONGO.port}`;
+console.log(`[ban-writer] Mongo URL: ${mongoUrl}`);
+const mongoDbName = env.MONGO.db;
 const pgConfig = {
-  host: 'localhost',
-  port: 5432,
-  user: 'ban_user',
-  password: 'ban_pass',
-  database: 'ban',
+  host: env.PG.host,
+  port: env.PG.port,
+  user: env.PG.user,
+  password: env.PG.password,
+  database: env.PG.db,
 };
 
 const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
