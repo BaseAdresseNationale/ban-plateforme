@@ -1,0 +1,71 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`digestIDsFromBalUIDs > should return an empty object for an empty BanIDs string 1`] = `{}`;
+
+exports[`digestIDsFromBalUIDs > should return an empty object for an undefined BanIDs 1`] = `{}`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with addrID and mainTopoID 1`] = `
+{
+  "addressID": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "mainTopoID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with addrID and secondaryTopoIDs 1`] = `
+{
+  "addressID": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "secondaryTopoIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with addrID, mainTopoID, secondaryTopoIDs and districtID 1`] = `
+{
+  "addressID": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "mainTopoID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "secondaryTopoIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with mainTopoID and districtID 1`] = `
+{
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "mainTopoID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with only addrID 1`] = `
+{
+  "addressID": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with only districtID 1`] = `
+{
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with only mainTopoID 1`] = `
+{
+  "mainTopoID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+}
+`;
+
+exports[`digestIDsFromBalUIDs > should return an object with BanID with only secondaryTopoIDs 1`] = `
+{
+  "secondaryTopoIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+}
+`;

@@ -1,17 +1,24 @@
+import type { BrokerConfig, ConnectionAttributes } from 'rascal';
+
 import rascal from 'rascal';
 
 import { env } from '@ban/config';
+import { getDistrictIDs, getAssembledBal, getRevisionData } from '@ban/shared-lib';
 
-import parseBalForBan from './parseBalForBan.js';
+import validator from './helpers/validator.js';
+import getBalVersion from './helpers/get-bal-version.js';
+import csvBalToJsonBal from './helpers/csv-bal-to-json-bal.js';
 
-const rabbitConfig = {
+const AUTO_CREATE_DISTRICT = true; // Auto create district if not found
+
+const rabbitConfig: ConnectionAttributes = {
   hostname: env.RABBIT.host,
   port: Number(env.RABBIT.port),
   user: env.RABBIT.user,
   password: env.RABBIT.password,
 };
 
-const config = {
+const config: BrokerConfig = {
   vhosts: {
     '/': {
       connection: {
@@ -40,11 +47,86 @@ async function main() {
   try {
     const broker = await rascal.BrokerAsPromised.create(config);
     const subscription = await broker.subscribe('balUploaded');
-    subscription.on('message', async (message, content, ackOrNack) => {
+    subscription.on('message', async (message:any, content:any, ackOrNack) => {
       try {
-        const parsedRows = await parseBalForBan(content.payload);
+        let cog;
+        let dataBal;
+        let source; // TODO: Get source from API
+        let mandataire;
+        const {type, payload} = content;
+
+        console.log(
+          `[bal-parser] Nouveau message BAL reçu (type: ${type}) :`,
+          typeof content !== 'string'
+            ? JSON.stringify(content, null, 2)
+            : content,
+        );
+
+        switch (type) {
+          case 'application/json':
+            if (typeof payload === 'object' && payload.cog) {
+              cog = payload.cog;
+              const revisionData = await getRevisionData(cog);
+              if (revisionData) {
+                // Récupération réussie des données de révision depuis une BAL
+                const { revision, balTextData } = revisionData;
+                dataBal = balTextData;
+                source = 'bal';
+                mandataire = revision.client || {};
+                console.log(`[bal-parser]  BAL récupéré depuis depuis API-Depot pour le cog ${cog} via message de type [${type}]`);
+              } else {
+                // Aucune révision trouvée pour le COG. Récupération depuis l'assemblage
+                dataBal = await getAssembledBal(cog);
+                source = 'assemblage';
+                console.log(`[bal-parser]  BAL récupéré depuis bal-assembly pour le cog ${cog} via message de type [${type}]`);
+              }
+            } else {
+              throw new Error('JSON payload must contain a "cog" field.');
+            }
+            break;
+          case 'text/csv':
+          default:
+            if(typeof payload !== 'string') {
+              throw new Error(`Payload must be a string for type [${type || 'DEFAULT'}]`);
+            }
+            dataBal = payload;
+            console.log(`[bal-parser] BAL reçue en CSV via message de type [${type || 'DEFAULT'}]`, typeof payload);
+            break;
+        }
+
+        // Convert csv to json
+        const parsedRows = await csvBalToJsonBal(dataBal);
+
+        // Detect BAL version
+        const version = getBalVersion(parsedRows);
+
         console.log('[bal-parser] BAL parsée avec', parsedRows.length, 'lignes');
-        await broker.publish('balParsed', { id: content.id, rows: parsedRows });
+
+        if(!cog) {
+          cog = parsedRows[0].commune_insee; // TODO: manage multiple cogs
+        }
+
+        let districtIDs;
+        const shouldThrowError = !AUTO_CREATE_DISTRICT;
+        districtIDs = await getDistrictIDs(cog, shouldThrowError);
+
+        if (AUTO_CREATE_DISTRICT && !districtIDs) {
+          districtIDs = [...(new Set(parsedRows.map(({ id_ban_commune }) => id_ban_commune)))]
+          console.log('[bal-parser] Création automatique des districts pour les COGs trouvés dans la BAL :', districtIDs);
+        }
+
+        let useBanId = false;
+        useBanId = await validator(districtIDs || [], parsedRows, version, { cog });
+
+        await broker.publish('balParsed', {
+          id: content.id,
+          meta: {
+            useBanId,
+            ...(source ? { source } : {}), // add source only if defined
+            ...(mandataire ? { mandataire } : {}), // add mandataire only if defined
+          },
+          rows: parsedRows
+        });
         ackOrNack();
       } catch (err) {
         console.error('[bal-parser] Erreur:', err);
@@ -52,7 +134,7 @@ async function main() {
       }
     });
 
-    console.log('[bal-parser] En écoute...');
+    console.log('[bal-parser] En écoute...', AUTO_CREATE_DISTRICT ? ' (Auto création des districts activée)' : '');
   } catch (err) {
     console.error('[bal-parser] Erreur:', err);
     process.exit(1);

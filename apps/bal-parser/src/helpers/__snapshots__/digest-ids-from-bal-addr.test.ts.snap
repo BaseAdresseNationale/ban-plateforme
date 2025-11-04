@@ -1,0 +1,165 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`balJSONlegacy2balJSON > should convert BAL JSON legacy into BAL JSON with BanIDs 1`] = `
+[
+  {
+    "addressID": "03fb190a-cf5b-4f48-a1ab-7caa4d10e157",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "787ca7cf-8072-47ae-a8c6-98a62a8dd90c",
+  },
+  {
+    "addressID": "03fb190a-cf5b-4f48-a1ab-7caa4d10e157",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "787ca7cf-8072-47ae-a8c6-98a62a8dd90c",
+  },
+  {
+    "addressID": "d19b14c9-d9d0-478f-b741-c973d05c343f",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "787ca7cf-8072-47ae-a8c6-98a62a8dd90c",
+  },
+  {
+    "addressID": "4afc82e4-694e-4bb3-81cb-0a32cd59a300",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "7ce61747-d840-4019-97be-82dc0568619f",
+  },
+  {
+    "addressID": "18510122-0ad8-49fe-bbae-ca484d8f4e01",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "7ce61747-d840-4019-97be-82dc0568619f",
+  },
+  {
+    "addressID": "29387aa3-1dc6-4e38-a1e9-aea350c91296",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "7ce61747-d840-4019-97be-82dc0568619f",
+  },
+  {
+    "addressID": "577e9019-42bb-4965-b287-fe4cebe41038",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "61b54625-bef6-4450-95e1-b6f37d93441a",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "28fd0d23-9f3a-4ac0-8e17-05f851546f34",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "7a9e11ff-31b6-4f14-8494-55369e7dce04",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "5139b74a-f569-4008-aade-3bb955186134",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "5114f638-f99d-4da2-b3ed-d2e2c3a32765",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "2480fe76-bbd8-4703-a41a-5c43fd3c5891",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+  },
+  {
+    "addressID": "6edd2c77-e8db-4384-bbb6-810e868d4dee",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "f1a28bf1-fac3-41f0-8cb4-3abc82b2b963",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "1890569a-d05f-4cf9-b27b-9172c497023e",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "e9de2ecf-e082-448b-9a21-fe9d38d017ae",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "e6278261-1a1b-4606-9c20-a8f2d06738fa",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "ff8bb658-3f73-4ac3-ab04-7966e869e991",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "48691fd6-a611-4335-b346-a05679bcb31d",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+  },
+  {
+    "addressID": "aeda3e20-8204-4d2b-8e59-184df887ae4e",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c965715f-3874-4cba-ae4e-c9afa585f5eb",
+  },
+  {
+    "addressID": "aeda3e20-8204-4d2b-8e59-184df887ae4e",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c965715f-3874-4cba-ae4e-c9afa585f5eb",
+  },
+  {
+    "addressID": "8c12024d-6216-4634-aca0-598f569d632b",
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "c965715f-3874-4cba-ae4e-c9afa585f5eb",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "cfdb5a41-75b4-4964-ad95-f14f4ab6b23f",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "f52cf4c8-df1d-4619-9a64-0b0b3ee01c4e",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "d447b2d5-ff6d-42bc-8cb2-7efbfa2030e7",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "8b3ae0a2-81ad-45b6-b58a-925868e6a3bc",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "413eb0cb-561a-435a-af8f-d244023f9b40",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "1748660f-d473-400a-88ad-52d55f3fc9f5",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "3c091079-e2c0-4151-8d1f-3a000bc29894",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "16e337a0-d0c7-4c24-b8dc-e43edbd4d273",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "26d79f86-7051-4c51-a1b1-966fd7f1e345",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "17ec2d21-8c66-4a43-921e-817fb489f899",
+  },
+  {
+    "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+    "mainTopoID": "e89808c4-7f7e-46f3-b3a8-d40e4b783d8d",
+  },
+]
+`;
