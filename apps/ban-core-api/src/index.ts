@@ -5,6 +5,8 @@ import multer from 'multer';
 
 import { env } from '@ban/config';
 
+import balStockRouter from './routes/bal-stock.js';
+
 import type { BrokerAsPromised } from 'rascal';
 
 const rabbitConfig = {
@@ -96,6 +98,8 @@ app.post('/bal/text', express.text(), async (req, res) => {
     res.status(500).json({ error: 'Erreur traitement BAL' });
   }
 });
+
+app.use('/bal-stock', balStockRouter);
 
 app.listen(port, async () => {
   try {
