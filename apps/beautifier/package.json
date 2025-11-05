@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "dev": "tsx watch src/index.ts || true"
   },
   "dependencies": {
-    "@ban/config": "workspace:*"
+    "@ban/config": "workspace:*",
+    "@etalab/adresses-util": "^0.8.2",
+    "@nivalis/normadresse": "^2.0.1"
   }
 }
