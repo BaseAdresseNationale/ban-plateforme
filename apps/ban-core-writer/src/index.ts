@@ -75,7 +75,7 @@ const getItemPositions = (item: Record<string, any> | undefined, row: Record<str
 
 const getBanObjectsFromBalRows = (rows: any[]) => {
   const addresses: Record<string, any> = {};
-  const mainToponymes: Record<string, any> = {};
+  const commonToponyms: Record<string, any> = {};
   const districts: Record<string, any> = {};
 
   rows.forEach((row: any) => {
@@ -92,8 +92,8 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
 
     // Toponym
     if (row.id_ban_toponyme) {
-      mainToponymes[row.id_ban_toponyme] = {
-        ...mainToponymes?.[row.id_ban_toponyme] || {},
+      commonToponyms[row.id_ban_toponyme] = {
+        ...commonToponyms?.[row.id_ban_toponyme] || {},
         id: row.id_ban_toponyme,
         districtID: row.id_ban_commune,
         district: districts[row.id_ban_commune] || {},
@@ -141,7 +141,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
         mainCommonToponymID: row.id_ban_toponyme,
         secondaryCommonToponymIDs: row.id_ban_toponymes_secondaires ? row.id_ban_toponymes_secondaires.split('|') : [],
         districtID: row.id_ban_commune,
-        mainCommonToponym: mainToponymes[row.id_ban_toponyme] || {},
+        mainCommonToponym: commonToponyms[row.id_ban_toponyme] || {},
         districts: districts[row.id_ban_commune] || {},
         labels: row.ban_enrich_beautified_labels_lieudit_complement_nom,
         number: row.numero,
@@ -189,7 +189,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
 
   return {
     districts,
-    mainToponymes,
+    commonToponyms,
     addresses,
   };
 }
@@ -200,7 +200,7 @@ async function main() {
   const mongoDb = mongoClient.db(mongoDbName);
 
   const mongoCollectionDistricts = mongoDb.collection('districts');
-  const mongoCollectionMainToponyms = mongoDb.collection('mainToponyms');
+  const mongoCollectionCommonToponyms = mongoDb.collection('commonToponyms');
   const mongoCollectionAddresses = mongoDb.collection('addresses');
 
   const pgPool = new Pool(pgConfig); // TODO: Implement real value for PG
@@ -232,27 +232,30 @@ async function main() {
       const parsedDistrictsIds = Object.keys(banObjects.districts);
       await Promise.all([
         mongoCollectionAddresses.deleteMany({ districtID: { $in: parsedDistrictsIds } }),
-        mongoCollectionMainToponyms.deleteMany({ districtID: { $in: parsedDistrictsIds } }),
+        mongoCollectionCommonToponyms.deleteMany({ districtID: { $in: parsedDistrictsIds } }),
         mongoCollectionDistricts.deleteMany({ id: { $in: parsedDistrictsIds } }),
       ]);
       console.log(`[writer] Documents existants pour BAL ${parsed.id} contenant le(s) district(s) ${parsedDistrictsIds.join(', ')} supprimé(s)`);
 
       // Enregistrement MongoDB
       const currentTimestamp = new Date().toISOString();
-      console.log(`[writer] Enregistrement MongoDB de BAL ${parsed.id} avec ${Object.keys(banObjects.districts).length} districts, ${Object.keys(banObjects.mainToponymes).length} toponymes et ${Object.keys(banObjects.addresses).length} adresses`);
+      console.log(`[writer] Enregistrement MongoDB de BAL ${parsed.id} avec ${Object.keys(banObjects.districts).length} districts, ${Object.keys(banObjects.commonToponyms).length} toponymes et ${Object.keys(banObjects.addresses).length} adresses`);
       await Promise.all([
+        // Injection des districts
         mongoCollectionDistricts.insertMany(
           Object.values(banObjects?.districts).map(doc => ({
             ...doc,
             storedAt: currentTimestamp,
           })),
         ),
-        mongoCollectionMainToponyms.insertMany(
-          Object.values(banObjects?.mainToponymes).map(doc => ({
+        // Injection des toponymes
+        mongoCollectionCommonToponyms.insertMany(
+          Object.values(banObjects?.commonToponyms).map(doc => ({
             ...doc,
             storedAt: currentTimestamp,
           })),
         ),
+        // Injection des adresses
         mongoCollectionAddresses.insertMany(
           Object.values(banObjects?.addresses).map(doc => ({
             ...doc,
