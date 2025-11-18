@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`balPositionTypeToBanPositionType > should return building 1`] = `"building"`;
+
+exports[`balPositionTypeToBanPositionType > should return entrance 1`] = `"entrance"`;
+
+exports[`balPositionTypeToBanPositionType > should return other 1`] = `"other"`;
+
+exports[`balPositionTypeToBanPositionType > should return parcel 1`] = `"parcel"`;
+
+exports[`balPositionTypeToBanPositionType > should return postal delivery 1`] = `"postal delivery"`;
+
+exports[`balPositionTypeToBanPositionType > should return segment 1`] = `"segment"`;
+
+exports[`balPositionTypeToBanPositionType > should return staircase identifier 1`] = `"staircase identifier"`;
+
+exports[`balPositionTypeToBanPositionType > should return undefined 1`] = `undefined`;
+
+exports[`balPositionTypeToBanPositionType > should return undefined 2`] = `undefined`;
+
+exports[`balPositionTypeToBanPositionType > should return utility service 1`] = `"utility service"`;

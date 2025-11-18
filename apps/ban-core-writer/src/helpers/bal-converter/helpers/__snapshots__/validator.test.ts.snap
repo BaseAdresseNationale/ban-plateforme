@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`balTopoToBanTopo > Should return false as bal does not use ban IDs 1`] = `false`;
+
+exports[`balTopoToBanTopo > Should return true as bal 1.3 uses ban IDs 1`] = `true`;
+
+exports[`balTopoToBanTopo > Should return true as bal 1.4 uses ban IDs 1`] = `true`;

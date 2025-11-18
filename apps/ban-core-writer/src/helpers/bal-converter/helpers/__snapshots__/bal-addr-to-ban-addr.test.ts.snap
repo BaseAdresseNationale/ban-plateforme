@@ -1,0 +1,505 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`balAddrToBanAddr > should not consider as Ban Address 1`] = `undefined`;
+
+exports[`balAddrToBanAddr > should return BanAddress with BanID and BanTopoID 1`] = `
+{
+  "certified": true,
+  "districtID": undefined,
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": undefined,
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with BanID without BanTopoID 1`] = `
+{
+  "certified": true,
+  "districtID": undefined,
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "mainCommonToponymID": undefined,
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": undefined,
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with BanID, BanTopoID, other toponyms and BanDistrictID 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with BanTopoID 1`] = `
+{
+  "certified": true,
+  "districtID": undefined,
+  "id": undefined,
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": undefined,
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with label 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "labels": [
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with multilingual label 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "labels": [
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero",
+    },
+    {
+      "isoCode": "eus",
+      "value": "Antzinako Heroiaren Bidea",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with multilingual label after cleaning non-compliant ISO code lang 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "labels": [
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with multilingual label and ignore empty default value 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "labels": [
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with multilingual label and overwrited default value 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "labels": [
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with multiple positions 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          3,
+          4,
+        ],
+        "type": "Point",
+      },
+      "type": "other",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress with number '0' 1`] = `
+{
+  "certified": true,
+  "districtID": "dddddddd-0000-4aaa-9000-1234567890ff",
+  "id": "aaaaaaaa-0000-4aaa-9000-1234567890aa",
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 0,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": [
+    "cccccccc-0000-4aaa-9000-1234567890cc",
+    "cccccccc-1111-4aaa-9000-1234567890dd",
+    "cccccccc-2222-4aaa-9000-1234567890ee",
+  ],
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanAddress without BanID & BanTopoID 1`] = `
+{
+  "certified": true,
+  "districtID": undefined,
+  "id": undefined,
+  "mainCommonToponymID": undefined,
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": undefined,
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanToponym with multilingual label and personal config for default lang 1`] = `
+{
+  "certified": true,
+  "districtID": undefined,
+  "id": undefined,
+  "labels": [
+    {
+      "isoCode": "eus",
+      "value": "Antzinako Heroiaren Bidea",
+    },
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": undefined,
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`balAddrToBanAddr > should return BanToponym with multilingual label, personal config for default lang  and overwrited default value 1`] = `
+{
+  "certified": true,
+  "districtID": undefined,
+  "id": undefined,
+  "labels": [
+    {
+      "isoCode": "eus",
+      "value": "Denboraren heroiaren antzinako bidea",
+    },
+    {
+      "isoCode": "fra",
+      "value": "Ancien chemin du hero du temps",
+    },
+  ],
+  "mainCommonToponymID": "bbbbbbbb-0000-4aaa-9000-1234567890bb",
+  "meta": {
+    "bal": {
+      "cleInterop": "21286_0001_00001",
+    },
+  },
+  "number": 1,
+  "positions": [
+    {
+      "geometry": {
+        "coordinates": [
+          1,
+          2,
+        ],
+        "type": "Point",
+      },
+      "type": "entrance",
+    },
+  ],
+  "secondaryCommonToponymIDs": undefined,
+  "updateDate": 2021-01-01T00:00:00.000Z,
+}
+`;

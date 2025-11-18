@@ -3,15 +3,27 @@
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "tsx watch src/index.ts || true",
     "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "@ban/config": "workspace:*",
+    "@ban/types": "workspace:*",
+    "@types/object-hash": "^3.0.6",
+    "@types/papaparse": "^5.3.16",
+    "@types/uuid": "^10.0.0",
     "mongodb": "^6.18.0",
-    "pg": "^8.16.3"
+    "node-fetch": "^3.3.2",
+    "object-hash": "^3.0.0",
+    "papaparse": "^5.5.3",
+    "pg": "^8.16.3",
+    "uuid": "^9.0.1",
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@types/pg": "^8.15.5"

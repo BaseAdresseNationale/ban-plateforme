@@ -1,0 +1,1183 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`balToBan > should convert Bal list into Ban list 1`] = `
+{
+  "addresses": {
+    "03fb190a-cf5b-4f48-a1ab-7caa4d10e157": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "03fb190a-cf5b-4f48-a1ab-7caa4d10e157",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "La voie celeste",
+        },
+      ],
+      "mainCommonToponymID": "787ca7cf-8072-47ae-a8c6-98a62a8dd90c",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_2xdjog_00001",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000C0115",
+            "212860000C0114",
+          ],
+        },
+        "idfix": {
+          "hash": "58f38f6a3ebc0417a9b02ba5c816cf37",
+        },
+      },
+      "number": 1,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.081243,
+              48.769923,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+        {
+          "geometry": {
+            "coordinates": [
+              1.081148,
+              48.770269,
+            ],
+            "type": "Point",
+          },
+          "type": "unit identifier",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2022-08-23T00:00:00.000Z",
+    },
+    "18510122-0ad8-49fe-bbae-ca484d8f4e01": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "18510122-0ad8-49fe-bbae-ca484d8f4e01",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Observatoire d’Hyrule",
+        },
+      ],
+      "mainCommonToponymID": "7ce61747-d840-4019-97be-82dc0568619f",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_mz58hg_00031",
+        },
+        "idfix": {
+          "hash": "1e3e1ed62f8ac2418a77b5b4ee323997",
+        },
+      },
+      "number": 31,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.08586,
+              48.773833,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "1890569a-d05f-4cf9-b27b-9172c497023e": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "1890569a-d05f-4cf9-b27b-9172c497023e",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Les Bois Perdus",
+        },
+      ],
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00006",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0237",
+          ],
+        },
+        "idfix": {
+          "hash": "fc0d30a7e9fdcdf2249346f10208e7e5",
+        },
+      },
+      "number": 6,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.086775,
+              48.759802,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "2480fe76-bbd8-4703-a41a-5c43fd3c5891": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "2480fe76-bbd8-4703-a41a-5c43fd3c5891",
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00010",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0053",
+            "212860000D0054",
+          ],
+        },
+        "idfix": {
+          "hash": "1e28632c625c2ce14bb090c32f607132",
+        },
+      },
+      "number": 10,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.082305,
+              48.762015,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "28fd0d23-9f3a-4ac0-8e17-05f851546f34": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "28fd0d23-9f3a-4ac0-8e17-05f851546f34",
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00005",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0305",
+            "212860000D0307",
+            "212860000D0308",
+            "212860000D0266",
+          ],
+        },
+        "idfix": {
+          "hash": "d5f00b652ca9805e93d79281f916073f",
+        },
+      },
+      "number": 5,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.085079,
+              48.762971,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "29387aa3-1dc6-4e38-a1e9-aea350c91296": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "29387aa3-1dc6-4e38-a1e9-aea350c91296",
+      "mainCommonToponymID": "7ce61747-d840-4019-97be-82dc0568619f",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_mz58hg_00033",
+        },
+        "idfix": {
+          "hash": "fe1a4fb08c9d0f246c80c8bdabe3730b",
+        },
+      },
+      "number": 33,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.085574,
+              48.774035,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "48691fd6-a611-4335-b346-a05679bcb31d": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "48691fd6-a611-4335-b346-a05679bcb31d",
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00011",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0143",
+          ],
+        },
+        "idfix": {
+          "hash": "0bc059047107cc1e42eadb189c9bb582",
+        },
+      },
+      "number": 11,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.087958,
+              48.760488,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "4afc82e4-694e-4bb3-81cb-0a32cd59a300": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "4afc82e4-694e-4bb3-81cb-0a32cd59a300",
+      "mainCommonToponymID": "7ce61747-d840-4019-97be-82dc0568619f",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_mz58hg_00029",
+        },
+        "idfix": {
+          "hash": "385829ed5afc6c4bf59fa53d32ff3c4b",
+        },
+      },
+      "number": 29,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.086279,
+              48.773553,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "5114f638-f99d-4da2-b3ed-d2e2c3a32765": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "5114f638-f99d-4da2-b3ed-d2e2c3a32765",
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00009",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0290",
+            "212860000D0292",
+            "212860000D0273",
+            "212860000D0288",
+          ],
+        },
+        "idfix": {
+          "hash": "0ca576fd16e085c51b65a2f5390a355e",
+        },
+      },
+      "number": 9,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.083096,
+              48.76238,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "5139b74a-f569-4008-aade-3bb955186134": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "5139b74a-f569-4008-aade-3bb955186134",
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00008",
+        },
+        "cadastre": {
+          "ids": [
+            "21286000ZC0087",
+          ],
+        },
+        "idfix": {
+          "hash": "410b40aafcce28effb83c59d9f081a9d",
+        },
+      },
+      "number": 8,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.082967,
+              48.762421,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "577e9019-42bb-4965-b287-fe4cebe41038": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "577e9019-42bb-4965-b287-fe4cebe41038",
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00001",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0113",
+          ],
+        },
+        "idfix": {
+          "hash": "64ab823969cc56990b28a26ca2d38cba",
+        },
+      },
+      "number": 1,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.085624,
+              48.763273,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "61b54625-bef6-4450-95e1-b6f37d93441a": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "61b54625-bef6-4450-95e1-b6f37d93441a",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Relai d’Hylia",
+        },
+      ],
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00003",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0113",
+          ],
+        },
+        "idfix": {
+          "hash": "b25fe71184ccfd2141733380397bffee",
+        },
+      },
+      "number": 3,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.08535,
+              48.763191,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "6edd2c77-e8db-4384-bbb6-810e868d4dee": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "6edd2c77-e8db-4384-bbb6-810e868d4dee",
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00003",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0304",
+            "212860000D0229",
+          ],
+        },
+        "idfix": {
+          "hash": "93c2d2498f1330d6c9c174eb0f36dfe8",
+        },
+      },
+      "number": 3,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.086349,
+              48.759711,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "7a9e11ff-31b6-4f14-8494-55369e7dce04": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "7a9e11ff-31b6-4f14-8494-55369e7dce04",
+      "mainCommonToponymID": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_p899mr_00007",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0293",
+          ],
+        },
+        "idfix": {
+          "hash": "80f0d69b1e26b9ce918e770d2a2d7bb8",
+        },
+      },
+      "number": 7,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.084526,
+              48.76266,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "8c12024d-6216-4634-aca0-598f569d632b": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "8c12024d-6216-4634-aca0-598f569d632b",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Empreinte du Fleau",
+        },
+      ],
+      "mainCommonToponymID": "c965715f-3874-4cba-ae4e-c9afa585f5eb",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0085_00002",
+        },
+        "idfix": {
+          "hash": "b157bd429be9dbed36bd2c93b1eae4dd",
+        },
+      },
+      "number": 2,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.079699,
+              48.773594,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "aeda3e20-8204-4d2b-8e59-184df887ae4e": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "aeda3e20-8204-4d2b-8e59-184df887ae4e",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Empreinte du Fleau",
+        },
+      ],
+      "mainCommonToponymID": "c965715f-3874-4cba-ae4e-c9afa585f5eb",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0085_00001",
+        },
+        "idfix": {
+          "hash": "661ba8f682fd255b9211148012a2117f",
+        },
+      },
+      "number": 1,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.07932,
+              48.773412,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+        {
+          "geometry": {
+            "coordinates": [
+              1.078832,
+              48.773161,
+            ],
+            "type": "Point",
+          },
+          "type": "unit identifier",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2022-08-23T00:00:00.000Z",
+    },
+    "d19b14c9-d9d0-478f-b741-c973d05c343f": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "d19b14c9-d9d0-478f-b741-c973d05c343f",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "La voie celeste",
+        },
+      ],
+      "mainCommonToponymID": "787ca7cf-8072-47ae-a8c6-98a62a8dd90c",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_2xdjog_00002",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000C0237",
+            "212860000C0107",
+          ],
+        },
+        "idfix": {
+          "hash": "2dec4ef5d08ce9a081f9958e10c8e5b0",
+        },
+      },
+      "number": 2,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.081444,
+              48.769615,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "e6278261-1a1b-4606-9c20-a8f2d06738fa": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "e6278261-1a1b-4606-9c20-a8f2d06738fa",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Les Bois Perdus",
+        },
+      ],
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00008",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0236",
+          ],
+        },
+        "idfix": {
+          "hash": "fdae71fa34182e8e89c3af0ade05dc00",
+        },
+      },
+      "number": 8,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.087306,
+              48.760129,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "e9de2ecf-e082-448b-9a21-fe9d38d017ae": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "e9de2ecf-e082-448b-9a21-fe9d38d017ae",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Les Bois Perdus",
+        },
+      ],
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00007",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0150",
+          ],
+        },
+        "idfix": {
+          "hash": "9e4db7a77162454efb20ef9f02b22c63",
+        },
+      },
+      "number": 7,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.086974,
+              48.760002,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "f1a28bf1-fac3-41f0-8cb4-3abc82b2b963": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "f1a28bf1-fac3-41f0-8cb4-3abc82b2b963",
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00005",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0230",
+          ],
+        },
+        "idfix": {
+          "hash": "db0f8e38b7b0af8a647c8047d2e6d14d",
+        },
+      },
+      "number": 5,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.086628,
+              48.759821,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "ff8bb658-3f73-4ac3-ab04-7966e869e991": {
+      "certified": false,
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "ff8bb658-3f73-4ac3-ab04-7966e869e991",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Les Bois Perdus",
+        },
+      ],
+      "mainCommonToponymID": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "meta": {
+        "bal": {
+          "cleInterop": "21286_0040_00009",
+        },
+        "cadastre": {
+          "ids": [
+            "212860000D0148",
+            "212860000D0284",
+          ],
+        },
+        "idfix": {
+          "hash": "188c29bd0cd87ccd8818a81bd91aa16f",
+        },
+      },
+      "number": 9,
+      "positions": [
+        {
+          "geometry": {
+            "coordinates": [
+              1.087483,
+              48.760315,
+            ],
+            "type": "Point",
+          },
+          "type": "entrance",
+        },
+      ],
+      "secondaryCommonToponymIDs": undefined,
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+  },
+  "commonToponyms": {
+    "16e337a0-d0c7-4c24-b8dc-e43edbd4d273": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.067195,
+          48.760165,
+        ],
+        "type": "Point",
+      },
+      "id": "16e337a0-d0c7-4c24-b8dc-e43edbd4d273",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Les Bois Perdus",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_B010",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "8422b18fd4dbf6b2a5982b4c5c9dda71",
+        },
+      },
+      "updateDate": "2022-06-03T00:00:00.000Z",
+    },
+    "1748660f-d473-400a-88ad-52d55f3fc9f5": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.063471,
+          48.771215,
+        ],
+        "type": "Point",
+      },
+      "id": "1748660f-d473-400a-88ad-52d55f3fc9f5",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Observatoire d’Hyrule",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_zpe59o",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "17c4735267406add8846f624f88d55d3",
+        },
+      },
+      "updateDate": "2020-07-03T00:00:00.000Z",
+    },
+    "17ec2d21-8c66-4a43-921e-817fb489f899": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.06278,
+          48.759994,
+        ],
+        "type": "Point",
+      },
+      "id": "17ec2d21-8c66-4a43-921e-817fb489f899",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Les Quatre Maisons",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_B040",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "4ac385db9c38ea9ac83d14ad2cec5fa4",
+        },
+      },
+      "updateDate": "2022-08-23T00:00:00.000Z",
+    },
+    "26d79f86-7051-4c51-a1b1-966fd7f1e345": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.060606,
+          48.768683,
+        ],
+        "type": "Point",
+      },
+      "id": "26d79f86-7051-4c51-a1b1-966fd7f1e345",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Armurerie de l’Ancien Royaume",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_vwgc9s",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "c461874d9881ddd58b1b9af6610273ca",
+        },
+      },
+      "updateDate": "2022-06-13T00:00:00.000Z",
+    },
+    "3c091079-e2c0-4151-8d1f-3a000bc29894": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.061001,
+          48.761039,
+        ],
+        "type": "Point",
+      },
+      "id": "3c091079-e2c0-4151-8d1f-3a000bc29894",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Empreinte du Fleau",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_B015",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "9dd55103ae387925fd207441dc16a250",
+        },
+      },
+      "updateDate": "2020-08-31T00:00:00.000Z",
+    },
+    "413eb0cb-561a-435a-af8f-d244023f9b40": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.081033,
+          48.772203,
+        ],
+        "type": "Point",
+      },
+      "id": "413eb0cb-561a-435a-af8f-d244023f9b40",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "La voie celeste",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_B023",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "ba62090ee3ae36711fb6c0b36fa2b3df",
+        },
+      },
+      "updateDate": "2020-07-03T00:00:00.000Z",
+    },
+    "468d0b9b-ec0c-448d-8188-4e28762251e2": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "468d0b9b-ec0c-448d-8188-4e28762251e2",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Route de la Baleine",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_p899mr",
+        },
+        "idfix": {
+          "hash": "8928ba0b9bd611aff9aa89a23aefe4f9",
+        },
+      },
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "787ca7cf-8072-47ae-a8c6-98a62a8dd90c": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "787ca7cf-8072-47ae-a8c6-98a62a8dd90c",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Rue Rhoam Bosphoramus",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_2xdjog",
+        },
+        "idfix": {
+          "hash": "20e99798cbe2c8b49372bfbaf23afd7f",
+        },
+      },
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "7ce61747-d840-4019-97be-82dc0568619f": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "7ce61747-d840-4019-97be-82dc0568619f",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Allée des Prodiges",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_mz58hg",
+        },
+        "idfix": {
+          "hash": "1e035ffb2b452d5cffc0cdaac881355d",
+        },
+      },
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "8b3ae0a2-81ad-45b6-b58a-925868e6a3bc": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.060016,
+          48.785677,
+        ],
+        "type": "Point",
+      },
+      "id": "8b3ae0a2-81ad-45b6-b58a-925868e6a3bc",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Passage de Daruk",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_t6v2h3",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "fb43b18bc090a7da69afdb693fec3c98",
+        },
+      },
+      "updateDate": "2020-07-03T00:00:00.000Z",
+    },
+    "c965715f-3874-4cba-ae4e-c9afa585f5eb": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "c965715f-3874-4cba-ae4e-c9afa585f5eb",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Impasse des lynels",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_0085",
+        },
+        "idfix": {
+          "hash": "4b699fb29e730bcc166d059c5b4b53a3",
+        },
+      },
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "c9b6df77-638b-4b30-991e-71486a91ea95": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "id": "c9b6df77-638b-4b30-991e-71486a91ea95",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Chemin de la legende",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_0040",
+        },
+        "idfix": {
+          "hash": "3b282b93cf116741f836b793b6a4b2f7",
+        },
+      },
+      "updateDate": "2021-09-06T00:00:00.000Z",
+    },
+    "cfdb5a41-75b4-4964-ad95-f14f4ab6b23f": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.088235,
+          48.758813,
+        ],
+        "type": "Point",
+      },
+      "id": "cfdb5a41-75b4-4964-ad95-f14f4ab6b23f",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Etang du sorcier",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_ty2whe",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "8835eed19d4b71ee4010c76bc11567bb",
+        },
+      },
+      "updateDate": "2020-07-03T00:00:00.000Z",
+    },
+    "d447b2d5-ff6d-42bc-8cb2-7efbfa2030e7": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.071619,
+          48.751484,
+        ],
+        "type": "Point",
+      },
+      "id": "d447b2d5-ff6d-42bc-8cb2-7efbfa2030e7",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Arbre Mojo",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_adckqc",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "1296593f99fd1113e83b5db18db896b8",
+        },
+      },
+      "updateDate": "2020-07-03T00:00:00.000Z",
+    },
+    "e89808c4-7f7e-46f3-b3a8-d40e4b783d8d": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.077283,
+          48.766076,
+        ],
+        "type": "Point",
+      },
+      "id": "e89808c4-7f7e-46f3-b3a8-d40e4b783d8d",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Chemin du Moulin",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_k6znad",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "86b6f1b46dd14cf5e287120953981e0e",
+        },
+      },
+      "updateDate": "2023-01-13T00:00:00.000Z",
+    },
+    "f52cf4c8-df1d-4619-9a64-0b0b3ee01c4e": {
+      "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+      "geometry": {
+        "coordinates": [
+          1.071305,
+          48.760311,
+        ],
+        "type": "Point",
+      },
+      "id": "f52cf4c8-df1d-4619-9a64-0b0b3ee01c4e",
+      "labels": [
+        {
+          "isoCode": "fra",
+          "value": "Relai d’Hylia",
+        },
+      ],
+      "meta": {
+        "bal": {
+          "deprecatedID": "21286_B019",
+          "isLieuDit": true,
+        },
+        "idfix": {
+          "hash": "3319e3a47272f665fc0f279c0c5ccf95",
+        },
+      },
+      "updateDate": "2020-07-03T00:00:00.000Z",
+    },
+  },
+  "districtID": "e2b5c142-3eb3-4d07-830a-3d1a59195dfd",
+}
+`;
