@@ -4,6 +4,5 @@
     "module": "NodeNext",
     "outDir": "dist"
   },
-  "composite": true,
-  "include": ["src", "src/helpers/__mocks__"]
+  "include": ["src"]
 }
