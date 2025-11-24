@@ -20,7 +20,8 @@
     "dev:all": "pnpm --recursive --parallel run dev || true",
     "dev": "pnpm dev:start || true",
     "build": "pnpm --recursive run build",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "clean": "rm -rf node_modules dist & pnpm -r exec rm -rf node_modules dist"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",

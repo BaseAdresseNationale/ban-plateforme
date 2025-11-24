@@ -3,6 +3,7 @@ import { MongoClient } from 'mongodb';
 import pg from 'pg';
 
 import { env } from '@ban/config';
+import processBalAdresses from './services/balBan.service.js';
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -220,6 +221,7 @@ async function main() {
       if (hasAllIds) {
         // Écriture PostgreSQL simulée (à remplacer par du vrai SQL)
         console.log(`[writer] Enregistrement PostgreSQL de ${parsed.rows.length} lignes`);
+        processBalAdresses(parsed.rows);
       } else {
         console.log(`[writer] Données incomplètes pour PostgreSQL, passage MongoDB`);
       }
