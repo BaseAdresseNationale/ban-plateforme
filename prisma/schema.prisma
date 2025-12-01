@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["ban"]
+}
+
+model action {
+  id         String   @id @db.Uuid
+  districtID String   @db.Uuid
+  status     Boolean
+  label      String   @db.VarChar(255)
+  siren      String   @db.VarChar(255)
+  sessionID  String   @db.Uuid
+  createdAt  DateTime @db.Timestamptz(6)
+  updatedAt  DateTime @db.Timestamptz(6)
+  district   district @relation(fields: [districtID], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session    session  @relation(fields: [sessionID], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("ban")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model address {
+  id                        String                   @id @db.Uuid
+  mainCommonToponymID       String                   @db.Uuid
+  secondaryCommonToponymIDs String[]                 @db.Uuid
+  districtID                String                   @db.Uuid
+  number                    Int
+  suffix                    String?                  @db.VarChar(255)
+  labels                    Json[]
+  certified                 Boolean?
+  positions                 Json[]
+  updateDate                DateTime?                @db.Timestamptz(6)
+  meta                      Json?
+  range_validity            Unsupported("tstzrange")?
+  isActive                  Boolean                  @default(true)
+  district                  district                 @relation(fields: [districtID], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  common_toponym            common_toponym           @relation(fields: [mainCommonToponymID], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  address_h                 address_h[]              @ignore
+  certificate               certificate[]
+
+  @@index([certified], map: "address_certified")
+  @@index([districtID], map: "address_district_i_d")
+  @@index([mainCommonToponymID], map: "address_main_common_toponym_i_d")
+  @@index([secondaryCommonToponymIDs], map: "address_secondary_common_toponym_i_ds")
+  @@schema("ban")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This table contains exclusion constraints and requires additional setup for migrations. Visit https://pris.ly/d/exclusion-constraints for more info.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model address_h {
+  id                        String                   @db.Uuid
+  mainCommonToponymID       String                   @db.Uuid
+  secondaryCommonToponymIDs String[]                 @db.Uuid
+  districtID                String                   @db.Uuid
+  number                    Int
+  suffix                    String?                  @db.VarChar(255)
+  labels                    Json[]
+  certified                 Boolean?
+  positions                 Json[]
+  updateDate                DateTime?                @db.Timestamptz(6)
+  meta                      Json?
+  range_validity            Unsupported("tstzrange")
+  isActive                  Boolean
+  address                   address                  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "adresse_h_id_fkey")
+
+  @@index([id])
+  @@index([range_validity], type: Gist)
+  @@ignore
+  @@schema("ban")
+}
+
+model certificate {
+  id           String    @id @db.Uuid
+  address_id   String    @db.Uuid
+  full_address Json
+  cadastre_ids String[]  @db.VarChar(255)
+  createdAt    DateTime? @db.Timestamptz(6)
+  address      address   @relation(fields: [address_id], references: [id], onDelete: Cascade)
+
+  @@schema("ban")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model common_toponym {
+  id               String                   @id @db.Uuid
+  districtID       String                   @db.Uuid
+  labels           Json[]
+  geometry         Json?
+  updateDate       DateTime?                @db.Timestamptz(6)
+  meta             Json?
+  range_validity   Unsupported("tstzrange")?
+  isActive         Boolean                  @default(true)
+  address          address[]
+  district         district                 @relation(fields: [districtID], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  common_toponym_h common_toponym_h[]       @ignore
+
+  @@index([districtID], map: "common_toponym_district_i_d")
+  @@schema("ban")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This table contains exclusion constraints and requires additional setup for migrations. Visit https://pris.ly/d/exclusion-constraints for more info.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model common_toponym_h {
+  id             String                   @db.Uuid
+  districtID     String                   @db.Uuid
+  labels         Json[]
+  geometry       Json?
+  updateDate     DateTime?                @db.Timestamptz(6)
+  meta           Json?
+  range_validity Unsupported("tstzrange")
+  isActive       Boolean
+  common_toponym common_toponym           @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id])
+  @@index([range_validity], type: Gist)
+  @@ignore
+  @@schema("ban")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model district {
+  id             String                   @id @db.Uuid
+  labels         Json[]
+  updateDate     DateTime                 @db.Timestamptz(6)
+  config         Json?
+  meta           Json?
+  range_validity Unsupported("tstzrange")?
+  isActive       Boolean                  @default(true)
+  action         action[]
+  address        address[]
+  common_toponym common_toponym[]
+  district_h     district_h[]             @ignore
+
+  @@schema("ban")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This table contains exclusion constraints and requires additional setup for migrations. Visit https://pris.ly/d/exclusion-constraints for more info.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model district_h {
+  id             String                   @db.Uuid
+  labels         Json[]
+  updateDate     DateTime                 @db.Timestamptz(6)
+  config         Json?
+  meta           Json?
+  range_validity Unsupported("tstzrange")
+  isActive       Boolean
+  district       district                 @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id])
+  @@index([range_validity], type: Gist)
+  @@ignore
+  @@schema("ban")
+}
+
+model job_status {
+  id        String   @id @db.VarChar(255)
+  status    String?  @db.VarChar(255)
+  dataType  String?  @db.VarChar(255)
+  jobType   String?  @db.VarChar(255)
+  count     Int?
+  message   String?  @db.VarChar(255)
+  report    Json?
+  createdAt DateTime @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+
+  @@schema("ban")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model revisions {
+  id           String                @id @db.Uuid
+  revisionId   String                @db.VarChar(255)
+  cog          String                @db.VarChar(5)
+  districtName String?               @db.VarChar(100)
+  districtId   String?               @db.Uuid
+  status       enum_revisions_status
+  message      String?
+  createdAt    DateTime              @db.Timestamptz(6)
+
+  @@schema("ban")
+}
+
+model session {
+  id         String   @id @db.Uuid
+  sub        String   @db.VarChar(255)
+  name       String?  @db.VarChar(255)
+  givenName  String?  @db.VarChar(255)
+  familyName String?  @db.VarChar(255)
+  usualName  String?  @db.VarChar(255)
+  email      String   @db.VarChar(255)
+  siret      String   @db.VarChar(255)
+  aud        String   @db.VarChar(255)
+  exp        BigInt
+  iat        BigInt
+  iss        String   @db.VarChar(255)
+  createdAt  DateTime @db.Timestamptz(6)
+  updatedAt  DateTime @db.Timestamptz(6)
+  action     action[]
+
+  @@schema("ban")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model subscribers {
+  id                String   @id @db.Uuid
+  subscriptionName  String?  @db.VarChar(255)
+  webhookUrl        String   @unique @db.VarChar(500)
+  districtsToFollow String[] @default([]) @db.VarChar(255)
+  statusesToFollow  String[] @default(["error", "warning"]) @db.VarChar(255)
+  isActive          Boolean  @default(true)
+  createdBy         String?  @db.VarChar(255)
+  createdByEmail    String?  @db.VarChar(255)
+  createdAt         DateTime @db.Timestamptz(6)
+
+  @@schema("ban")
+}
+
+enum enum_revisions_status {
+  success
+  error
+  warning
+  info
+
+  @@schema("ban")
+}
