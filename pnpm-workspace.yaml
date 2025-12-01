@@ -8,5 +8,7 @@ ignoredBuiltDependencies:
 inject-workspace-packages: true
 
 onlyBuiltDependencies:
+  - '@prisma/engines'
   - esbuild
+  - prisma
   - sqlite3
