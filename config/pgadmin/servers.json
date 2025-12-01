@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "BAN Local",
+      "Group": "Servers",
+      "Host": "ban_postgres",
+      "Port": 5432,
+      "MaintenanceDB": "ban",
+      "Username": "ban_user",
+      "SSLMode": "prefer"
+    }
+  }
+}
