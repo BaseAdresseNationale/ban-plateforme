@@ -3,9 +3,11 @@ import { MongoClient } from 'mongodb';
 
 import { env } from '@ban/config';
 
+// import { testBdd } from './test/bddTools.js';
 import logger from './tools/logger.js';
 import prismaPg from './db/prisma.js';
 import { writeInMongoDb } from './api/api-mongo-ban.js';
+import { writeInPgDb } from './api/api-pg-ban.js';
 import { getBanObjectsFromBalRows } from './helper.js';
 
 const rabbitConfig = {
@@ -83,7 +85,8 @@ async function main() {
       // Ecriture PostgreSQL si les objets ont tous les IDs requis
       if (isWithIds) {
         // PostgreSQL
-        logger.info(`[writer] SIMULATION : Enregistrement PostgreSQL de BAL ${parsed.id} avec ${parsed.rows.length} lignes`);
+        logger.info(`[writer] Enregistrement PostgreSQL de BAL ${parsed.id} avec ${parsed.rows.length} lignes`);
+        await writeInPgDb(prismaPg, banObjects)
       } else {
         logger.info(`[writer] Données incomplètes pour PostgreSQL, passage direct à MongoDB`);
       }
@@ -99,6 +102,8 @@ async function main() {
   });
 
   logger.log('[writer] En écoute sur bal.ready...');
+  // Test database connection
+  // testBdd();
 }
 
 main();
