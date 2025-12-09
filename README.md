@@ -1,315 +1,260 @@
-# 📦 BAN Platform Monorepo
+# 🏛️ BAN Platform — Développement & Architecture
 
-Ce dépôt contient les services et librairies de la plateforme **Base Adresse Nationale (BAN)**.
+BAN-Plateforme est l’infrastructure technique permettant la gestion, l’enrichissement et la diffusion de **l’Adresse en France**, opérée dans le cadre de la **Base Adresse Nationale (BAN)** et portée par l’État français, sous le pilotage de l'**Institut national de l’information géographique et forestière (IGN)**.
 
-Il est structuré en **monorepo** avec [`pnpm`](https://pnpm.io), utilise **TypeScript**, **ESM**, et suit une approche modulaire :
-chaque service ou librairie se trouve dans un dossier indépendant.
+Elle fournit un écosystème cohérent de microservices capables de :
+
+- traiter des fichiers BAL/BAN,
+- orchestrer les enrichissements,
+- historiser les données d’adresse,
+- exposer des API performantes,
+- garantir la qualité et la traçabilité des informations adressées.
+
+La BAN-Platform est un environnement **multi-services** permettant :
+
+- le parsing, l’enrichissement et l’écriture de fichiers BAL/BAN,
+- l’orchestration via RabbitMQ,
+- l’enregistrement en base PostgreSQL (schéma BAN complet + triggers d’historisation),
+- l’exposition des données via des APIs (MongoDB).
+
+Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
 ---
 
-## 📁 Structure du projet
+## 🚀 Démarrage du projet
+
+Cette section explique comment lancer BAN-Platform en local.
+
+Bienvenue sur la BAN Platform !\
+Ce guide devrait vous offrir un demarrage rapide, même sur une machine vierge.
+
+### 1. 🧩 Prérequis
+
+- **Node.js ≥ 24**
+- **PNPM ≥ 10**
+- **Docker / Docker Desktop**
+
+### 2. 📦 Installation du projet
 
 ```shell
-ban-platform/
-├── apps/
-│   ├── bal-parser/         # Service d'import des fichiers BAL
-│   └── ...                 # Autres services
-├── packages/
-│   ├── shared-lib/         # Librairie partagée (utils, helpers, etc.)
-│   └── ...                 # Autres Librairies partagées
-├── boilerplate/
-│   ├── app/                # Exemple de services
-│   └── package/            # Exemple de Librairie partagée
-│
-├── .env.                   # Variable d'environement
-├── .eslintrc.cjs           # Config ESLint partagée
-├── pnpm-workspace.yaml     # Déclaration des workspaces
-└── tsconfig.base.json       # Config TypeScript partagée
-```
-
----
-
-## 🔧 Installation
-
-Assurez-vous d’avoir installé :
-
-- [Node.js (v24+)](https://nodejs.org/)
-- [PNPM (v10.12+)](https://pnpm.io/)
-- [Docker (v4+)](https://www.docker.com/)
-
-Puis, installer toutes les dépendances requises :
-
-```bash
+git clone <repo>
+cd ban-platform
 pnpm install
 ```
 
----
+### 3. ⚙️ Configuration de l’environnement
 
-## 💻 Développement
+Copiez le fichier d’exemple :
 
-### Démarrer BAN-Platform avec l'environnement de développement (avec hot-reload)
-
-Pour démarrer l'ensemble de la plateforme (tous les services) dans /ban-plateforme :
-
-```bash
-pnpm dev:start
+```shell
+cp .env.example .env
 ```
 
-#### Pour ne démarrer qu'un unique service de BAN-Platform (avec hot-reload)
+Puis ajustez les valeurs selon vos besoins :
 
-```bash
-pnpm --filter @ban/bal-parser dev
+```shell
+PG_DB=ban
+PG_USER=ban_user
+PG_PASSWORD=ban_password
+PG_PORT=5432
+
+PGADMIN_PORT=8082
+PGADMIN_DEFAULT_EMAIL=admin@ban.fr
+PGADMIN_DEFAULT_PASSWORD=admin
 ```
 
-> Note : Les environnements de développement utilisent `tsx` pour exécuter les fichiers sources avec rechargement automatique.
+> Ces variables alimentent `docker-compose.dev.ban.yml` ainsi que les scripts de développement.
 
----
+### 4. 🚀 Démarrer l’infrastructure + services Node
 
-## 🚀 Démarrage local complet à partir des `artifacts` de CI
-
-Cette approche permet de récupérer automatiquement les artefacts produits par la CI et de lancer un environnement complet BAN (RabbitMQ, PostgreSQL, MongoDB et tous les services BAN) en local tout en étant au plus proche des environnements de production.
-
-### 🛠️ Prérequis supplémentaires
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mac/Win) ou Docker Engine (Linux)
-- [GitHub CLI (`gh`)](https://cli.github.com/) + authentification :
-- [fzf (menu interactif CLI)](https://github.com/junegunn/fzf)
-- `tar` et `unzip` (présents par défaut sur Mac/Linux).
-
-L'authentification est obligatoire pour récupérer les artefacts depuis GitHub :
-
-  ```bash
-  gh auth login
-  ```
-
----
-
-### ▶️ Télécharger et démarrer BAN-Platform
-
-```bash
-pnpm ban:start
+```shell
+pnpm dev
 ```
 
 Ce script :
 
-1. Vérifie les prérequis (Docker, gh, etc.)
-2. Liste les derniers runs CI GitHub (workflow **Build & Package BAN Services**)
-3. Télécharge les artefacts `.tar.gz`
-4. Extrait les services BAN dans `.services/`
-5. Propose un démarrage :
-   - **Docker** : chaque service dans un container Node
-   - **Local** : chaque service lancé via `node dist/index.js`
-6. Lance RabbitMQ, PostgreSQL, MongoDB
+- charge automatiquement les variables de `.env`,
+- démarre Postgres, Mongo, RabbitMQ, pgAdmin et Mongo-Express,
+- lance **toutes les apps Node** en mode `dev` avec hot-reload.
 
-**Accès RabbitMQ UI** : [http://localhost:15672](http://localhost:15672)
-*(login : guest / pass : guest)*
+### 🔁 Démarrage quotidien (workflow développeur)
 
----
+Pour travailler chaque jour sur la BAN Platform :
 
-### 🛑 Arrêter BAN-Platform
+1. Assurez-vous d’être dans la racine du repo :
 
-```bash
-pnpm ban:stop
-```
+  ```shell
+  cd ban-platform
+  ```
 
-Ce script stop :
+2. Vérifiez les dépendances (si le repo a changé depuis votre dernier pull) :
 
-- RabbitMQ, PostgreSQL, MongoDB
-- Les containers BAN (mode Docker)
-- Les processus Node locaux (mode Local)
+  ```shell
+  pnpm install
+  ```
 
----
+3. Démarrez l’environnement complet :
 
-### 🔗 Flux CI → Artifacts → Script
+  ```shell
+  pnpm dev
+  ```
 
-```mermaid
-flowchart LR
-    A[CI GitHub Actions<br/>(Build Matrix)] --> B[Artifacts<br/>(.tar.gz)]
-    B --> C[Script<br/>(dev-run-artifacts.sh)]
-    C --> D[Docker<br/>(Containers Node)]
-    C --> E[Local<br/>(Process Node.js)]
+C’est tout 🎉
 
-    style A fill:#4CAF50,stroke:#333,stroke-width:1px,color:#fff
-    style B fill:#FF9800,stroke:#333,stroke-width:1px,color:#fff
-    style C fill:#03A9F4,stroke:#333,stroke-width:1px,color:#fff
-    style D fill:#9C27B0,stroke:#333,stroke-width:1px,color:#fff
-    style E fill:#9C27B0,stroke:#333,stroke-width:1px,color:#fff
+> Si la base est déjà initialisée, **aucune autre action n’est nécessaire**. Le script `pnpm dev` démarre automatiquement toute l’infra + les services en hot-reload.
 
-    linkStyle default stroke:#333,stroke-width:1.5px
-```
+## 5. 🗄️ Initialiser la base BAN *(première installation uniquement)*
 
----
+BAN utilise un schéma PostgreSQL complexe :
 
-### 🔎 Structure générée
+- extensions (`postgis`, `btree_gist`)
+- triggers d’historisation
+- fonction `historisation()`
+- contraintes `EXCLUDE`
+- colonnes `tstzrange`
+- tables historiques `*_h`
 
-Le script crée deux dossiers ignorés par Git :
+👉 Ce schéma **ne peut pas être créé par Prisma**, d’où le fichier racine : `ban_schema.sql`
+
+Initialisez la base avec :
 
 ```shell
-.artifacts/      # Artifacts CI téléchargés et téléchargé depuis Github
-.services/       # Microservices extraits depuis les artifacts apres leurs téléchargements + docker-compose généré
-  ├─ apps/
-  │   ├─ bal-parser/
-  │   └─ beautifier/
-  └─ packages/
-      ├─ shared-lib/
-      └─ config/
+pnpm run dev:infra:init
+```
+
+Ce script :
+
+1. lance './scripts/dev-db-init.sh', qui...
+2. Vérifie que Postgres tourne,
+3. Vérifie si `ban.district` existe,
+4. Si nécessaire → importe `ban_schema.sql`,
+5. Marque la migration Prisma `0000_baseline` comme appliquée (`npx prisma migrate resolve --applied 0000_baseline`),
+6. Applique toutes les migrations Prisma restantes (`npx prisma migrate deploy`),
+7. Regénère le client Prisma (`npx prisma generate`).
+
+
+Après ça, votre base BAN locale est entièrement fonctionnelle.
+
+## 6. 🔧 Outils disponibles
+
+| Outil         | URL                                                                     | Notes                                   |
+| ------------- | ----------------------------------------------------------------------- | --------------------------------------- |
+| RabbitMQ UI   | [http://localhost:15672](http://localhost:15672)                        | guest / guest                           |
+| Mongo Express | [http://localhost:8081](http://localhost:8081)                          | inspection Mongo                        |
+| pgAdmin       | [http://localhost:\${PGADMIN\_PORT}](http://localhost:\${PGADMIN_PORT}) | identifiants dans `.env`                |
+| PostgreSQL    | localhost:\${PG\_PORT}                                                  | utilisateur / DB configurés dans `.env` |
+
+---
+
+## 🏗️ Architecture du monorepo
+
+```shell
+ban-platform/
+│
+├── apps/
+│   ├── ban-core-writer/
+│   ├── ban-core-api/
+│
+├── prisma/
+│   └── schema.prisma
+├── prisma.config.ts
+├── generated/
+│   └── client/
+│
+├── ban_schema.sql
+├── scripts/
+│   ├── dev-start.sh
+│   ├── dev-infra-up.sh
+│   └── dev-db-init.sh
+│
+├── docker-compose.dev.ban.yml
+└── package.json
 ```
 
 ---
 
-## 🧩 Mode Docker vs Mode Local
+## 🧬 Prisma, baseline & migrations
 
-- **Docker** → À privilégier : environnement isolé proche de la prod (containers Node)
-- **Local** → Exécution directe en Node.js (pour un debug rapide).
+### Pourquoi Prisma ne gère pas l’initialisation BAN ?
+
+Prisma ne peut **pas** initialiser la base BAN car le schéma utilise des éléments PostgreSQL avancés :
+
+- types `tstzrange`,
+- triggers d’historisation,
+- fonction `historisation()`,
+- contraintes `EXCLUDE USING gist`,
+- extensions `postgis`, `btree_gist`,
+- tables d’historique `*_h`.
+
+Ces mécanismes ne peuvent **pas** être créés via Prisma.
+
+👉 L’initialisation de la base passe donc **obligatoirement** par le fichier SQL complet : `ban_schema.sql`
+
+Ce fichier contient l’intégralité du schéma PostgreSQL BAN (tables, clés, triggers, extensions…).
+
+L’initialisation réelle est assurée automatiquement par :
+
+```shell
+./scripts/dev-db-init.sh
+```
+
+Ce script :
+
+- vérifie si la base doit être initialisée,
+- applique `ban_schema.sql` si nécessaire,
+- regénère le client Prisma.
+
+👉 Prisma prend ensuite le relais **uniquement pour les évolutions futures du schéma**.
 
 ---
 
-## 🛠️ Outils dev
+### Migration 0 Prisma
 
-### 🧹 Linter
+> ℹ️ Cette opération est réalisée **une seule fois par les mainteneurs** pour définir l’état initial du schéma côté Prisma. Les autres développeurs n’ont **pas** à relancer ces commandes manuellement.
 
-```bash
-pnpm lint
+Pour créer la migration de base (`0000_baseline`) à partir du schéma actuel :
+
+
+```shell
+npx prisma migrate diff \
+  --from-empty \
+  --to-schema=prisma/schema.prisma \
+  --script \
+  --output=prisma/migrations/0000_baseline/migration.sql
 ```
 
-> Utilise `[eslint-stylistic`](https://eslint.style/) sans `Prettier`.
+Puis enregistrer cette migration comme "déjà appliquée" auprès de Prisma :
 
-### 🏗️ Build manuel
-
-```bash
-pnpm build
+```shell
+npx prisma migrate resolve --applied 0000_baseline
 ```
 
-*(La CI se charge déjà de builder à chaque push sur `main`.)*
+Dans les environnements de développement, l’alignement Prisma ⇔ base est ensuite géré automatiquement par :
 
-### 🧪 Tests
+```
+./scripts/dev-db-init.sh
+```
 
-À venir.
+Ce script :
+
+- initialise le schéma BAN via `ban_schema.sql` si nécessaire,
+- génère le client Prisma,
+- et peut marquer la migration `0000_baseline` comme appliquée dans la base locale.
 
 ---
 
-## ➕ Ajouter un nouveau service 
+## 🧪 Tester Prisma
 
-### À partir des boilerplate
-
-Le dossier `/boilerplate` contient un exemple d'application (`/boilerplate/app`) et de package (`/boilerplate/package`).
-Vous pouvez les récupérer et les copier dans le dossier adéquat (`/apps` ou `/packages`).
-
-```bash
-cp -r /boilerplate/app apps/mon-nouveau-service
-cd apps/mon-nouveau-service
+```shell
+pnpm --filter @ban/ban-core-writer test:prisma
 ```
 
-Dans le fichier `package.json`, renommer le nouveau service (sur la clé `name`) :
-
-```json
-{
-  "name": "@ban/mon-nouveau-service",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "dev": "tsx watch src/index.ts || true"
-  }
-}
-```
-
-Si besoin, ajouter des dépendances spécifiques à ce service :
-
-```bash
-pnpm install --filter @ban/mon-nouveau-service ma-dependance
-# exemple : pnpm install --filter @ban/mon-nouveau-service lodash
-```
-
-### Vanilia
-
-```bash
-mkdir -p apps/mon-nouveau-service/src
-cd apps/mon-nouveau-service
-pnpm init -y
-```
-
-Dans `package.json`, personnaliser le nom du service (sur la clé `name`) et ajouter les scripts essentiels :
-
-```json
-{
-  "name": "@ban/mon-nouveau-service",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "dev": "tsx watch src/index.ts || true"
-  }
-}
-```
-
-Puis ajouter un `tsconfig.json` :
-
-```json
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "include": ["src"]
-}
-```
 ---
 
-### Mode docker DEV - Build local (`deploy-dev.sh`)
+## 🔥 Mode Artifacts CI
 
-**Pour développer et tester vos modifications en local**
-
-Ce mode build les images Docker directement depuis votre code source local.
-
-#### Prérequis
-- Docker en cours d'exécution
-- PNPM installé
-- Fichier `.env.docker` ou `.env` configuré
-
-#### Commandes
-
-```bash
-# Voir ce qui sera généré (Dockerfiles + docker-compose)
-./deploy-dev.sh plan
-
-# Build les images localement et démarrer tous les services
-./deploy-dev.sh apply
-
-# Arrêter tous les services
-./deploy-dev.sh down
-```
--
-
-### Mode docker PROD - Images depuis GitHub Registry (`deploy-prod.sh`)
-
-**Pour utiliser les images de production depuis GitHub Container Registry**
-
-Ce mode pull les images Docker pré-buildées par la CI/CD GitHub Actions.
-
-#### Prérequis
-- Docker en cours d'exécution
-- Accès au GitHub Container Registry (ghcr.io)
-- Fichier `.env.docker` ou `.env` configuré
-
-#### Commandes
-
-```bash
-# Voir ce qui sera généré avec le tag "latest"
-./deploy-prod.sh latest plan
-
-# Pull les images et démarrer tous les services
-./deploy-prod.sh latest apply
-
-# Utiliser un tag spécifique (branche, version)
-./deploy-prod.sh feat-add-docker-latest apply
-./deploy-prod.sh v1.2.3 apply
-
-# Arrêter tous les services
-./deploy-prod.sh down
+```shell
+pnpm ban:start
 ```
 
-**Tags disponibles :**
-- `latest` : Dernière version de la branche `main`
-- `feat-branch-name-latest` : Dernière version d'une feature branch
-- `v1.2.3` : Version taguée spécifique
+Lance l’infra + les services Node buildés (archives CI/CD).

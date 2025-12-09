@@ -13,6 +13,8 @@
   "scripts": {
     "ban:start": "./scripts/ban-start.sh",
     "ban:stop": "./scripts/ban-stop.sh",
+    "dev:infra:init": "./scripts/dev-db-init.sh",
+    "dev:infra:patch": "npx prisma migrate resolve --applied 0000_baseline || true",
     "dev:infra:up": "./scripts/dev-infra-up.sh",
     "dev:infra:down": "./scripts/dev-infra-down.sh",
     "dev:start": "./scripts/dev-start.sh",
@@ -20,6 +22,7 @@
     "dev:all": "pnpm --recursive --parallel run dev || true",
     "dev": "pnpm dev:start || true",
     "build": "pnpm --recursive run build",
+    "build:packages": "pnpm --filter './packages/*' run build",
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
@@ -30,6 +33,7 @@
     "eslint": "^9.29.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-stylistic": "0.0.0-0",
+    "prisma": "^7.0.0",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
@@ -37,7 +41,11 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
     "dotenv": "^17.2.1",
+    "pg": "^8.16.3",
+    "pg-pool": "^3.10.1",
     "rascal": "^20.1.1",
     "zod": "^3.25.76"
   }

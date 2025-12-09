@@ -8,7 +8,9 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@ban/*": ["packages/*/src"]
+      "@ban/*": ["packages/*/src"],
+      "@prisma": ["generated/client/client.ts"],
+      "@prisma/*": ["generated/client/*"]
     }
   }
 }

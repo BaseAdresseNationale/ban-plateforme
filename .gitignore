@@ -89,3 +89,9 @@ deploy/
 docker-compose.*.generated.yml
 # Dépendance à Gazetteer à supprimer quand on aura une vraie base de données
 *.sqlite
+
+# Config files with sensitive data
+config/.pgpass
+
+# Prisma
+generated/
