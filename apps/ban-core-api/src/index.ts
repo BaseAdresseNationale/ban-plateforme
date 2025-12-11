@@ -1,13 +1,11 @@
-import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import rascal from 'rascal';
 import express from 'express';
 import multer from 'multer';
-// import cors from 'cors'
 
 import { env } from '@ban/config';
 
-import { parseBalForBan } from './parseBalForBan.js';
+import balStockRouter from './routes/bal-stock.js';
 
 import type { BrokerAsPromised } from 'rascal';
 
@@ -47,7 +45,7 @@ const port = process.env.PORT || 3000;
 let broker: Awaited<ReturnType<typeof BrokerAsPromised.create>>;
 
 app.use(express.json({limit: '20mb'}))
-// app.use(cors({origin: true}))
+// app.use(cors({origin: true})) // TODO : Apply CORS only on specific routes
 
 app.get('/', (req, res) => {
   res.send('Welcome to the BAN Core API');
@@ -55,43 +53,6 @@ app.get('/', (req, res) => {
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
-});
-
-app.post('/upload-bal', upload.single('file'), async (req, res) => {
-  if (!req.file) return res.status(400).send('No file uploaded');
-
-  try {
-    const fileStream = fsSync.createReadStream(req.file.path, { encoding: 'utf8' });
-    const json = await parseBalForBan(fileStream);
-    await broker.publish('default', json); // publie sur exchange/routingKey par défaut
-
-    console.log('[ban-core-api] Fichier BAL envoyé vers RabbitMQ');
-    res.status(200).json({ status: 'ok' });
-  } catch (error) {
-    console.error('[ban-core-api] Erreur parsing ou publication:', error);
-    res.status(500).json({ error: 'Erreur traitement BAL' });
-  } finally {
-    await fs.unlink(req.file.path);
-  }
-});
-
-app.post('/send-bal', express.text(), async (req, res) => {
-  // get the body from the request
-  // Assuming the body is sent as JSON
-  const body = req.body;
-
-  try {
-    const json = await parseBalForBan(body);
-    console.log('JSON result', json);
-
-    // Default Publish on exchange/routingKey
-    await broker.publish('default', json); 
-
-    res.status(200).json({ status: 'ok' });
-  } catch (error) {
-    console.error('[ban-core-api] Erreur parsing ou publication:', error);
-    res.status(500).json({ error: 'Erreur traitement BAL en Body' });
-  }
 });
 
 app.post('/bal/file', upload.single('file'), async (req, res) => {
@@ -137,6 +98,8 @@ app.post('/bal/text', express.text(), async (req, res) => {
     res.status(500).json({ error: 'Erreur traitement BAL' });
   }
 });
+
+app.use('/bal-stock', balStockRouter);
 
 app.listen(port, async () => {
   try {

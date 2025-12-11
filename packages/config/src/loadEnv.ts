@@ -14,20 +14,33 @@ console.log('[config] Variables chargées depuis .env');
 
 // Définir le schéma attendu pour valider les variables d'environnement
 const envSchema = z.object({
+  // Base de données PostgreSQL
   PG_HOST: z.string(),
   PG_PORT: z.string(),
   PG_DB: z.string(),
   PG_USER: z.string(),
   PG_PASSWORD: z.string(),
+
+  // Base de données MongoDB
   MONGO_HOST: z.string(),
   MONGO_PORT: z.string(),
   MONGO_DB: z.string(),
   MONGO_USER: z.string().optional().default(''),
   MONGO_PASSWORD: z.string().optional().default(''),
+
+  // RabbitMQ
   RABBITMQ_HOST: z.string(),
   RABBITMQ_PORT: z.string(),
   RABBITMQ_USER: z.string(),
   RABBITMQ_PASSWORD: z.string(),
+
+  // S3
+  S3_ACCESS_KEY_ID: z.string(),
+  S3_SECRET_ACCESS_KEY: z.string(),
+  S3_REGION: z.string(),
+  S3_ENDPOINT: z.string(),
+  S3_BUCKETNAME: z.string(),
+  S3_MAXKEYS: z.string(),
 });
 
 // Valider les variables d'environnement
@@ -53,6 +66,14 @@ export const env = {
     port: parseInt(process.env.RABBITMQ_PORT!, 10),
     user: process.env.RABBITMQ_USER!,
     password: process.env.RABBITMQ_PASSWORD!,
+  },
+  S3: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: process.env.S3_REGION,
+    endpoint: process.env.S3_ENDPOINT,
+    bucketName: process.env.S3_BUCKETNAME,
+    maxKeys: process.env.S3_MAXKEYS,
   }
 };
 
