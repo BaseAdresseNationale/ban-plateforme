@@ -126,9 +126,6 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction()
     try {
       await queryInterface.dropTable({schema: 'external', tableName: 'datanova'}, {transaction})
-
-      await queryInterface.sequelize.query('DROP SCHEMA IF EXISTS external CASCADE', {transaction})
-
       await transaction.commit()
     } catch (error) {
       await transaction.rollback()
