@@ -1,0 +1,274 @@
+{
+  "date": "2025-12-17T11:56:03Z",
+  "status": "success",
+  "response": {
+    "communes": [
+      {
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Bidart"
+        },
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInsee": "64125",
+        "nomsMultilinguesCommune": [
+          {
+            "codeLangue": "fra",
+            "nom": "Bidart"
+          },
+          {
+            "codeLangue": "oc",
+            "nom": "Bidart"
+          }
+        ],
+        "dateDerniereIntegrationBan": "2025-12-17T11:56:03Z",
+        "statutCommune": "ACTUELLE"
+      },
+      {
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Ciboure"
+        },
+        "idCommune": "8e8a9e26-fa32-46f3-8cec-32e739a9f5ea",
+        "codeInsee": "64189",
+        "nomsMultilinguesCommune": [
+          {
+            "codeLangue": "fra",
+            "nom": "Ciboure"
+          },
+          {
+            "codeLangue": "eu",
+            "nom": "Ziburu"
+          }
+        ],
+        "dateDerniereIntegrationBan": "2025-12-17T11:56:03Z",
+        "statutCommune": "ACTUELLE"
+      }
+    ],
+    "odonymes": [
+      {
+        "idOdonyme": "31036d18-9890-4611-b955-ef1e95de48d1",
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "cleInterop": "64125_RUEDELAMER",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Rue de la Mer"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Rue de la Mer"
+          }
+        ]
+      },
+      {
+        "idOdonyme": "381de012-c0c5-4830-8574-2ec2ce412a51",
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "cleInterop": "64125_PLACEDESURF",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Place des Surfeurs"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Place des Surfeurs"
+          },
+          {
+            "codeLangue": "fr-gallo",
+            "nom": "Plass des surfouers"
+          }
+        ]
+      },
+      {
+        "idOdonyme": "a277106b-5e5b-4f7c-8168-d2d579500a64",
+        "idCommune": "8e8a9e26-fa32-46f3-8cec-32e739a9f5ea",
+        "cleInterop": "64189_QUAIDULITTORAL",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Quai du Littoral"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Quai du Littoral"
+          }
+        ]
+      }
+    ],
+    "adresses": [
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.554321,
+              43.4367891
+            ]
+          }
+        },
+        "idAdresseCommunale": "71bc89c8-0637-49e9-a5cf-ede3730a8bdc",
+        "cleInterop": "64125_RUEDELAMER_12",
+        "idVoiePlaceLieudit": "31036d18-9890-4611-b955-ef1e95de48d1",
+        "idLieuditComplementaire": null,
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64210",
+        "numero": 12,
+        "indiceRepetition": null
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.5541203,
+              43.4367002
+            ]
+          }
+        },
+        "idAdresseCommunale": "fb0bfe79-e722-4eda-b91e-c2d53ac2df84",
+        "cleInterop": "64125_RUEDELAMER_14_BIS",
+        "idVoiePlaceLieudit": "31036d18-9890-4611-b955-ef1e95de48d1",
+        "idLieuditComplementaire": null,
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64210",
+        "numero": 14,
+        "indiceRepetition": "B"
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.5539001,
+              43.4365
+            ]
+          }
+        },
+        "idAdresseCommunale": "cf03e928-9a42-4af9-9280-83c47298bf93",
+        "cleInterop": "64125_PLACEDESURF_0",
+        "idVoiePlaceLieudit": "381de012-c0c5-4830-8574-2ec2ce412a51",
+        "idLieuditComplementaire": null,
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64210",
+        "numero": 0,
+        "indiceRepetition": null
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.5538,
+              43.43645
+            ]
+          }
+        },
+        "idAdresseCommunale": "4201a4ff-40c8-40b8-873f-5ffea1579ea0",
+        "cleInterop": "64125_PLACEDESURF_x",
+        "idVoiePlaceLieudit": "381de012-c0c5-4830-8574-2ec2ce412a51",
+        "idLieuditComplementaire": null,
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64210",
+        "indiceRepetition": null
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.6687654,
+              43.3845678
+            ]
+          }
+        },
+        "idAdresseCommunale": "8a4c92a0-22e4-470a-8d8f-5dc8737c0d72",
+        "cleInterop": "64189_QUAIDULITTORAL_3",
+        "idVoiePlaceLieudit": "a277106b-5e5b-4f7c-8168-d2d579500a64",
+        "idLieuditComplementaire": null,
+        "idCommune": "8e8a9e26-fa32-46f3-8cec-32e739a9f5ea",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64500",
+        "numero": 3,
+        "indiceRepetition": "A"
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.6688,
+              43.3846
+            ]
+          }
+        },
+        "idAdresseCommunale": "9c160d4f-385d-45dd-8256-f153c0edcd41",
+        "cleInterop": "64189_QUAIDULITTORAL_5",
+        "idVoiePlaceLieudit": "a277106b-5e5b-4f7c-8168-d2d579500a64",
+        "idLieuditComplementaire": null,
+        "idCommune": "8e8a9e26-fa32-46f3-8cec-32e739a9f5ea",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64500",
+        "numero": 5,
+        "indiceRepetition": null
+      }
+    ]
+  }
+}
