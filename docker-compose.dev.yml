@@ -2,12 +2,12 @@ services:
   db-postgres:
     build:
       args:
-        http_proxy: http://proxy.ign.fr:3128
-        https_proxy: http://proxy.ign.fr:3128
+        http_proxy: ${PROXY_URL}
+        https_proxy: ${PROXY_URL}
   api:
     build:
       args:
-        http_proxy: http://proxy.ign.fr:3128
-        https_proxy: http://proxy.ign.fr:3128
+        http_proxy: ${PROXY_URL}
+        https_proxy: ${PROXY_URL}
     environment:
       - PROXY_URL=${PROXY_URL}

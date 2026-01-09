@@ -36,6 +36,12 @@ La commande précédente va déployer une architecture locale, interconnectée, 
 - un conteneur "redis" (image redis:4.0.9)
 - un conteneur "api" (à partir de l'image définie dans le fichier docker-resources/api/Dockerfile.dev) => Au lancement de ce conteneur, un script d'initialisation (défini dans le fichier docker-resources/api/start.sh) va permettre le téléchargement des données requises au démarrage de la plateforme.
 
+Pour le déploiement avec un proxy, utiliser le fichier docker-compose.dev.yml en lançant le script dev.sh contenant la commande suivante :
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
 ### Deploiement local sans Docker
 
 #### Pré-requis
