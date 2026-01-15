@@ -72,6 +72,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ./volumes/postgres-data:/postgres-data/
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB} -h 127.0.0.1 -p 5432"]
       interval: 2s        # ⏱️ on réduit l’attente
