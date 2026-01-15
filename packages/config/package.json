@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "OLD-build": "tsup src --dts",
-    "build": "tsup src --format esm --dts"
+    "build": "tsup src --format esm --dts",
+    "dev": "tsup src --format esm --dts --watch"
   },
   "dependencies": {
     "dotenv": "^16.3.1",

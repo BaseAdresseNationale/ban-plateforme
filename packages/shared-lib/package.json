@@ -4,6 +4,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup src --format esm --dts"
+    "build": "tsup src --format esm --dts",
+    "dev": "tsup src --format esm --dts --watch"
   }
 }
