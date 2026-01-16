@@ -1759,10 +1759,10 @@
   resolved "https://registry.npmjs.org/@etalab/decoupage-administratif/-/decoupage-administratif-4.0.0.tgz"
   integrity sha512-TMGZT4rFaQdkovoAZF5iMNJnxc2To8GXiC4x/N8Z5j6I0j29AeInE2Js86Wy9W2ZnjGFbKkSpmnsbLYwWYAFsw==
 
-"@etalab/decoupage-administratif@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-5.0.0.tgz#5bbf084118b7545abbadfaf2cde214a6bdc78443"
-  integrity sha512-Ui/5A4jqvhQ4EsikNyuvJN3lIgRHBv9N1tX7B+n08EMRqlHjzm0e+Z7pOlDHJ2EQU9XnA5xcl4lqlBpznfp07w==
+"@etalab/decoupage-administratif@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-5.2.0.tgz#2bd853d51980dcd654f6e3fd5cdce2c53e7b2592"
+  integrity sha512-o6G7XvYH6qZeKyltKuYU3eeIspvg1yKqRiRcMJIiFwTOEGZVMtvGyJ9mf/QkdU4KEZ3L4YjWwBr+GU68pObnZQ==
 
 "@etalab/majic@^0.11.0":
   version "0.11.0"

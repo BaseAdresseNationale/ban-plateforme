@@ -44,7 +44,7 @@
     "@ban-team/shared-data": "^1.4.2",
     "@ban-team/validateur-bal": "^3.2.0",
     "@etalab/adresses-util": "^0.8.2",
-    "@etalab/decoupage-administratif": "^5.0.0",
+    "@etalab/decoupage-administratif": "^5.2.0",
     "@etalab/majic": "^0.11.0",
     "@etalab/normadresse": "^1.2.0",
     "@etalab/project-legal": "^0.6.0",
