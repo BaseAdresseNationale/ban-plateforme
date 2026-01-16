@@ -51,7 +51,8 @@ async function runYarn(args) {
   })
 }
 
-async function removeDirectory(dirPath) {
+/*
+Async function removeDirectory(dirPath) {
   try {
     await fs.promises.rm(dirPath, {recursive: true, force: true})
     console.log(`Répertoire supprimé: ${dirPath}`)
@@ -63,6 +64,7 @@ async function removeDirectory(dirPath) {
     console.log(`Le répertoire n'existe pas: ${dirPath}`)
   }
 }
+*/
 
 async function createNationalFile(sourceDir, filePattern, outputPath, firstFileDept) {
   console.log(`Création du fichier national: ${outputPath}`)
@@ -90,7 +92,7 @@ async function createNationalFile(sourceDir, filePattern, outputPath, firstFileD
 
     await appendFileWithoutHeader(filePath, tempOutputPath)
     processed++
-    
+
     if (processed % 10 === 0) {
       console.log(`Traité ${processed}/${sourceFiles.length} fichiers`)
     }
@@ -105,7 +107,7 @@ async function createNationalFile(sourceDir, filePattern, outputPath, firstFileD
   await pipeline(input, gzipOutput, output)
 
   await fs.promises.unlink(tempOutputPath)
-  
+
   // Vérifier la taille du fichier créé
   const stat = await fs.promises.stat(outputPath)
   console.log(` Fichier national créé: ${outputPath}`)
@@ -121,7 +123,9 @@ async function getFileHeader(filePath) {
     let headerFound = false
 
     const cleanup = () => {
-      if (!fileStream.destroyed) fileStream.destroy()
+      if (!fileStream.destroyed) {
+        fileStream.destroy()
+      }
     }
 
     fileStream.pipe(gunzip)
@@ -143,7 +147,7 @@ async function getFileHeader(filePath) {
           resolve(Buffer.from(header))
         }
       })
-      .on('error', (err) => {
+      .on('error', err => {
         cleanup()
         reject(err)
       })
@@ -159,8 +163,13 @@ async function appendFileWithoutHeader(filePath, outputPath) {
     let isFirstLine = true
 
     const cleanup = () => {
-      if (!fileStream.destroyed) fileStream.destroy()
-      if (!outputStream.destroyed) outputStream.destroy()
+      if (!fileStream.destroyed) {
+        fileStream.destroy()
+      }
+
+      if (!outputStream.destroyed) {
+        outputStream.destroy()
+      }
     }
 
     fileStream.pipe(gunzip)
@@ -181,7 +190,7 @@ async function appendFileWithoutHeader(filePath, outputPath) {
         // CORRECTION: Attendre que l'écriture soit terminée
         outputStream.end(() => resolve())
       })
-      .on('error', (err) => {
+      .on('error', err => {
         cleanup()
         reject(err)
       })
@@ -206,34 +215,33 @@ async function mergeAddokFiles(sourceDir, filePattern, outputPath) {
   try {
     for (const file of sourceFiles) {
       const filePath = path.join(sourceDir, file)
-      
+
       // CORRECTION: Utiliser des streams au lieu de readFile pour éviter les problèmes de mémoire
       await new Promise((resolve, reject) => {
         const input = fs.createReadStream(filePath)
-        
+
         input.on('data', chunk => {
           output.write(chunk)
         })
-        
+
         input.on('end', () => {
           console.log(`Ajouté au fichier addok: ${file}`)
           resolve()
         })
-        
+
         input.on('error', reject)
       })
     }
 
     // CORRECTION: Attendre que l'écriture soit terminée
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       output.end(resolve)
     })
-    
+
     // Vérifier la taille du fichier créé
     const stat = await fs.promises.stat(outputPath)
     console.log(` Fichier addok créé: ${outputPath}`)
     console.log(` Taille: ${Math.round(stat.size / 1024 / 1024)} MB`)
-    
   } catch (error) {
     output.destroy()
     throw error
@@ -253,7 +261,7 @@ async function syncToS3(localPath, s3Bucket, s3Prefix) {
 
       const files = await readdir(folderPath)
       const fileList = []
-      
+
       // AMÉLIORATION: Filtrer et préparer la liste des fichiers à uploader
       for (const file of files) {
         const filePath = path.join(folderPath, file)
@@ -262,23 +270,24 @@ async function syncToS3(localPath, s3Bucket, s3Prefix) {
           fileList.push({path: filePath, name: file, size: stat.size})
         }
       }
-      
+
       console.log(`Dossier ${folder}: ${fileList.length} fichiers à uploader`)
 
       let uploaded = 0
       let totalSize = 0
-      
+
       for (const fileInfo of fileList) {
         const s3Key = `${s3Prefix}/${folder}/${fileInfo.name}`.replace(/\\/g, '/')
 
         await uploadFile(fileInfo.path, s3Bucket, s3Key)
         uploaded++
         totalSize += fileInfo.size
-        
+
         if (uploaded % 5 === 0) { // Affichage plus fréquent pour les gros fichiers
           console.log(`Uploadé ${uploaded}/${fileList.length} fichiers du dossier ${folder} (${Math.round(totalSize / 1024 / 1024)} MB total)`)
         }
       }
+
       console.log(`Dossier ${folder} terminé: ${uploaded} fichiers uploadés (${Math.round(totalSize / 1024 / 1024)} MB total)`)
     } catch (error) {
       if (error.code === 'ENOENT') {
@@ -298,17 +307,17 @@ async function uploadFile(filePath, bucket, key) {
   try {
     // CORRECTION: Utiliser un stream au lieu de charger tout en mémoire
     const fileStream = fs.createReadStream(filePath)
-    
+
     // Obtenir la taille du fichier pour le progress
     const stat = await fs.promises.stat(filePath)
-    
+
     const params = {
       Bucket: bucket,
       Key: key,
       Body: fileStream, // ← Stream au lieu de Buffer
       ContentLength: stat.size // Optionnel mais recommandé
     }
-    
+
     await s3Client.send(new PutObjectCommand(params))
     console.log(`Uploadé: ${path.basename(filePath)} (${Math.round(stat.size / 1024 / 1024)} MB) -> s3://${bucket}/${key}`)
   } catch (error) {
@@ -321,7 +330,7 @@ async function main() {
   try {
     console.log('=== DÉBUT DU TRAITEMENT COMPLET ===')
     console.log('Suppression du répertoire dist')
-    // await removeDirectory(config.localDistPath)
+    // Await removeDirectory(config.localDistPath)
 
     console.log('Génération des fichiers départementaux')
     await runYarn('dist')
