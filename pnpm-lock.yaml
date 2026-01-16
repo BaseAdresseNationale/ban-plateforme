@@ -189,6 +189,12 @@ importers:
 
   packages/shared-lib: {}
 
+  packages/tools:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../config
+
 packages:
 
   '@babel/runtime-corejs3@7.28.2':
