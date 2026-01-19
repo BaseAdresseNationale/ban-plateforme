@@ -1,8 +1,9 @@
+import { logger } from '@ban/tools';
+
 import {
     type Prisma,
     type PrismaClient,
 } from '../db/prisma.js';
-import logger from '../tools/logger.js';
 import { banPgCommonToponymSchema } from './commonToponym.model.js';
 
 const banCommonToponymToBanPgCommonToponym = (commonToponymRaw: Partial<BanCommonToponym>): BanPgCommonToponym => {

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { getUUIDv4 } from "../tools/uuid-v4.js";
+import { getUUIDv4 } from '@ban/tools';
+
 import { label, banID, pgDateString } from './ban-generic.model.js';
 
 const districtConfigSchema = z.object({

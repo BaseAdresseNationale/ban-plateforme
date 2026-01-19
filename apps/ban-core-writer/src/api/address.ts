@@ -1,8 +1,9 @@
+import { logger } from '@ban/tools';
+
 import {
   type Prisma,
   type PrismaClient,
 } from '../db/prisma.js';
-import logger from '../tools/logger.js';
 import { banPgAddressSchema } from './address.model.js';
 
 const banAddressToBanPgAddress = ({mainCommonToponym, secondaryCommonToponyms, district, ...addressRaw}: Partial<BanAddress>): BanPgAddress => {
