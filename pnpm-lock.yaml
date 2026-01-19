@@ -125,6 +125,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/tools':
+        specifier: workspace:*
+        version: link:../../packages/tools
       mongodb:
         specifier: ^6.18.0
         version: 6.19.0(socks@2.8.7)

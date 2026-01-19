@@ -1,4 +1,4 @@
-import logger from '../tools/logger.js';
+import { logger } from '@ban/tools';
 
 interface MongoCollections {
   districts: import('mongodb').Collection;

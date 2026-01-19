@@ -1,6 +1,8 @@
 import { z } from 'zod';
-import { getUUIDv4 } from "../tools/uuid-v4.js";
 
+import { getUUIDv4 } from '@ban/tools';
+
+import { banDistrictSchema } from './district.model.js';
 import {
   label,
   pgDateString,
@@ -9,7 +11,6 @@ import {
   metaBalSchema,
   metaIdfixSchema,
 } from './ban-generic.model.js';
-import { banDistrictSchema } from './district.model.js';
 
 const metaCommonToponymSchema = z.object({
     cadastre: metaCadastreSchema.optional(),

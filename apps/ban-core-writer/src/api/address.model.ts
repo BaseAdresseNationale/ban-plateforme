@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-import { getUUIDv4 } from "../tools/uuid-v4.js";
+import { getUUIDv4 } from '@ban/tools';
+
+import { banCommonToponymSchema } from './commonToponym.model.js';
+import { banDistrictSchema } from './district.model.js';
 import {
   label,
   banID,
@@ -12,8 +15,6 @@ import {
   typePositionsSchema,
   banGeometrySchema,
 } from './ban-generic.model.js';
-import { banCommonToponymSchema } from './commonToponym.model.js';
-import { banDistrictSchema } from './district.model.js';
 
 // ----------------
 // Address schemas
