@@ -181,6 +181,25 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(typescript@5.8.3)
 
+  packages/api:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../config
+      '@ban/tools':
+        specifier: workspace:*
+        version: link:../tools
+      mongodb:
+        specifier: ^6.18.0
+        version: 6.19.0(socks@2.8.7)
+      pg:
+        specifier: ^8.16.3
+        version: 8.16.3
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.15.5
+
   packages/config:
     dependencies:
       dotenv:
