@@ -2,13 +2,13 @@ import rascal from 'rascal';
 import { MongoClient } from 'mongodb';
 
 import { env } from '@ban/config';
+import {getPrismaClient, writeInMongoDb, writeInPgDb, type MongoCollections} from '@ban/api';
 import { logger } from '@ban/tools';
 
 // import { testBdd } from './test/bddTools.js';
-import prismaPg from './db/prisma.js';
-import { writeInMongoDb } from './api/api-mongo-ban.js';
-import { writeInPgDb } from './api/api-pg-ban.js';
 import { getBanObjectsFromBalRows } from './helper.js';
+
+const prismaPg = getPrismaClient();
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -64,7 +64,7 @@ async function main() {
     districts: mongoDb.collection('districts'),
     commonToponyms: mongoDb.collection('commonToponyms'),
     addresses: mongoDb.collection('addresses'),
-  };
+  } as unknown as MongoCollections;
 
   const broker = await rascal.BrokerAsPromised.create(config);
   const subscription = await broker.subscribe('balReady');
