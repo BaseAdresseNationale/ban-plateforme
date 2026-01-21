@@ -122,6 +122,9 @@ importers:
 
   apps/ban-core-writer:
     dependencies:
+      '@ban/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
