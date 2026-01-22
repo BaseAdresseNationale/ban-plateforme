@@ -1,0 +1,13 @@
+services:
+  db-postgres:
+    build:
+      args:
+        http_proxy: ${PROXY_URL}
+        https_proxy: ${PROXY_URL}
+  api:
+    build:
+      args:
+        http_proxy: ${PROXY_URL}
+        https_proxy: ${PROXY_URL}
+    environment:
+      - PROXY_URL=${PROXY_URL}
