@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "files": ["dist"],
   "scripts": {
+    "test:prisma": "tsx  --env-file=../../.env src/test/prisma-test.ts",
     "dev": "tsx watch src/index.ts || true",
     "build": "tsc --project tsconfig.json"
   },
