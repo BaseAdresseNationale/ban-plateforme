@@ -1,6 +1,7 @@
 import rascal from 'rascal';
 import { env } from '@ban/config';
-import {init} from './util/sequelize.js'
+import {init, Datanova, PostalArea } from './util/sequelize.js'
+import { Op, fn, col, where, Model, Attributes  } from 'sequelize';
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -52,8 +53,12 @@ const config = {
   }
 };
  
-// Test connection to postgres
+// Connection to postgres
 await init()
+export const getMultidistributed = async (districtCog: any) => Datanova.findOne({
+  where: {inseeCom: districtCog},
+  raw: true
+})
 
 async function main() {
   try {
@@ -63,11 +68,50 @@ async function main() {
 
     subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
 
+      const codePostaux = await Promise.all(content.rows.map(async (row: any) => {
+
+        const inseeCom : string = row.commune_insee
+        const cpFromInseeCom : Attributes<Model> = await getMultidistributed(inseeCom)
+
+        // Code postal non multi-distribué
+        if (cpFromInseeCom?.postalCodes?.lenght <= 1){
+          return {
+            code_postal: cpFromInseeCom.postalCodes[0]
+          }
+        }
+        // Code postal multi-distribué  
+        else {
+          const xCoord = row.x
+          const yCoord = row.y
+          const cpFromLatLong = await PostalArea.findOne({
+              attributes: ['postalCode'],
+              where: {
+                inseeCom: inseeCom,
+                [Op.and]: where(
+                  fn(
+                    'ST_Contains',
+                    col('geometry'),
+                    fn(
+                      'ST_SetSRID',
+                      fn('ST_MakePoint', xCoord, yCoord),
+                      2154
+                    )
+                  ),
+                  true
+                )
+              }
+            });
+          return {
+            code_postal: cpFromLatLong?.dataValues.postalCode
+          }
+        }
+      }));
+
       const enriched = {
         ...content,
         rows: content.rows.map((row: any, index: number) => ({
           ...row,
-          ban_enrich_code_postal: "61450"
+          ban_enrich_code_postal: codePostaux[index]?.code_postal
         }))
       };
 

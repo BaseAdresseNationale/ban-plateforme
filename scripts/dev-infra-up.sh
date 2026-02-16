@@ -40,7 +40,7 @@ wait_for () {
 # Attente des services critiques
 echo "🟠 - Attente des services critiques…"
 wait_for ban_rabbitmq 180
-wait_for ban_postgres 180
+wait_for ban_postgres_postal 180
 wait_for ban_mongo 180
 
 echo "🟢 - Pret à démarrer les services en mode dev…"
