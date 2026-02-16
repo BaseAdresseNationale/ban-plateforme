@@ -14,11 +14,15 @@ console.log('[config] Variables chargées depuis .env');
 
 // Définir le schéma attendu pour valider les variables d'environnement
 const envSchema = z.object({
-  PG_HOST: z.string(),
-  PG_PORT: z.string(),
-  PG_DB: z.string(),
-  PG_USER: z.string(),
-  PG_PASSWORD: z.string(),
+  POSTGRES_HOST: z.string(),
+  POSTGRES_PORT: z.string(),
+  POSTGRES_DB: z.string(),
+  POSTGRES_BAN_USER: z.string(),
+  POSTGRES_BAN_PASSWORD: z.string(),
+  POSTGRES_ROOT_USER: z.string(),
+  POSTGRES_ROOT_PASSWORD: z.string(),
+  POSTGRES_URI: z.string(),
+  POSTGRES_DATA_PATH: z.string(),
   MONGO_HOST: z.string(),
   MONGO_PORT: z.string(),
   MONGO_DB: z.string(),
@@ -35,11 +39,15 @@ envSchema.parse(process.env);
 
 export const env = {
   PG: {
-    host: process.env.PG_HOST!,
-    port: parseInt(process.env.PG_PORT!, 10),
-    db: process.env.PG_DB!,
-    user: process.env.PG_USER!,
-    password: process.env.PG_PASSWORD!,
+    host: process.env.POSTGRES_HOST!,
+    port: parseInt(process.env.POSTGRES_PORT!, 10),
+    db: process.env.POSTGRES_DB!,
+    user: process.env.POSTGRES_BAN_USER!,
+    password: process.env.POSTGRES_BAN_PASSWORD!,
+    rootUser: process.env.POSTGRES_ROOT_USER!,
+    rootPassword: process.env.POSTGRES_ROOT_PASSWORD!,
+    url: process.env.POSTGRES_URI!,
+    dataPath: process.env.POSTGRES_DATA_PATH!,
   },
   MONGO: {
     host: process.env.MONGO_HOST!,
