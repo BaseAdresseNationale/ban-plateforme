@@ -1,5 +1,6 @@
 import rascal from 'rascal';
 import { env } from '@ban/config';
+import {init} from './util/sequelize.js'
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -51,6 +52,8 @@ const config = {
   }
 };
  
+// Test connection to postgres
+await init()
 
 async function main() {
   try {
