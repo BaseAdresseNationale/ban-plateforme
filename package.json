@@ -20,6 +20,7 @@
     "dev:all": "pnpm --recursive --parallel run dev || true",
     "dev": "pnpm dev:start || true",
     "build": "pnpm --recursive run build",
+    "build:packages": "pnpm --filter './packages/*' run build",
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
