@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const {POSTGRES_BAN_USER} = process.env
 
@@ -30,24 +30,24 @@ module.exports = {
       }
     }, {
       schema: 'ban'
-    });
+    })
 
     // Index GIN sur le champ data
     await queryInterface.addIndex({tableName: 'user_preferences', schema: 'ban'}, ['data'], {
       using: 'GIN',
       name: 'idx_user_preferences_data'
-    });
+    })
 
     // Index GIN spécifique sur les favoris pour optimiser les recherches
     await queryInterface.sequelize.query(
       'CREATE INDEX idx_user_preferences_favorites ON ban.user_preferences USING GIN ((data->\'favorites\'));'
-    );
+    )
 
     // Grant permissions to ban user
     await queryInterface.sequelize.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE ban.user_preferences TO "${POSTGRES_BAN_USER}";`)
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable({tableName: 'user_preferences', schema: 'ban'});
+  async down(queryInterface, _Sequelize) {
+    await queryInterface.dropTable({tableName: 'user_preferences', schema: 'ban'})
   }
-};
+}
