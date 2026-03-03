@@ -11,3 +11,5 @@ services:
         https_proxy: ${PROXY_URL}
     environment:
       - PROXY_URL=${PROXY_URL}
+      - NO_PROXY=${NO_PROXY}
+      - no_proxy=${no_proxy}
