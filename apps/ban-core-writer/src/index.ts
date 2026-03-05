@@ -125,7 +125,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
             isMainCog: row.ban_enrich_is_main_cog || '',
           },
           laPoste: {
-            codePostal: row.ban_enrich_code_postal ? [row.ban_enrich_code_postal.split('|')] : [],
+            codePostal: row.ban_data_code_postal || row.ban_enrich_code_postal  || null,
           },
         },
         legalityDate: row.date_der_maj || '',
@@ -178,7 +178,7 @@ const getBanObjectsFromBalRows = (rows: any[]) => {
             isMainCog: row.ban_enrich_is_main_cog || '',
           },
           laPoste: {
-            codePostal: row.ban_enrich_code_postal ? [row.ban_enrich_code_postal.split('|')] : [],
+            codePostal: row.ban_data_code_postal || row.ban_enrich_code_postal || null,
           },
         },
         legalityDate: row.date_der_maj || '',
