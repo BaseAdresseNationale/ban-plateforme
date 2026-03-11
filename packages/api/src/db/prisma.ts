@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 
  // TODO : Prefere the future internal librairy "@ban/prisma-client" :
 import { PrismaClient } from '../../../../generated/client/client.js'
+import { withRangeValidity } from '../../../../prisma/extensions/rangeValidity.js'
 
 const connectionString = process.env.PG_URL
 
@@ -15,7 +16,9 @@ export const pool = new Pool({ connectionString})
 const adapter = new PrismaPg(pool)
 export const getPrismaClient = () => {
   const prismaBase = new PrismaClient({ adapter })
-  return prismaBase
+  // return prismaBase
+  const prismaWithRangeValidity = withRangeValidity(prismaBase)
+  return prismaWithRangeValidity
 }
 
 export default getPrismaClient
