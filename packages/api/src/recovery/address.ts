@@ -1,7 +1,7 @@
-import { logger } from '@ban/tools';
 import type { z } from 'zod';
+import { logger } from '@ban/tools';
+import { getPrismaClient } from '@ban/prisma-client'
 
-import { getPrismaClient } from '../db/prisma.js';
 import { banPgAddressSchema } from './address.model.js';
 
 type PrismaClient = ReturnType<typeof getPrismaClient>;

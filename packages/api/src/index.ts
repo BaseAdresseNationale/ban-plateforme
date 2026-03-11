@@ -1,10 +1,23 @@
-import getPrismaClient from './db/prisma.js';
+import { getPrismaClient } from '@ban/prisma-client'
+
+type PrismaClientInstance = ReturnType<typeof getPrismaClient>;
 
 class Ban {
-  // TODO: add CRUD methods for each entity (district, address, common toponym, etc.) that will use the prismaPg client to write in the PG DB
-  constructor() {
+  private readonly prismaClient: unknown;
+
+  constructor(prismaClient?: unknown) {
+    this.prismaClient = prismaClient ?? getPrismaClient();
   }
-};
+
+  protected get prisma(): PrismaClientInstance {
+    return this.prismaClient as PrismaClientInstance;
+  }
+
+  // Sample method to demonstrate how to use the Prisma client within the Ban class
+  async findDistrictByCode(code: string) {
+    return this.prisma.district.findFirst({ where: { meta: { path: ['insee', 'cog'], equals: code } } });
+  }
+}
 
 export { getPrismaClient };
 export default Ban;
