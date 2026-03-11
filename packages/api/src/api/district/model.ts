@@ -4,8 +4,7 @@ import { getPrismaClient } from '../../db/prisma.js';
 
 import { banPgDistrictSchema } from '../district/schema.js';
 
-// export { exportNdjson } from '../../../../../prisma/extensions/exportNdjson.progress.js'
-export { exportNdjson } from '../../../../../prisma/extensions/exportNdjson.progress.batch.js'
+export { exportNdjson } from '@ban/prisma-client'
 
 
 const logger = {

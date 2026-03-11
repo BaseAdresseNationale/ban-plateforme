@@ -1,4 +1,5 @@
-import { getPrismaClient } from '../db/prisma.js';
+import { getPrismaClient } from '@ban/prisma-client'
+
 import { writeDistrictsInPgDb } from './district.js';
 import { writeCommonToponymsInPgDb } from './commonToponym.js';
 import { writeAddressesInPgDb } from './address.js';

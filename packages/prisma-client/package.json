@@ -1,0 +1,33 @@
+{
+  "name": "@ban/prisma-client",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "prisma:generate": "prisma generate --config prisma.config.ts",
+    "prisma:migrate:diff:baseline": "prisma migrate diff --config prisma.config.ts --from-empty --to-schema=prisma/schema.prisma --script --output=prisma/migrations/0000_baseline/migration.sql",
+    "prisma:migrate:bootstrap": "./scripts/bootstrap.sh",
+    "prisma:migrate:dev": "prisma migrate dev --config prisma.config.ts",
+    "prisma:migrate:resolve": "prisma migrate resolve --config prisma.config.ts --applied",
+    "prisma:migrate:deploy": "prisma migrate deploy --config prisma.config.ts",
+    "prisma:migrate:reset": "prisma migrate reset --config prisma.config.ts --force",
+    "prisma:studio": "prisma studio --config prisma.config.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "dev": "tsup src/index.ts --format esm --dts --watch"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@types/node": "^24.1.0",
+    "pg": "^8.16.3",
+    "prisma": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5"
+  }
+}

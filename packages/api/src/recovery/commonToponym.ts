@@ -1,6 +1,6 @@
 import { logger } from '@ban/tools';
+import { getPrismaClient } from '@ban/prisma-client'
 
-import { getPrismaClient } from '../db/prisma.js';
 import { banPgCommonToponymSchema } from './commonToponym.model.js';
 
 type PrismaClient = ReturnType<typeof getPrismaClient>;
@@ -40,7 +40,7 @@ export const writeCommonToponymsInPgDb = async (prismaClient: PrismaClient, banO
       where: { id: commonToponym.id },
       update: commonToponym,
       create: commonToponym,
-    }).then((result) => result as unknown as BanPgCommonToponym);
+    }).then((result: BanPgCommonToponym) => result);
 
     logger.verbose('✅ Common toponym created:', commonToponym.id, '…');
     logger.dir(newCommonToponym, { depth: null });

@@ -189,6 +189,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../config
+      '@ban/prisma-client':
+        specifier: workspace:*
+        version: link:../prisma-client
       '@ban/tools':
         specifier: workspace:*
         version: link:../tools
@@ -211,6 +214,25 @@ importers:
       zod:
         specifier: ^3.22.4
         version: 3.25.76
+
+  packages/prisma-client:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.1.0
+      '@types/node':
+        specifier: ^24.1.0
+        version: 24.1.0
+      pg:
+        specifier: ^8.16.3
+        version: 8.16.3
+      prisma:
+        specifier: ^7.0.0
+        version: 7.1.0(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.8.3)
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.15.5
 
   packages/shared-lib: {}
 
