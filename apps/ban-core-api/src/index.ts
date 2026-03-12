@@ -1,15 +1,15 @@
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
-import rascal from 'rascal';
+import rascal, { type BrokerAsPromised } from 'rascal';
 import express from 'express';
 import multer from 'multer';
-// import cors from 'cors'
 
 import { env } from '@ban/config';
+import { logger } from '@ban/tools';
 
 import { parseBalForBan } from './parseBalForBan.js';
 
-import type { BrokerAsPromised } from 'rascal';
+import dataRoutes from './routes/data/index.js';
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -35,7 +35,7 @@ const config = {
   publications: {
     'balUploaded': {
       exchange: 'bal.events',
-      routingKey: 'bal.uploaded'
+      routingKey: 'bal.uploaded',
     }
   }
 };
@@ -47,11 +47,17 @@ const port = process.env.PORT || 3000;
 let broker: Awaited<ReturnType<typeof BrokerAsPromised.create>>;
 
 app.use(express.json({limit: '20mb'}))
-// app.use(cors({origin: true}))
 
 app.get('/', (req, res) => {
   res.send('Welcome to the BAN Core API');
 });
+
+app.use('/api/data', dataRoutes);
+
+
+// -------------------------
+//-- TEST & INTERNAL ROUTES --
+//-------------------------
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
@@ -65,10 +71,10 @@ app.post('/upload-bal', upload.single('file'), async (req, res) => {
     const json = await parseBalForBan(fileStream);
     await broker.publish('default', json); // publie sur exchange/routingKey par défaut
 
-    console.log('[ban-core-api] Fichier BAL envoyé vers RabbitMQ');
+    logger.info('[ban-core-api] Fichier BAL envoyé vers RabbitMQ');
     res.status(200).json({ status: 'ok' });
   } catch (error) {
-    console.error('[ban-core-api] Erreur parsing ou publication:', error);
+    logger.error('[ban-core-api] Erreur parsing ou publication:', error);
     res.status(500).json({ error: 'Erreur traitement BAL' });
   } finally {
     await fs.unlink(req.file.path);
@@ -82,14 +88,14 @@ app.post('/send-bal', express.text(), async (req, res) => {
 
   try {
     const json = await parseBalForBan(body);
-    console.log('JSON result', json);
+    logger.info('JSON result', json);
 
     // Default Publish on exchange/routingKey
-    await broker.publish('default', json); 
+    await broker.publish('default', json);
 
     res.status(200).json({ status: 'ok' });
   } catch (error) {
-    console.error('[ban-core-api] Erreur parsing ou publication:', error);
+    logger.error('[ban-core-api] Erreur parsing ou publication:', error);
     res.status(500).json({ error: 'Erreur traitement BAL en Body' });
   }
 });
@@ -105,12 +111,12 @@ app.post('/bal/file', upload.single('file'), async (req, res) => {
       filename: req.file.originalname,
     };
     await broker.publish('bal.uploaded', message);
-    console.log('>>> bal.uploaded', message);
-    console.log('[ban-core-api] BAL fichier envoyée');
+    logger.info('>>> bal.uploaded', message);
+    logger.info('[ban-core-api] BAL fichier envoyée');
     res.status(202).json({ status: 'queued', source: 'file' });
   } catch (err) {
-    console.error('[ban-core-api] Erreur fichier :', err);
-    res.status(500).json({ error: 'Erreur traitement BAL' });
+    logger.error('[ban-core-api] Erreur fichier :', err);
+    res.status(500).send({ error: 'Erreur traitement BAL' });
   } finally {
     await fs.unlink(req.file.path);
   }
@@ -128,12 +134,10 @@ app.post('/bal/text', express.text(), async (req, res) => {
     };
     // TODO AFTER
     await broker.publish('balUploaded', message);
-    // await broker.publish('bal.uploaded', message);
-    // console.log('>>> bal.uploaded', message);
-    console.log('[ban-core-api] BAL texte envoyée');
+    logger.info('[ban-core-api] BAL texte envoyée');
     res.status(202).json({ status: 'queued', source: 'text' });
   } catch (err) {
-    console.error('[ban-core-api] Erreur text :', err);
+    logger.error('[ban-core-api] Erreur text :', err);
     res.status(500).json({ error: 'Erreur traitement BAL' });
   }
 });
@@ -141,9 +145,8 @@ app.post('/bal/text', express.text(), async (req, res) => {
 app.listen(port, async () => {
   try {
     broker = await rascal.BrokerAsPromised.create(config);
-    console.log(`[ban-core-api] API démarrée sur http://localhost:${port} et broker RabbitMQ connecté`);
+    logger.info(`[ban-core-api] API démarrée sur http://localhost:${port} et broker RabbitMQ connecté`);
   } catch (error) {
-    console.error('[ban-core-api] Erreur de connexion au broker RabbitMQ:', error);
-    // process.exit(1);
+    logger.error('[ban-core-api] Erreur de connexion au broker RabbitMQ:', error);
   }
 });
