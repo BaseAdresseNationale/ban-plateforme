@@ -1,4 +1,4 @@
-import { getPrismaClient } from '@ban/prisma-client'
+import { getPrismaClient, pool as pgPool } from '@ban/prisma-client'
 
 type PrismaClientInstance = ReturnType<typeof getPrismaClient>;
 
@@ -19,7 +19,7 @@ class Ban {
   }
 }
 
-export { getPrismaClient };
+export { getPrismaClient, pgPool };
 export default Ban;
 
 // -------------------------
