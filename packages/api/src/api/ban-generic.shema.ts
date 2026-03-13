@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export const pgDateString = z.string().refine((dateStr) => !isNaN(Date.parse(dateStr)), { message: 'Invalid date string' }); // ISO 8601 date string in Postgres format
+// export const pgDateString = z.string().refine((dateStr) => !isNaN(Date.parse(dateStr)), { message: 'Invalid date string' }); // ISO 8601 date string in Postgres format
+export const pgDateString = z.date().refine((dateStr) => !isNaN(dateStr.getTime()), { message: 'Invalid date string' }); // ISO 8601 date string in Postgres format
 
 // ----------------
 // Position types
@@ -142,7 +143,52 @@ declare global {
   // BanObjects type
   interface BanObjects {
     districts: Record<string, BanDistrict>;
-    commonToponyms: Record<string, BanCommonToponym>;
-    addresses: Record<string, BanAddress>;
+    // commonToponyms: Record<string, BanCommonToponym>;
+    commonToponyms: Record<string, any>; // FIXME: to be replaced with actual BanCommonToponym type when available
+    // addresses: Record<string, BanAddress>;
+    addresses: Record<string, any>; // FIXME: to be replaced with actual BanAddress type when available
   }
 }
+
+
+// -----------------
+// Legacy schemas
+// -----------------
+
+// import {object, string, number, array, boolean} from 'yup'
+
+// export const banID = string().trim().uuid()
+// --- export const banID = z.string().uuid(); // UUID v4
+
+// export const labelSchema = object({
+//   isoCode: string().trim().length(3).required(),
+//   value: string().trim().required(),
+// }).noUnknown()
+export const labelSchema = label;
+
+// export const geometrySchema = object({
+//   type: string().trim().matches(/^Point$/).required(),
+//   coordinates: array().length(2).of(number()).required(),
+// }).noUnknown()
+export const geometrySchema = banGeometrySchema;
+
+// export const cadastreSchema = object({
+//   ids: array().of(string().trim())
+// }).noUnknown()
+export const cadastreSchema = metaCadastreSchema;
+
+// export const balSchema = object({
+//   idRevision: string().trim(),
+//   dateRevision: string().trim(),
+//   codeAncienneCommune: string().trim(),
+//   nomAncienneCommune: string().trim(),
+//   isLieuDit: boolean(),
+//   cleInterop: string().trim(),
+//   deprecatedID: string().trim(),
+// }).noUnknown()
+export const balSchema = metaBalSchema;
+
+// export const idfixSchema = object({
+//   hash: string().trim(),
+// }).noUnknown()
+export const idfixSchema = metaIdfixSchema;

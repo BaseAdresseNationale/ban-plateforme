@@ -46,6 +46,26 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) =>
         ...districts?.[row.id_ban_commune] || {},
         id: row.id_ban_commune,
         labels: getterLabels('commune_nom') || [],
+        meta: {
+          ban: {
+            source: row.source || '',
+            hashIdFix: row.ban_enrich_hash_id_fix || '',
+            DEPRECATED_cleInterop: row.cle_interop || '',
+            DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
+            targetKey: row.ban_enrich_ban_target_key_district || ['']
+          },
+          dgfip: {
+            codeDepartement: row.code_departement || '',
+          },
+          insee: {
+            cog: row.commune_insee || '',
+            mainCog: row.ban_enrich_main_cog || row.commune_insee,
+            mainId: row.id_ban_commune || '',
+            isMain: row.ban_enrich_is_main_cog || true,
+          },
+        },
+        legalityDate: row.date_der_maj || '',
+        lastRecordDate: new Date().toISOString(), // Assuming last record date is now
       };
     }
 
@@ -81,7 +101,8 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) =>
           insee: {
             cog: row.commune_insee || '',
             mainCog: row.ban_enrich_main_cog || '',
-            isMainCog: row.ban_enrich_is_main_cog || '',
+            mainId: row.id_ban_commune || '',
+            isMain: row.ban_enrich_is_main_cog || '',
           },
           laPoste: {
             codePostal: row.ban_enrich_code_postal ? [row.ban_enrich_code_postal.split('|')] : [],
@@ -132,7 +153,8 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) =>
           insee: {
             cog: row.commune_insee || '',
             mainCog: row.ban_enrich_main_cog || '',
-            isMainCog: row.ban_enrich_is_main_cog || '',
+            mainId: row.id_ban_commune || '',
+            isMain: row.ban_enrich_is_main_cog || '',
           },
           laPoste: {
             codePostal: row.ban_enrich_code_postal ? [row.ban_enrich_code_postal.split('|')] : [],

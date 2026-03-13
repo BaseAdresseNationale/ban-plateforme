@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { getUUIDv4 } from '@ban/tools';
 
-import { getUUIDv4 } from "../tools/uuid-v4.js";
 import {
   label,
   banID,
@@ -11,7 +11,7 @@ import {
   metaIdfixSchema,
   typePositionsSchema,
   banGeometrySchema,
-} from './ban-generic.model.js';
+} from '../api/ban-generic.shema.js';
 import { banCommonToponymSchema } from './commonToponym.model.js';
 import { banDistrictSchema } from './district.model.js';
 
@@ -51,7 +51,8 @@ const banAddressSchema = genericAddressSchema.extend({
 });
 
 export const banPgAddressSchema = genericAddressSchema.extend({
-    updateDate: pgDateString.default(() => new Date().toISOString()),
+    // updateDate: pgDateString.default(() => new Date().toISOString()),
+    updateDate: pgDateString.default(() => new Date()),
 });
 
 // -----------------

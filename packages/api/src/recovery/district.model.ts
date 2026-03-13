@@ -1,7 +1,7 @@
 import { z } from 'zod';
+import { getUUIDv4 } from '@ban/tools';
 
-import { getUUIDv4 } from "../tools/uuid-v4.js";
-import { label, banID, pgDateString } from './ban-generic.model.js';
+import { label, banID, pgDateString } from '../api/ban-generic.shema.js';
 
 const districtConfigSchema = z.object({
     certificate: z.record(z.any()).optional(),
@@ -29,7 +29,8 @@ export const banDistrictSchema = z.object({
 });
 
 export const banPgDistrictSchema = banDistrictSchema.extend({
-    updateDate: pgDateString.default(() => new Date().toISOString()),
+    // updateDate: pgDateString.default(() => new Date().toISOString()),
+    updateDate: pgDateString.default(() => new Date()),
 });
 
 export {

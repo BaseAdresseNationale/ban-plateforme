@@ -1,9 +1,25 @@
-import {
-    type Prisma,
-    type PrismaClient,
-} from '../db/prisma.js';
-import logger from '../tools/logger.js';
+import { logger } from '@ban/tools';
+
+import { getPrismaClient } from '../db/prisma.js';
 import { banPgCommonToponymSchema } from './commonToponym.model.js';
+
+type PrismaClient = ReturnType<typeof getPrismaClient>;
+
+// TODO : Clean this TEMPORARY FIX ? :
+type BanPgCommonToponym = {
+  id: string;
+  districtID: string;
+  name?: string;
+  legalityDate?: Date;
+  updateDate: Date;
+}
+type BanCommonToponym = {
+  id: string;
+  districtID: string;
+  name?: string;
+  legalityDate?: Date;
+  updateDate: Date;
+}
 
 const banCommonToponymToBanPgCommonToponym = (commonToponymRaw: Partial<BanCommonToponym>): BanPgCommonToponym => {
     const parsedCommonToponym = banPgCommonToponymSchema.parse(commonToponymRaw);
@@ -22,8 +38,8 @@ export const writeCommonToponymsInPgDb = async (prismaClient: PrismaClient, banO
     logger.verbose('📍 Inserting common toponym', commonToponym.id, '…');
     const newCommonToponym = await prismaClient.common_toponym.upsert({
       where: { id: commonToponym.id },
-      update: commonToponym as unknown as Prisma.common_toponymUpdateInput,
-      create: commonToponym as unknown as Prisma.common_toponymCreateInput,
+      update: commonToponym,
+      create: commonToponym,
     }).then((result) => result as unknown as BanPgCommonToponym);
 
     logger.verbose('✅ Common toponym created:', commonToponym.id, '…');

@@ -2,13 +2,13 @@ import rascal from 'rascal';
 import { MongoClient } from 'mongodb';
 
 import { env } from '@ban/config';
+import {getPrismaClient, writeInMongoDb, writeInPgDb, type MongoCollections} from '@ban/api';
+import { logger } from '@ban/tools';
 
 // import { testBdd } from './test/bddTools.js';
-import logger from './tools/logger.js';
-import prismaPg from './db/prisma.js';
-import { writeInMongoDb } from './api/api-mongo-ban.js';
-import { writeInPgDb } from './api/api-pg-ban.js';
 import { getBanObjectsFromBalRows } from './helper.js';
+
+const prismaPg = getPrismaClient();
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -52,7 +52,7 @@ const mongoUrl =
   env.MONGO.username && env.MONGO.password
     ? `mongodb+srv://${env.MONGO.username}:${env.MONGO.password}@${env.MONGO.host}?replicaSet=replicaset&tls=true&authSource=admin&readPreference=primary`
     : `mongodb://${env.MONGO.host}:${env.MONGO.port}`;
-logger.info(`[ban-writer] Mongo URL: ${mongoUrl}`);
+logger.info(`[writer] Mongo URL: ${mongoUrl}`);
 const mongoDbName = env.MONGO.db;
 
 async function main() {
@@ -64,7 +64,7 @@ async function main() {
     districts: mongoDb.collection('districts'),
     commonToponyms: mongoDb.collection('commonToponyms'),
     addresses: mongoDb.collection('addresses'),
-  };
+  } as unknown as MongoCollections;
 
   const broker = await rascal.BrokerAsPromised.create(config);
   const subscription = await broker.subscribe('balReady');

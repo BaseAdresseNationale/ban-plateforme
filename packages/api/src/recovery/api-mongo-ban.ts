@@ -1,6 +1,6 @@
-import logger from '../tools/logger.js';
+import { logger } from '@ban/tools';
 
-interface MongoCollections {
+export interface MongoCollections {
   districts: import('mongodb').Collection;
   commonToponyms: import('mongodb').Collection;
   addresses: import('mongodb').Collection;

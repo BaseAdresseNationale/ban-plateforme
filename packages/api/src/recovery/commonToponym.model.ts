@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getUUIDv4 } from "../tools/uuid-v4.js";
+import { getUUIDv4 } from '@ban/tools';
 
 import {
   label,
@@ -8,7 +8,7 @@ import {
   metaCadastreSchema,
   metaBalSchema,
   metaIdfixSchema,
-} from './ban-generic.model.js';
+} from '../api/ban-generic.shema.js';
 import { banDistrictSchema } from './district.model.js';
 
 const metaCommonToponymSchema = z.object({
@@ -31,7 +31,8 @@ export const banCommonToponymSchema = genericCommonToponymSchema.extend({
 });
 
 export const banPgCommonToponymSchema = genericCommonToponymSchema.extend({
-    updateDate: pgDateString.default(() => new Date().toISOString()),
+    // updateDate: pgDateString.default(() => new Date().toISOString()),
+    updateDate: pgDateString.default(() => new Date()),
 });
 
 // extract the inferred type

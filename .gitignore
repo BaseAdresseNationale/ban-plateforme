@@ -95,3 +95,6 @@ config/.pgpass
 
 # Prisma
 generated/
+
+volumes/postgres-data/*
+!volumes/postgres-data/readme.md
