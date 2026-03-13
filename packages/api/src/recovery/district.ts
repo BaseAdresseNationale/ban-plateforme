@@ -1,6 +1,6 @@
 import { logger } from '@ban/tools';
+import { getPrismaClient } from '@ban/prisma-client'
 
-import { getPrismaClient } from '../db/prisma.js';
 import {
     banPgDistrictSchema,
     type BanPgDistrict,
@@ -37,7 +37,7 @@ export const writeDistrictsInPgDb = async (prismaClient: PrismaClient, banObject
       where: { id: district.id },
       update: district,
       create: district,
-    }).then((result) => result as unknown as BanPgDistrict);
+    }).then((result: BanPgDistrict) => result);
 
     logger.verbose('✅ District created:', district.id, '…');
     logger.dir(newDistrict, { depth: null });

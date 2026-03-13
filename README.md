@@ -128,9 +128,12 @@ Ce script :
 2. Vérifie que Postgres tourne,
 3. Vérifie si `ban.district` existe,
 4. Si nécessaire → importe `ban_schema.sql`,
-5. Marque la migration Prisma `0000_baseline` comme appliquée (`npx prisma migrate resolve --applied 0000_baseline`),
-6. Applique toutes les migrations Prisma restantes (`npx prisma migrate deploy`),
-7. Regénère le client Prisma (`npx prisma generate`).
+5. Lance le bootstrap Prisma (`pnpm db:bootstrap`) qui :
+   - marque `0000_baseline` comme appliquée,
+   - applique les migrations Prisma restantes,
+   - régénère le client Prisma.
+
+`pnpm db:bootstrap` s’occupe de tout le cycle Prisma après l’import du schéma BAN.
 
 
 Après ça, votre base BAN locale est entièrement fonctionnelle.
@@ -155,11 +158,15 @@ ban-platform/
 │   ├── ban-core-writer/
 │   ├── ban-core-api/
 │
-├── prisma/
-│   └── schema.prisma
-├── prisma.config.ts
-├── generated/
-│   └── client/
+├── packages/
+│   └── prisma-client/
+│       ├── prisma.config.ts
+│       ├── prisma/
+│       │   ├── schema.prisma
+│       │   ├── extensions/
+│       │   └── migrations/
+│       └── generated/
+│           └── client/
 │
 ├── ban_schema.sql
 ├── scripts/
@@ -216,17 +223,13 @@ Pour créer la migration de base (`0000_baseline`) à partir du schéma actuel :
 
 
 ```shell
-npx prisma migrate diff \
-  --from-empty \
-  --to-schema=prisma/schema.prisma \
-  --script \
-  --output=prisma/migrations/0000_baseline/migration.sql
+pnpm db:migrate:diff:baseline
 ```
 
 Puis enregistrer cette migration comme "déjà appliquée" auprès de Prisma :
 
 ```shell
-npx prisma migrate resolve --applied 0000_baseline
+pnpm db:migrate:resolve -- 0000_baseline
 ```
 
 Dans les environnements de développement, l’alignement Prisma ⇔ base est ensuite géré automatiquement par :

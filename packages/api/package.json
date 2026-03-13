@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ban/config": "workspace:*",
+    "@ban/prisma-client": "workspace:*",
     "@ban/tools": "workspace:*",
     "mongodb": "^6.18.0",
     "pg": "^8.16.3"
