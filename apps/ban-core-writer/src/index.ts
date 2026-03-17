@@ -5,7 +5,6 @@ import { env } from '@ban/config';
 import {getPrismaClient, writeInMongoDb, writeInPgDb, type MongoCollections} from '@ban/api';
 import { logger } from '@ban/tools';
 
-// import { testBdd } from './test/bddTools.js';
 import { getBanObjectsFromBalRows } from './helper.js';
 
 const prismaPg = getPrismaClient();
@@ -73,14 +72,18 @@ async function main() {
     try {
       const parsed = typeof content === 'string' ? JSON.parse(content) : content;
 
-      // Extraction des objets BAN depuis les lignes BAL
-      const banObjects = getBanObjectsFromBalRows(parsed.rows, DEFAULT_ISO_CODE);
-
-      // Check si tous les IDs requis sont présents - TODO: améliorer cette logique et la passer dans ID-Fix/Ban-Parser
+      // Contrôle la présence d'ID sur l'ensemble de la donnée // TODO: améliorer cette logique et la passer dans ID-Fix/Ban-Parser ?
       const isWithIds = parsed.rows.every(
         (row: any) =>
           row.id_ban_commune && row.id_ban_toponyme && row.id_ban_adresse
       );
+
+      // TODO : Identifier les events de la publication via une route `delta-report`
+
+      // Extraction des objets BAN depuis les lignes BAL
+      const banObjects = getBanObjectsFromBalRows(parsed.rows, DEFAULT_ISO_CODE, isWithIds);
+
+      // TODO : extraction des ID des districts/communes impactées par la publication de la BAL
 
       // Ecriture PostgreSQL si les objets ont tous les IDs requis
       if (isWithIds) {
@@ -102,8 +105,6 @@ async function main() {
   });
 
   logger.log('[writer] En écoute sur bal.ready...');
-  // Test database connection
-  // testBdd();
 }
 
 main();
