@@ -3,6 +3,8 @@ type Label = {
   value: string;
 };
 
+const EMPTY_TOPONYM_BAL_IDENTIFIER = 99_999; // Valeur utilisée dans la BAL pour indiquer un toponyme sans numero.
+
 const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
   const labels: Label[] = row[colName] ? [{ isoCode: defaultIsoCode, value: row[colName] }] : [];
   Object.entries(row).forEach(([key, value]) => {
@@ -31,20 +33,54 @@ const getItemPositions = (item: Record<string, any> | undefined, row: Record<str
   return position;
 };
 
-export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) => {
+export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, isWithId: boolean = true) => {
   const addresses: Record<string, any> = {};
   const commonToponyms: Record<string, any> = {};
   const districts: Record<string, any> = {};
 
+  const standardizeLabel = (label: string) => {
+    var string_norm = label.normalize('NFD').replace(/\p{Diacritic}/gu, ''); // Old method: .replace(/[\u0300-\u036f]/g, "");
+    console.log(string_norm);
+
+    return string_norm.trim().toUpperCase().replace(/\s+/g, '_');
+}
   rows.forEach((row: any) => {
     const getterLabels = getLabelsFromRow(row, defaultIsoCode);
+
+    const rowIds: { idDistrict?: string; idCommonToponym?: string; idAddress?: string } = {};
+
+    // Utilisation des IDs-BAN stables si disponibles, sinon 
+    // fallback sur des IDs instables générés à partir des données de la BAL
+    if(isWithId) {
+      if (row.id_ban_commune) rowIds.idDistrict = row.id_ban_commune;
+      if (row.id_ban_toponyme) rowIds.idCommonToponym = row.id_ban_toponyme;
+      if (row.id_ban_adresse) rowIds.idAddress = row.id_ban_adresse;
+    } else {
+      // - District : Code INSEE
+      if(row.commune_insee)
+        rowIds.idDistrict = `no-id-district--${row.commune_insee}`; // FIXME: Réccuperer l'ID-BAN de la commune ou générer un ID à partir du code INSEE
+      // - CommonToponyme : [ID District (Without Prefix)] + Label dans un format standardisé (Latin-1, Majustule, Underscore en remplacement des espaces)
+      if(getterLabels('voie_nom')[0]?.value)
+        rowIds.idCommonToponym =
+          `no-id-toponym--${
+          rowIds.idDistrict?.split('--')[1] }--${
+          standardizeLabel(getterLabels('voie_nom')[0].value) }`;
+      // - Adresse : [ID District (Without Prefix)] + [ID CommonToponym (Without Prefix)] + Numero+suffix
+      if(row.numero && parseInt(row.numero) !== EMPTY_TOPONYM_BAL_IDENTIFIER)
+        rowIds.idAddress =
+          `no-id-address--${
+          rowIds.idDistrict?.split('--')[1]}--${
+          rowIds.idCommonToponym?.split('--')?.[2] || 'unknown'}--${
+          row.numero}${row.suffixe ? `-${row.suffixe}` : ''}`;
+    }
+
     // TODO: Gérer les fusions profondes (plusieurs lignes pour une même entité) cf. oldDistrict
 
-    // District
-    if (row.id_ban_commune) {
-      districts[row.id_ban_commune] = {
-        ...districts?.[row.id_ban_commune] || {},
-        id: row.id_ban_commune,
+    // District // TODO: Ne plus composer les district à partir des données de la BAL, mais directement à partir de celle de la BDD PostgreSQL
+    if (rowIds.idDistrict) {
+      districts[rowIds.idDistrict] = {
+        ...districts?.[rowIds.idDistrict] || {},
+        id: rowIds.idDistrict,
         labels: getterLabels('commune_nom') || [],
         meta: {
           ban: {
@@ -70,12 +106,12 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) =>
     }
 
     // Toponym
-    if (row.id_ban_toponyme) {
-      commonToponyms[row.id_ban_toponyme] = {
-        ...commonToponyms?.[row.id_ban_toponyme] || {},
-        id: row.id_ban_toponyme,
-        districtID: row.id_ban_commune,
-        district: districts[row.id_ban_commune] || {},
+    if (rowIds.idCommonToponym) {
+      commonToponyms[rowIds.idCommonToponym] = {
+        ...commonToponyms?.[rowIds.idCommonToponym] || {},
+        id: rowIds.idCommonToponym,
+        districtID: rowIds.idDistrict,
+        district: districts[rowIds.idDistrict as string] || {},
         labels: getterLabels('voie_nom') || [],
         // certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune), // TODO: Add certified field if available
         geometry: {
@@ -114,20 +150,20 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) =>
     }
 
     // Address
-    if (row.id_ban_adresse) {
-      addresses[row.id_ban_adresse] = {
-        ...addresses?.[row.id_ban_adresse] || {},
-        id: row.id_ban_adresse,
-        mainCommonToponymID: row.id_ban_toponyme,
+    if (rowIds.idAddress) {
+      addresses[rowIds.idAddress] = {
+        ...addresses?.[rowIds.idAddress] || {},
+        id: rowIds.idAddress,
+        mainCommonToponymID: rowIds.idCommonToponym,
         secondaryCommonToponymIDs: row.id_ban_toponymes_secondaires ? row.id_ban_toponymes_secondaires.split('|') : [],
-        districtID: row.id_ban_commune,
-        mainCommonToponym: commonToponyms[row.id_ban_toponyme] || {},
-        districts: districts[row.id_ban_commune] || {},
+        districtID: rowIds.idDistrict,
+        mainCommonToponym: commonToponyms[rowIds.idCommonToponym as string] || {},
+        districts: districts[rowIds.idDistrict as string] || {},
         labels: getterLabels('lieudit_complement_nom') || [],
         number: row.numero,
         suffix: row.suffixe,
         certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune),
-        positions: getItemPositions(addresses[row.id_ban_adresse], row),
+        positions: getItemPositions(addresses[rowIds.idAddress as string], row),
         meta: {
           ban: {
             source: row.source || '',
@@ -144,7 +180,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string) =>
                 }],
                 "code": row.ban_enrich_old_district_code
               }
-              : addresses[row.id_ban_adresse]?.meta?.ban?.oldDistrict || null,
+              : addresses[rowIds.idAddress as string]?.meta?.ban?.oldDistrict || null,
           },
           dgfip: {
             cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
