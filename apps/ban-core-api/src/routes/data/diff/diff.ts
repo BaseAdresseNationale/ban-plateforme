@@ -6,8 +6,8 @@ import Cursor from "pg-cursor";
 import { pgPool } from '@ban/api';
 import { logger } from '@ban/tools';
 
-import { handleApiResponse } from '../../helper/handleApiResponse.js'
-import { banRequestConfigs as requestConfig } from './ban-config.js'
+import { handleApiResponse } from '../../../helper/handleApiResponse.js'
+import { diffRequestConfigs as requestConfig } from './diff-config.js'
 import {
   VALID_FORMATS,
   VALID_DATA_TYPES,
@@ -16,10 +16,10 @@ import {
   getMetaLine,
   banToStandardFr,
   banToStandardFrInt,
-  getSnapshotObjLine,
+  getDiffObjLine,
   closeCursor,
   streamCursorData,
-} from './helper.js'
+} from '../helper.js'
 
 const FETCH_SIZE = 500;
 
@@ -34,7 +34,8 @@ app.get("/:dep", async (req, res) => {
   const address_ids: string[] | null = null;
   const common_toponym_ids: string[] | null = null;
   const district_ids: string[] | null = null;
-  const at: string | null = dateStringToPgTimestamptz(req.query.at as string | undefined);
+  const from: string | null = dateStringToPgTimestamptz(req.query.from as string | undefined);
+  const to: string | null = dateStringToPgTimestamptz(req.query.to as string | undefined);
   const queryFormat: string | null = String(typeof req.query.format === "string" ? req.query.format : "raw");
   const queryDataTypes: string | undefined = req.query.dataTypes ? String(req.query.dataTypes) : undefined;
 
@@ -43,8 +44,11 @@ app.get("/:dep", async (req, res) => {
   if (departements.length === 0) return handleApiResponse(res, 400, "The `deps` parameter is required.", {});
 
   // Check date parameters format
-  if(!at)   return handleApiResponse(res, 400, "The `at` parameter is required.", {});
-  if(at === 'Invalid date')   return handleApiResponse(res, 400, "Invalid date format for 'at' parameter. Expected ISO 8601 format (YYYY-MM-DD).", {});
+  // TODO : vérifier que `from` est bien antérieur à `to` et que l'intervalle n'est pas trop grand (ex: max 3 mois) pour éviter les requêtes trop lourdes
+  if(!from)   return handleApiResponse(res, 400, "The `from` parameter is required.", {});
+  if(from === 'Invalid date')   return handleApiResponse(res, 400, "Invalid date format for 'from' parameter. Expected ISO 8601 format (YYYY-MM-DD).", {});
+  if(!to)     return handleApiResponse(res, 400, "The `to` parameter is required.", {});
+  if(to === 'Invalid date')   return handleApiResponse(res, 400, "Invalid date format for 'to' parameter. Expected ISO 8601 format (YYYY-MM-DD).", {});
 
   // Validate format parameter
   const format = !queryFormat
@@ -81,7 +85,8 @@ app.get("/:dep", async (req, res) => {
           .filter(item => VALID_DATA_TYPES.includes(item)) as Array<keyof typeof requestConfig>)
       : (Object.keys(requestConfig) as Array<keyof typeof requestConfig>);
     const requestInfo = {
-      at,
+      from,
+      to,
       format,
       address_ids,
       common_toponym_ids,
@@ -101,7 +106,8 @@ app.get("/:dep", async (req, res) => {
     // Init the stream with a meta line to indicate the start
     res.write(getMetaLine('stream-start', requestInfo));
 
-    const countEntriesByTypes: Record<keyof typeof requestConfig, number> = {} as Record<keyof typeof requestConfig, number>;
+    type StatEvents = Record<EventType, number>;
+    const countEntriesByTypes: Record<keyof typeof requestConfig, StatEvents> = {} as Record<keyof typeof requestConfig, StatEvents>;
 
     for (const dataType of dataTypes) {
       const { request, params, dataName } = requestConfig[dataType];
@@ -109,7 +115,7 @@ app.get("/:dep", async (req, res) => {
       logger.info(`Prepared request for ${dataType}`, { params });
 
       activeCursor = client.query(new Cursor(request, getQueryParams(params, requestInfo)));
-      if (!countEntriesByTypes[dataType]) countEntriesByTypes[dataType] = 0;
+      if (!countEntriesByTypes[dataType]) countEntriesByTypes[dataType] = {} as StatEvents;
 
       const stats = await streamCursorData({
         cursor: activeCursor,
@@ -117,7 +123,7 @@ app.get("/:dep", async (req, res) => {
         dataName,
         format,
         output: res,
-        banFormatter: getSnapshotObjLine,
+        banFormatter: getDiffObjLine,
         converters: {
           'standard-fr': banToStandardFr,
           'standard-fr-int': banToStandardFrInt,
@@ -125,7 +131,11 @@ app.get("/:dep", async (req, res) => {
         isAborted: () => aborted,
       });
 
-      countEntriesByTypes[dataType] += stats.count;
+      for (const [event, count] of Object.entries(stats)) {
+        const dataTypeStats = countEntriesByTypes[dataType as keyof typeof requestConfig] as StatEvents;
+        const eventKey = event as EventType;
+        dataTypeStats[eventKey] = (dataTypeStats[eventKey] || 0) + count;
+      }
 
       await closeCursor(activeCursor);
       activeCursor = null;
@@ -146,11 +156,7 @@ app.get("/:dep", async (req, res) => {
     if (!res.headersSent) res.status(500);
     res.end(String(e instanceof Error ? e.message : e));
   } finally {
-    try {
-      client.release();
-    } catch(err) {
-      logger.error("Error releasing database client", err);
-    }
+    try { client.release(); } catch {}
   }
 });
 
