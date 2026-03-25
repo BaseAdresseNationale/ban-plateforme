@@ -19,7 +19,7 @@ import {
   getSnapshotObjLine,
   closeCursor,
   streamCursorData,
-} from '../helper.js'
+} from '../helpers/index.js'
 
 const FETCH_SIZE = 500;
 
