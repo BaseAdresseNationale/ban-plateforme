@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ban.local/schemas/ban-diff-grouped.schema.json",
+  "title": "BAN diff (groupé)",
+  "type": "object",
+  "required": [
+    "meta",
+    "created",
+    "updated",
+    "disabled"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "from",
+        "to",
+        "generatedAt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "created": {
+      "$ref": "#/$defs/collections"
+    },
+    "disabled": {
+      "$ref": "#/$defs/collections"
+    },
+    "updated": {
+      "type": "object",
+      "required": [
+        "communes",
+        "odonymes",
+        "adresses"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "communes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/updatedCommune"
+          }
+        },
+        "odonymes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/updatedOdonyme"
+          }
+        },
+        "adresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/updatedAdresse"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "collections": {
+      "type": "object",
+      "required": [
+        "communes",
+        "odonymes",
+        "adresses"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "communes": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/commune"
+          }
+        },
+        "odonymes": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/odonyme"
+          }
+        },
+        "adresses": {
+          "type": "array",
+          "items": {
+            "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/adresse"
+          }
+        }
+      }
+    },
+    "updatedCommune": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/commune"
+        },
+        {
+          "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/commune"
+        }
+      ],
+      "items": false,
+      "$comment": "Tuple [after, before]."
+    },
+    "updatedOdonyme": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/odonyme"
+        },
+        {
+          "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/odonyme"
+        }
+      ],
+      "items": false,
+      "$comment": "Tuple [after, before]."
+    },
+    "updatedAdresse": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/adresse"
+        },
+        {
+          "$ref": "https://ban.local/schemas/common.defs.schema.json#/$defs/adresse"
+        }
+      ],
+      "items": false,
+      "$comment": "Tuple [after, before]."
+    }
+  }
+}

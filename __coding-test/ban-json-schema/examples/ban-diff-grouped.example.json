@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "from": "2025-12-01T00:00:00Z",
+    "to": "2025-12-17T00:00:00Z",
+    "generatedAt": "2025-12-17T23:17:55Z"
+  },
+  "created": {
+    "communes": [],
+    "odonymes": [
+      {
+        "idOdonyme": "3e8704e8-32c1-4a85-a074-0377a31435b2",
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "cleInterop": "64125_NOUVELLEVOIE",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Nouvelle voie"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Nouvelle voie"
+          }
+        ]
+      }
+    ],
+    "adresses": [
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.554321,
+              43.4367891
+            ]
+          }
+        },
+        "idAdresseCommunale": "279b25c8-3ca2-4ffe-9dab-1d9bb3a83f06",
+        "cleInterop": "64125_NOUVELLEVOIE_7",
+        "idVoiePlaceLieudit": "3e8704e8-32c1-4a85-a074-0377a31435b2",
+        "idLieuditComplementaire": null,
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T23:17:55Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64210",
+        "numero": 7,
+        "indiceRepetition": null
+      }
+    ]
+  },
+  "updated": {
+    "communes": [],
+    "odonymes": [],
+    "adresses": [
+      [
+        {
+          "position": {
+            "type": "entree",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                -1.554321,
+                43.4367891
+              ]
+            }
+          },
+          "idAdresseCommunale": "71bc89c8-0637-49e9-a5cf-ede3730a8bdc",
+          "cleInterop": "64125_RUEDELAMER_12",
+          "idVoiePlaceLieudit": "31036d18-9890-4611-b955-ef1e95de48d1",
+          "idLieuditComplementaire": null,
+          "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+          "codeInseeCommuneHistorique": null,
+          "certification": true,
+          "positionsComplementaires": [],
+          "dateDebut": "2025-01-01",
+          "dateDerniereMiseAJour": "2025-12-17T23:17:55Z",
+          "sources": [
+            "mairie"
+          ],
+          "parcellesCadastrales": [],
+          "codePostal": "64500",
+          "numero": 12,
+          "indiceRepetition": null
+        },
+        {
+          "position": {
+            "type": "entree",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                -1.554321,
+                43.4367891
+              ]
+            }
+          },
+          "idAdresseCommunale": "71bc89c8-0637-49e9-a5cf-ede3730a8bdc",
+          "cleInterop": "64125_RUEDELAMER_12",
+          "idVoiePlaceLieudit": "31036d18-9890-4611-b955-ef1e95de48d1",
+          "idLieuditComplementaire": null,
+          "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+          "codeInseeCommuneHistorique": null,
+          "certification": true,
+          "positionsComplementaires": [],
+          "dateDebut": "2025-01-01",
+          "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+          "sources": [
+            "mairie"
+          ],
+          "parcellesCadastrales": [],
+          "codePostal": "64210",
+          "numero": 12,
+          "indiceRepetition": null
+        }
+      ]
+    ]
+  },
+  "disabled": {
+    "communes": [],
+    "odonymes": [],
+    "adresses": [
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -1.5541203,
+              43.4367002
+            ]
+          }
+        },
+        "idAdresseCommunale": "fb0bfe79-e722-4eda-b91e-c2d53ac2df84",
+        "cleInterop": "64125_RUEDELAMER_14_BIS",
+        "idVoiePlaceLieudit": "31036d18-9890-4611-b955-ef1e95de48d1",
+        "idLieuditComplementaire": null,
+        "idCommune": "7c7b44ff-9198-4258-b9b2-ae3165201658",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T11:56:03Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "64210",
+        "numero": 14,
+        "indiceRepetition": "B"
+      }
+    ]
+  }
+}
