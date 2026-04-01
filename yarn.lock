@@ -1671,10 +1671,10 @@
   resolved "https://registry.yarnpkg.com/@ban-team/shared-data/-/shared-data-1.4.2.tgz#feb0a4e9aaa026cf1db39b99f8b4dda987682006"
   integrity sha512-GBdEmqIJEcx89EKq+PkyL2YR7hfoiKyDlfNy/vob0N5ro4pCdKZ9cMfPvod35FSC9KOEwaUZuOJz5fFwfSqufA==
 
-"@ban-team/validateur-bal@^3.3.7":
-  version "3.3.7"
-  resolved "https://registry.yarnpkg.com/@ban-team/validateur-bal/-/validateur-bal-3.3.7.tgz#fd36ed22710cb55577d7c517bdf0c40d06706654"
-  integrity sha512-DEh5u0E2ve/jcZHRWOPLe1TAIZNQndaypFpCqYbNrnGw2Bo8gFmnkqaP+YlwjBNuH5XVo4OkL112FE0+pGbduA==
+"@ban-team/validateur-bal@^3.4.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@ban-team/validateur-bal/-/validateur-bal-3.5.0.tgz#fd6e942703546d0953e750c77b43953f9600c2e0"
+  integrity sha512-vanYDFXcbw8TujxU5+WPCwwoy4Ooh0XWsTrbTGM2+S7Nuz6iXKO3lM/7y+/oNU99fKybt6MTrQ8kVI76ZmQ/iA==
   dependencies:
     "@ban-team/adresses-util" "^0.9.0"
     "@ban-team/shared-data" "^1.4.2"
@@ -1759,10 +1759,10 @@
   resolved "https://registry.npmjs.org/@etalab/decoupage-administratif/-/decoupage-administratif-4.0.0.tgz"
   integrity sha512-TMGZT4rFaQdkovoAZF5iMNJnxc2To8GXiC4x/N8Z5j6I0j29AeInE2Js86Wy9W2ZnjGFbKkSpmnsbLYwWYAFsw==
 
-"@etalab/decoupage-administratif@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-5.2.0.tgz#2bd853d51980dcd654f6e3fd5cdce2c53e7b2592"
-  integrity sha512-o6G7XvYH6qZeKyltKuYU3eeIspvg1yKqRiRcMJIiFwTOEGZVMtvGyJ9mf/QkdU4KEZ3L4YjWwBr+GU68pObnZQ==
+"@etalab/decoupage-administratif@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@etalab/decoupage-administratif/-/decoupage-administratif-6.0.0.tgz#0330556cf07e21fff21111e5775a316ec18b9636"
+  integrity sha512-XavYsFlbcM/prKr8hNHPKER94IHw/dsxNM4nxjWMYk6PLFACpEedvn/7wK8Baozm0dCYhWWcf+7bcWpA5pmCaQ==
 
 "@etalab/majic@^0.11.0":
   version "0.11.0"
