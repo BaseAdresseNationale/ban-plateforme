@@ -6,8 +6,6 @@ const {POSTGRES_BAN_USER} = process.env
 module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.query(`GRANT USAGE ON SCHEMA ban TO "${POSTGRES_BAN_USER}";`)
-    // btree_gist : déjà requis / créé par les migrations d’historisation (address_h, district_h, etc.)
-
     await queryInterface.sequelize.query(`
       CREATE TABLE ban.district_config (
         district_id UUID NOT NULL PRIMARY KEY
