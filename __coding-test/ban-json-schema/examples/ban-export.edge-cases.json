@@ -1,0 +1,223 @@
+{
+  "date": "2025-12-17T12:00:30Z",
+  "status": "success",
+  "response": {
+    "communes": [
+      {
+        "nom": {
+          "codeLangue": "fr",
+          "nom": "Commune A (ISO639-1 toléré)"
+        },
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "codeInsee": "2B037",
+        "nomsMultilinguesCommune": [
+          {
+            "codeLangue": "fr",
+            "nom": "Commune A"
+          },
+          {
+            "codeLangue": "fra",
+            "nom": "Commune A (fra)"
+          }
+        ],
+        "dateDerniereIntegrationBan": "2025-12-17T12:00:30Z",
+        "statutCommune": "ACTUELLE"
+      },
+      {
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Commune B"
+        },
+        "idCommune": "241f5f00-ef83-471b-8ebd-10c073306d8b",
+        "codeInsee": "09088",
+        "nomsMultilinguesCommune": [
+          {
+            "codeLangue": "fra",
+            "nom": "Commune B"
+          },
+          {
+            "codeLangue": "oc-nicard",
+            "nom": "Comuna B (tag IETF-ish)"
+          }
+        ],
+        "dateDerniereIntegrationBan": "2025-12-17T12:00:30Z",
+        "statutCommune": "ACTUELLE"
+      }
+    ],
+    "odonymes": [
+      {
+        "idOdonyme": "06ae8496-70da-4507-b288-c97c5e595cc7",
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "cleInterop": "2B037_TOPONYMEA",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Toponyme A"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Toponyme A"
+          },
+          {
+            "codeLangue": "fr-gallo",
+            "nom": "Toponim A"
+          }
+        ]
+      },
+      {
+        "idOdonyme": "d0bc1d7d-0f66-466c-99d4-9c144e088aa2",
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "cleInterop": "2B037_TOPONYME0",
+        "nom": {
+          "codeLangue": "fr",
+          "nom": "Toponyme Zéro"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fr",
+            "nom": "Toponyme Zéro"
+          }
+        ]
+      },
+      {
+        "idOdonyme": "901f13ca-7da7-4cdb-b675-f2619d2e7cce",
+        "idCommune": "241f5f00-ef83-471b-8ebd-10c073306d8b",
+        "cleInterop": "09088_TOPONYMEK",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Toponyme K"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Toponyme K"
+          },
+          {
+            "codeLangue": "oc-provenc",
+            "nom": "Toponim K"
+          }
+        ]
+      }
+    ],
+    "adresses": [
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -180.0,
+              -90.0
+            ]
+          }
+        },
+        "idAdresseCommunale": "5fa8ada4-f9a5-49ad-ad6f-01fa52652188",
+        "cleInterop": "2B037_TOPONYMEA_x",
+        "idVoiePlaceLieudit": "06ae8496-70da-4507-b288-c97c5e595cc7",
+        "idLieuditComplementaire": null,
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "codeInseeCommuneHistorique": null,
+        "certification": false,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T12:00:30Z",
+        "sources": [
+          "import-ban"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "20230",
+        "indiceRepetition": null
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              180.0,
+              90.0
+            ]
+          }
+        },
+        "idAdresseCommunale": "c7936583-90be-4826-9ab0-b1360f8035bf",
+        "cleInterop": "2B037_TOPONYME0_0",
+        "idVoiePlaceLieudit": "d0bc1d7d-0f66-466c-99d4-9c144e088aa2",
+        "idLieuditComplementaire": null,
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-02",
+        "dateDerniereMiseAJour": "2025-12-17T12:00:30Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [
+          "2B037000A0123"
+        ],
+        "codePostal": "20230",
+        "numero": 0,
+        "indiceRepetition": null
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              2.1234567,
+              48.1234567
+            ]
+          }
+        },
+        "idAdresseCommunale": "3b9cd397-c5eb-4c04-98d7-b925243a6393",
+        "cleInterop": "09088_TOPONYMEK_99998",
+        "idVoiePlaceLieudit": "901f13ca-7da7-4cdb-b675-f2619d2e7cce",
+        "idLieuditComplementaire": null,
+        "idCommune": "241f5f00-ef83-471b-8ebd-10c073306d8b",
+        "codeInseeCommuneHistorique": "09088",
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-02-01",
+        "dateDerniereMiseAJour": "2025-12-17T12:00:30Z",
+        "sources": [
+          "mairie",
+          "ign"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "09000",
+        "numero": 99998,
+        "indiceRepetition": "A"
+      },
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -61.1234567,
+              15.9876543
+            ]
+          }
+        },
+        "idAdresseCommunale": "c4e73c4d-0a1f-4217-b19e-3e6f3b736993",
+        "cleInterop": "09088_TOPONYMEK_12_BIS",
+        "idVoiePlaceLieudit": "901f13ca-7da7-4cdb-b675-f2619d2e7cce",
+        "idLieuditComplementaire": null,
+        "idCommune": "241f5f00-ef83-471b-8ebd-10c073306d8b",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-02-02",
+        "dateDerniereMiseAJour": "2025-12-17T12:00:30Z",
+        "sources": [
+          "mairie"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "09000",
+        "numero": 12,
+        "indiceRepetition": null
+      }
+    ]
+  }
+}

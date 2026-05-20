@@ -1,0 +1,218 @@
+{
+  "meta": {
+    "from": "2025-12-01T00:00:00Z",
+    "to": "2025-12-17T00:00:00Z",
+    "generatedAt": "2025-12-17T23:29:43Z"
+  },
+  "created": {
+    "communes": [],
+    "odonymes": [
+      {
+        "idOdonyme": "4d86bbf4-b689-4626-83a2-90cdbf17a053",
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "cleInterop": "2B037_TOPONYME0",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Toponyme Zéro"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Toponyme Zéro"
+          }
+        ]
+      }
+    ],
+    "adresses": [
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              180.0,
+              90.0
+            ]
+          }
+        },
+        "idAdresseCommunale": "dd488f8f-d426-4f8a-8e6e-ec53f174b197",
+        "cleInterop": "2B037_TOPONYMEEDGE_0",
+        "idVoiePlaceLieudit": "4d86bbf4-b689-4626-83a2-90cdbf17a053",
+        "idLieuditComplementaire": null,
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "codeInseeCommuneHistorique": null,
+        "certification": true,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T23:29:43Z",
+        "sources": [
+          "import-ban"
+        ],
+        "parcellesCadastrales": [
+          "2B037000A0123"
+        ],
+        "codePostal": "20230",
+        "indiceRepetition": null,
+        "numero": 0
+      }
+    ]
+  },
+  "updated": {
+    "communes": [],
+    "odonymes": [
+      [
+        {
+          "idOdonyme": "06ae8496-70da-4507-b288-c97c5e595cc7",
+          "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+          "cleInterop": "2B037_TOPONYMEA",
+          "nom": {
+            "codeLangue": "fr-gallo",
+            "nom": "Toponim Modifié"
+          },
+          "nomsMultilinguesOdonyme": [
+            {
+              "codeLangue": "fr-gallo",
+              "nom": "Toponim Modifié"
+            }
+          ]
+        },
+        {
+          "idOdonyme": "06ae8496-70da-4507-b288-c97c5e595cc7",
+          "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+          "cleInterop": "2B037_TOPONYMEA",
+          "nom": {
+            "codeLangue": "fra",
+            "nom": "Toponyme A"
+          },
+          "nomsMultilinguesOdonyme": [
+            {
+              "codeLangue": "fra",
+              "nom": "Toponyme A"
+            },
+            {
+              "codeLangue": "fr-gallo",
+              "nom": "Toponim A"
+            }
+          ]
+        }
+      ]
+    ],
+    "adresses": [
+      [
+        {
+          "position": {
+            "type": "entree",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                -180.0,
+                -90.0
+              ]
+            }
+          },
+          "idAdresseCommunale": "10674b01-399d-4571-8d04-89315ea0aa6e",
+          "cleInterop": "2B037_TOPONYMEEDGE_12_BIS",
+          "idVoiePlaceLieudit": "06ae8496-70da-4507-b288-c97c5e595cc7",
+          "idLieuditComplementaire": null,
+          "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+          "codeInseeCommuneHistorique": null,
+          "certification": false,
+          "positionsComplementaires": [],
+          "dateDebut": "2025-01-01",
+          "dateDerniereMiseAJour": "2025-12-17T23:29:43Z",
+          "sources": [
+            "import-ban"
+          ],
+          "parcellesCadastrales": [],
+          "codePostal": "20230",
+          "indiceRepetition": null,
+          "numero": 12
+        },
+        {
+          "position": {
+            "type": "entree",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                -180.0,
+                -90.0
+              ]
+            }
+          },
+          "idAdresseCommunale": "680a48dd-706a-4cb4-a1ef-1660c37d55c0",
+          "cleInterop": "2B037_TOPONYMEEDGE_x",
+          "idVoiePlaceLieudit": "06ae8496-70da-4507-b288-c97c5e595cc7",
+          "idLieuditComplementaire": null,
+          "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+          "codeInseeCommuneHistorique": null,
+          "certification": false,
+          "positionsComplementaires": [],
+          "dateDebut": "2025-01-01",
+          "dateDerniereMiseAJour": "2025-12-17T23:29:43Z",
+          "sources": [
+            "import-ban"
+          ],
+          "parcellesCadastrales": [],
+          "codePostal": "20230",
+          "indiceRepetition": null
+        }
+      ]
+    ]
+  },
+  "disabled": {
+    "communes": [],
+    "odonymes": [
+      {
+        "idOdonyme": "06ae8496-70da-4507-b288-c97c5e595cc7",
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "cleInterop": "2B037_TOPONYMEA",
+        "nom": {
+          "codeLangue": "fra",
+          "nom": "Toponyme A"
+        },
+        "nomsMultilinguesOdonyme": [
+          {
+            "codeLangue": "fra",
+            "nom": "Toponyme A"
+          },
+          {
+            "codeLangue": "fr-gallo",
+            "nom": "Toponim A"
+          }
+        ]
+      }
+    ],
+    "adresses": [
+      {
+        "position": {
+          "type": "entree",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              -180.0,
+              -90.0
+            ]
+          }
+        },
+        "idAdresseCommunale": "dce15fc7-ccf1-45ec-85e3-a8276fbd28c5",
+        "cleInterop": "2B037_TOPONYMEEDGE_99998_A",
+        "idVoiePlaceLieudit": "06ae8496-70da-4507-b288-c97c5e595cc7",
+        "idLieuditComplementaire": null,
+        "idCommune": "c3cf9dd0-7784-47d1-a631-970510b2d103",
+        "codeInseeCommuneHistorique": null,
+        "certification": false,
+        "positionsComplementaires": [],
+        "dateDebut": "2025-01-01",
+        "dateDerniereMiseAJour": "2025-12-17T23:29:43Z",
+        "sources": [
+          "mairie",
+          "ign"
+        ],
+        "parcellesCadastrales": [],
+        "codePostal": "20230",
+        "indiceRepetition": "A",
+        "numero": 99998
+      }
+    ]
+  }
+}
