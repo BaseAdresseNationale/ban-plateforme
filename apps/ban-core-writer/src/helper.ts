@@ -88,7 +88,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
             hashIdFix: row.ban_enrich_hash_id_fix || '',
             DEPRECATED_cleInterop: row.cle_interop || '',
             DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKey: row.ban_enrich_ban_target_key_district || ['']
+            targetKeys: row.ban_enrich_ban_target_keys_district || [''],
           },
           dgfip: {
             codeDepartement: row.code_departement || '',
@@ -128,7 +128,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
             DEPRECATED_groupId: row.slug || '',
             DEPRECATED_cleInterop: row.cle_interop || '',
             DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKey: row.ban_enrich_ban_target_key_toponym || ['']
+            targetKeys: row.ban_enrich_ban_target_keys_toponym || [''],
           },
           dgfip: {
             cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
@@ -171,7 +171,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
             hashIdFix: row.ban_enrich_hash_id_fix || '',
             DEPRECATED_cleInterop: row.cle_interop || '',
             DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKey: row.ban_enrich_ban_target_key_address || [''],
+            targetKeys: row.ban_enrich_ban_target_keys_address || [''],
             oldDistrict: row.ban_enrich_old_district_code && row.ban_enrich_old_district_name
               ? {
                 "labels": [{
@@ -198,7 +198,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
         },
         legalityDate: row.date_der_maj || '',
         lastRecordDate: new Date().toISOString(), // Assuming last record date is now
-      }
+      };
     }
   });
 
