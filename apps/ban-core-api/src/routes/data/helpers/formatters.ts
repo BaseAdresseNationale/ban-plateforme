@@ -234,7 +234,7 @@ export const banToStandardFrInt = {
     formater : (ndjsonHeader: NdjsonHeader, raw: RawCommonToponym) => ({
       toponymId: raw?.id,
       districtId: raw?.districtID,
-      targetKey: raw?.meta?.ban?.targetKeys ?? null,
+      targetKeys: raw?.meta?.ban?.targetKeys ?? null,
       DEPRECATED_interopKey: raw?.meta?.ban?.DEPRECATED_cleInteropBAN ?? null,
       toponymLabel: raw?.labels?.[0] ? {
         codeLang: raw.labels[0].isoCode,
@@ -262,7 +262,7 @@ export const banToStandardFrInt = {
       secondaryToponymIds: raw?.secondaryToponymIDs ?? [],
       districtId: raw?.districtID,
       historicalDistrictId: raw?.meta?.insee?.cog ?? null, // FIXME: ID ou code de la commune historique quand on aura accès à cette info dans le raw
-      targetKey: raw?.meta?.ban?.targetKeys ?? null,
+      targetKeys: raw?.meta?.ban?.targetKeys ?? null,
       DEPRECATED_interopKey: raw?.meta?.ban?.DEPRECATED_cleInteropBAN ?? null,
       number: raw?.number ?? null,
       repetitionIndex: raw?.suffix ?? null,
