@@ -5,7 +5,7 @@ import { env } from '@ban/config';
 import {getPrismaClient, writeInMongoDb, writeInPgDb, type MongoCollections} from '@ban/api';
 import { logger } from '@ban/tools';
 
-import { getBanObjectsFromBalRows } from './helper.js';
+import { EMPTY_TOPONYM_BAL_IDENTIFIER, getBanObjectsFromBalRows } from './helper.js';
 
 const prismaPg = getPrismaClient();
 
@@ -75,7 +75,12 @@ async function main() {
       // Contrôle la présence d'ID sur l'ensemble de la donnée // TODO: améliorer cette logique et la passer dans ID-Fix/Ban-Parser ?
       const isWithIds = parsed.rows.every(
         (row: any) =>
-          row.id_ban_commune && row.id_ban_toponyme && row.id_ban_adresse
+          row.id_ban_commune
+          && row.id_ban_toponyme
+          && (
+            // Si numero, autre que EMPTY_TOPONYM_BAL_IDENTIFIER, id_ban_adresse doit être présent aussi :
+            !row.numero || (parseInt(row.numero) !== EMPTY_TOPONYM_BAL_IDENTIFIER && row.id_ban_adresse)
+          )
       );
 
       // TODO : Identifier les events de la publication via une route `delta-report`

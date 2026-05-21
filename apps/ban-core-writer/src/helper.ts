@@ -3,7 +3,7 @@ type Label = {
   value: string;
 };
 
-const EMPTY_TOPONYM_BAL_IDENTIFIER = 99_999; // Valeur utilisée dans la BAL pour indiquer un toponyme sans numero.
+export const EMPTY_TOPONYM_BAL_IDENTIFIER = 99_999; // Valeur utilisée dans la BAL pour indiquer un toponyme sans numero.
 
 const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
   const labels: Label[] = row[colName] ? [{ isoCode: defaultIsoCode, value: row[colName] }] : [];
