@@ -1,10 +1,7 @@
-# docker-compose.dev.ban.yml
-# Stack DEV BAN — services infra + outils
-#
-# Points clés:
-# - Healthchecks sur RabbitMQ, PostgreSQL et MongoDB
-# - depends_on avec condition: service_healthy pour mongo-express et pgadmin
-# - container_name stables (ban_rabbitmq, ban_postgres, ban_mongo, …)
+x-proxy: &proxy-env
+  HTTP_PROXY: ${PROXY_URL:-}
+  HTTPS_PROXY: ${PROXY_URL:-}
+  NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1}
 
 services:
   rabbitmq:
@@ -64,14 +61,19 @@ services:
     container_name: ban_postgres_postal
     build:
       dockerfile: ./apps/postal-code/docker/postgres.Dockerfile
+      args:
+        - HTTP_PROXY=${PROXY_URL:-}
+        - HTTPS_PROXY=${PROXY_URL:-}
+        - NO_PROXY=${NO_PROXY:-localhost,127.0.0.1}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:
-      - POSTGRES_USER=${POSTGRES_ROOT_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_ROOT_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_BAN_USER=${POSTGRES_BAN_USER}
-      - POSTGRES_BAN_PASSWORD=${POSTGRES_BAN_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_ROOT_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_BAN_USER: ${POSTGRES_BAN_USER}
+      POSTGRES_BAN_PASSWORD: ${POSTGRES_BAN_PASSWORD}
+      <<: *proxy-env
     volumes:
       - pg_data_postal:/var/lib/postgresql/data
     healthcheck:
