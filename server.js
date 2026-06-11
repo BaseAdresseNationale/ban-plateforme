@@ -14,24 +14,43 @@ function log(message) {
   console.log(`[server] ${new Date().toISOString()} ${message}`)
 }
 
-function logStartupConfig() {
+function maskCredentialsInUrl(url) {
+  return url.replace(/:([^@/]+)@/g, ':***@')
+}
+
+function buildMongoUrl() {
+  const MONGODB_DBNAME = process.env.MONGODB_DBNAME || 'ban'
+  const MONGODB_HOST = process.env.MONGODB_HOST || 'localhost'
+  const {MONGODB_USER, MONGODB_PASSWORD, MONGODB_URL} = process.env
+
+  if (MONGODB_USER && MONGODB_PASSWORD) {
+    return `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DBNAME}?replicaSet=replicaset&tls=true&authSource=admin&readPreference=primary`
+  }
+
+  return MONGODB_URL || 'mongodb://localhost'
+}
+
+function buildPostgresUrl() {
   const {
-    NODE_ENV,
-    CLOUD_ENV,
-    PORT,
-    MONGODB_HOST,
-    MONGODB_DBNAME,
-    MONGODB_USER,
-    POSTGRES_URL,
-    POSTGRES_DB,
     POSTGRES_BAN_USER,
-    REDIS_URL,
+    POSTGRES_BAN_PASSWORD,
+    POSTGRES_DB,
+    POSTGRES_URL,
+    POSTGRES_PORT = 5432,
+    CLOUD_ENV,
   } = process.env
 
+  const ssl = CLOUD_ENV === 'true' ? '?sslmode=require' : ''
+  return `postgresql://${POSTGRES_BAN_USER}:${POSTGRES_BAN_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}/${POSTGRES_DB}${ssl}`
+}
+
+function logStartupConfig() {
+  const {NODE_ENV, CLOUD_ENV, PORT, REDIS_URL} = process.env
+
   log(`NODE_ENV=${NODE_ENV || 'undefined'}, CLOUD_ENV=${CLOUD_ENV || 'undefined'}, PORT=${PORT || 5000}`)
-  log(`MongoDB: host=${MONGODB_HOST || 'localhost'}, db=${MONGODB_DBNAME || 'ban'}, auth=${Boolean(MONGODB_USER)}`)
-  log(`Postgres: host=${POSTGRES_URL || 'undefined'}, db=${POSTGRES_DB || 'undefined'}, user=${POSTGRES_BAN_USER || 'undefined'}, ssl=${CLOUD_ENV === 'true'}`)
-  log(`Redis: configured=${Boolean(REDIS_URL)}`)
+  log(`MongoDB URL: ${maskCredentialsInUrl(buildMongoUrl())}`)
+  log(`Postgres URL: ${maskCredentialsInUrl(buildPostgresUrl())}`)
+  log(`Redis URL: ${REDIS_URL ? maskCredentialsInUrl(REDIS_URL) : 'non configuré'}`)
 }
 
 async function runStep(step, fn) {
