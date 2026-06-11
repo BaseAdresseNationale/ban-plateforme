@@ -10,16 +10,52 @@ import {configureRedis} from './lib/util/redis.cjs'
 import apiRoutes from './lib/api/routes.js'
 import legacyRoutes from './lib/api/legacy-routes.cjs'
 
+function log(message) {
+  console.log(`[server] ${new Date().toISOString()} ${message}`)
+}
+
+function logStartupConfig() {
+  const {
+    NODE_ENV,
+    CLOUD_ENV,
+    PORT,
+    MONGODB_HOST,
+    MONGODB_DBNAME,
+    MONGODB_USER,
+    POSTGRES_URL,
+    POSTGRES_DB,
+    POSTGRES_BAN_USER,
+    REDIS_URL,
+  } = process.env
+
+  log(`NODE_ENV=${NODE_ENV || 'undefined'}, CLOUD_ENV=${CLOUD_ENV || 'undefined'}, PORT=${PORT || 5000}`)
+  log(`MongoDB: host=${MONGODB_HOST || 'localhost'}, db=${MONGODB_DBNAME || 'ban'}, auth=${Boolean(MONGODB_USER)}`)
+  log(`Postgres: host=${POSTGRES_URL || 'undefined'}, db=${POSTGRES_DB || 'undefined'}, user=${POSTGRES_BAN_USER || 'undefined'}, ssl=${CLOUD_ENV === 'true'}`)
+  log(`Redis: configured=${Boolean(REDIS_URL)}`)
+}
+
+async function runStep(step, fn) {
+  const startedAt = Date.now()
+  log(`${step} — début`)
+  try {
+    await fn()
+    log(`${step} — terminé (+${Date.now() - startedAt}ms)`)
+  } catch (error) {
+    log(`${step} — échec après ${Date.now() - startedAt}ms: ${error.message}`)
+    throw error
+  }
+}
+
 async function main() {
-  // Mongo DB : connecting and creating indexes
-  await mongo.connect()
+  const startupStartedAt = Date.now()
+  log('Démarrage du serveur')
+  logStartupConfig()
 
-  // Postgres DB : Testing connection and syncing models
-  await init()
+  await runStep('1/4 Connexion MongoDB', () => mongo.connect())
+  await runStep('2/4 Connexion Postgres', () => init())
+  await runStep('3/4 Configuration Redis', () => configureRedis())
 
-  // Redis : Configuring memory settings
-  await configureRedis()
-
+  log('4/4 Initialisation Express')
   const app = express()
 
   if (process.env.NODE_ENV !== 'production') {
@@ -40,11 +76,11 @@ async function main() {
   const port = process.env.PORT || 5000
 
   app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`)
+    log(`Serveur prêt sur le port ${port} (démarrage total: +${Date.now() - startupStartedAt}ms)`)
   })
 }
 
 main().catch(error => {
-  console.error(error)
+  console.error(`[server] ${new Date().toISOString()} Erreur fatale au démarrage:`, error)
   process.exit(1)
 })
