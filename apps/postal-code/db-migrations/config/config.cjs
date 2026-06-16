@@ -2,8 +2,8 @@ const {env} = require('@ban/config')
 
 module.exports={
   development: {
-    username: env.PG.rootUser,
-    password: env.PG.rootPassword,
+    username: env.PG.user,
+    password: env.PG.password,
     database: env.PG.db,
     host: env.PG.host,
     port: env.PG.port,
