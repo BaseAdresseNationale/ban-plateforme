@@ -3,7 +3,8 @@ name: Docker Publish
 on:
   push:
     branches:
-      - "develop"
+      - "master"
+      - "prod"
     tags: [ 'v*.*.*' ]
 
 env:
