@@ -108,6 +108,13 @@ if ! eval "$BOOTSTRAP_SCRIPT_CMD"; then
 fi
 
 if [ "$START_DOCKER_INFRA_STATUS" = "true" ]; then
+  echo "🚀 Lancement des scripts de migration des tables du schéma Postal ..."
+  cd ./apps/postal-code/
+  npx sequelize db:migrate
+  cd ../../
+fi
+
+if [ "$START_DOCKER_INFRA_STATUS" = "true" ]; then
   echo "🚀 Arret des services de dev sur Docker…"
   ./scripts/dev-infra-stop.sh
   START_DOCKER_INFRA_STATUS="false"
