@@ -5,8 +5,7 @@ import Cursor from "pg-cursor";
 
 import { pgPool } from '@ban/api';
 import { logger } from '@ban/tools';
-
-import { handleApiResponse } from '../../helper/handleApiResponse.js'
+import { handleApiResponse } from '@ban/tools'
 import { diffRequestConfigs as requestConfig } from './diff-config.js'
 import {
   VALID_FORMATS,
