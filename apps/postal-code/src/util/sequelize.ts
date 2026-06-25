@@ -102,7 +102,7 @@ export const PostalAreaAudit = sequelize.define('PostalAreaAudit', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  previous_geometry: {
+  previousGeometry: {
     type: DataTypes.GEOMETRY,
     allowNull: false,
   },

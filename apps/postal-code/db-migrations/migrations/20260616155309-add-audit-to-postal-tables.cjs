@@ -46,7 +46,7 @@ module.exports = {
         },
         changedBy: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         changedAt: {
           type: Sequelize.DATE,
@@ -55,7 +55,7 @@ module.exports = {
         },
         changeNote: {
           type: Sequelize.TEXT,
-          allowNull: false,
+          allowNull: true,
         },
 
 
@@ -69,18 +69,18 @@ module.exports = {
         RETURNS TRIGGER AS $$
         BEGIN
           INSERT INTO postal.postal_area_audit (
-            postalAreaId,
-            changedAt,
-            changedBy,
-            changeNote,
-            previousPostalCode,
-            previousGeometry
+            "postalAreaId",
+            "previousPostalCode",
+            "changedAt",
+            "changedBy",
+            "changeNote",
+            "previousGeometry"
           ) VALUES (
             OLD.id,
-            NOW(),
-            NEW."updatedBy",
-            NEW."updateNote",
             OLD."postalCode",
+            NOW(),
+            OLD."updatedBy",
+            OLD."updateNote",
             OLD.geometry
           );
           RETURN NEW;
@@ -90,7 +90,7 @@ module.exports = {
 
       await queryInterface.sequelize.query(`
         CREATE TRIGGER audit_postal_area_update
-        BEFORE UPDATE ON postal.postal_area
+        BEFORE DELETE ON postal.postal_area
         FOR EACH ROW
         EXECUTE FUNCTION postal.log_postal_area_update();
       `, { transaction })
