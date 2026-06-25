@@ -1,4 +1,3 @@
-import rascal from 'rascal';
 import { env } from '@ban/config';
 import {init, Datanova, PostalArea } from './util/sequelize.js'
 import { Op, fn, col, where, Model, Attributes  } from 'sequelize';
@@ -59,9 +58,23 @@ export const getMultidistributed = async (districtCog: any) => Datanova.findOne(
   where: {inseeCom: districtCog},
   raw: true
 })
-
+ 
 async function main() {
   try {
+    const app = express();
+    const port = env.PC.port || 3001;
+
+    app.use(express.json({limit: '20mb'}))
+
+    app.get('/', (req, res) => {
+      res.send('Welcome to the Postal Code Service');
+    });
+
+    app.listen(port, () => {
+        logger.log(`[postal-code] Server is listening on port ${port}`)
+    })
+    
+
     const broker = await rascal.BrokerAsPromised.create(config);
 
     const subscription = await broker.subscribe(subscriberName);

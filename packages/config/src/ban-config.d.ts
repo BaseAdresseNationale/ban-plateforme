@@ -11,6 +11,11 @@ declare module "@ban/config" {
     url: string;
     dataPath: string;
   };
+  /** Configuration Postal Code */
+  export type PostalCodeConfig = {
+    port: number;
+    adminToken: string;
+  };
 
   /** Configuration MongoDB */
   export type MongoConfig = {
@@ -32,6 +37,7 @@ declare module "@ban/config" {
     PG: PGConfig;
     MONGO: MongoConfig;
     RABBIT: RabbitConfig;
+    PC: PostalCodeConfig;
     // Autorise d'autres clés additionnelles si présent
     [key: string]: any;
   };
