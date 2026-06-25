@@ -1,7 +1,9 @@
-import rascal from 'rascal';
 import { env } from '@ban/config';
-import {init, Datanova, PostalArea } from './util/sequelize.js'
-import { Op, fn, col, where, Model, Attributes  } from 'sequelize';
+import { logger } from '@ban/tools';
+import postalCodeRoutes from './routes/index.js';
+import getPostalCode from './routes/postal-code-long-lat/model.js';
+import express from 'express';
+import rascal from 'rascal';
 
 const rabbitConfig = {
   hostname: env.RABBIT.host,
@@ -53,15 +55,24 @@ const config = {
   }
 };
  
-// Connection to postgres
-await init()
-export const getMultidistributed = async (districtCog: any) => Datanova.findOne({
-  where: {inseeCom: districtCog},
-  raw: true
-})
-
 async function main() {
   try {
+    const app = express();
+    const port = env.PC.port || 3001;
+
+    app.use(express.json({limit: '20mb'}))
+
+    app.get('/', (req, res) => {
+      res.send('Welcome to the Postal Code Service');
+    });
+    
+    app.use('/postal-code', postalCodeRoutes);
+    
+    app.listen(port, () => {
+        logger.log(`[postal-code] Server is listening on port ${port}`)
+    })
+    
+
     const broker = await rascal.BrokerAsPromised.create(config);
 
     const subscription = await broker.subscribe(subscriberName);
@@ -69,42 +80,8 @@ async function main() {
     subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
 
       const codePostaux = await Promise.all(content.rows.map(async (row: any) => {
-
-        const inseeCom : string = row.commune_insee
-        const cpFromInseeCom : Attributes<Model> = await getMultidistributed(inseeCom)
-
-        // Code postal non multi-distribué
-        if (cpFromInseeCom?.postalCodes?.lenght <= 1){
-          return {
-            code_postal: cpFromInseeCom.postalCodes[0]
-          }
-        }
-        // Code postal multi-distribué  
-        else {
-          const xCoord = row.x
-          const yCoord = row.y
-          const cpFromLatLong = await PostalArea.findOne({
-              attributes: ['postalCode'],
-              where: {
-                inseeCom: inseeCom,
-                [Op.and]: where(
-                  fn(
-                    'ST_Contains',
-                    col('geometry'),
-                    fn(
-                      'ST_SetSRID',
-                      fn('ST_MakePoint', xCoord, yCoord),
-                      2154
-                    )
-                  ),
-                  true
-                )
-              }
-            });
-          return {
-            code_postal: cpFromLatLong?.dataValues.postalCode
-          }
-        }
+        const codePostal = await getPostalCode.getPostalCode(row.x?.toString(), row.y?.toString(), row.inseeCom?.toString())
+        return codePostal
       }));
 
       const enriched = {
@@ -119,13 +96,13 @@ async function main() {
         options: { contentType: 'application/json' }
       });
 
-      console.log(`[postal-code] Message publié sur "${exchangeName}" avec la clé de routage "${routingKey}" et la clé de publication "${publicationName}"`);
+      logger.log(`[postal-code] Message publié sur "${exchangeName}" avec la clé de routage "${routingKey}" et la clé de publication "${publicationName}"`);
       ackOrNack();
     });
 
-    console.log('[postal-code] En écoute...');
+    logger.log('[postal-code] En écoute...');
   } catch (err) {
-    console.error('[postal-code] Erreur:', err);
+    logger.error('[postal-code] Erreur:', err);
     process.exit(1);
   }
 }

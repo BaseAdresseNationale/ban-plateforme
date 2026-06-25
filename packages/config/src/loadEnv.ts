@@ -23,6 +23,8 @@ const envSchema = z.object({
   PG_ROOT_PASSWORD: z.string(),
   PG_URI: z.string(),
   PG_DATA_PATH: z.string(),
+  POSTAL_CODE_ADMIN_TOKEN: z.string(),
+  POSTAL_CODE_PORT: z.string(),
   MONGO_HOST: z.string(),
   MONGO_PORT: z.string(),
   MONGO_DB: z.string(),
@@ -38,6 +40,10 @@ const envSchema = z.object({
 envSchema.parse(process.env);
 
 export const env = {
+  PC:{
+    port: process.env.POSTAL_CODE_PORT!,
+    adminToken: process.env.POSTAL_CODE_ADMIN_TOKEN!,
+  },
   PG: {
     host: process.env.PG_HOST!,
     port: parseInt(process.env.PG_PORT!, 10),
