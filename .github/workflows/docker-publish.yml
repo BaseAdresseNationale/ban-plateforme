@@ -5,7 +5,14 @@ on:
     branches:
       - "prod"
     tags: [ 'v*.*.*' ]
+  pull_request:
+    branches:
+      - "prod"
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
