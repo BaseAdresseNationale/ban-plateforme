@@ -342,7 +342,7 @@ async function main() {
     console.log('\n Adresses avec IDs...')
     await createNationalFile(
       path.join(distPath, 'csv-with-ids'),
-      /^adresses-with-ids-\d+\.csv\.gz$/,
+      /^adresses-with-ids-(?:\d+|2[aAbB])\.csv\.gz$/,
       path.join(distPath, 'csv-with-ids', 'adresses-with-ids-france.csv.gz'),
       '01'
     )
@@ -358,7 +358,7 @@ async function main() {
     console.log('\n Adresses CSV standard...')
     await createNationalFile(
       path.join(distPath, 'csv'),
-      /^adresses-\d+\.csv\.gz$/,
+      /^adresses-(?:\d+|2[aAbB])\.csv\.gz$/,
       path.join(distPath, 'csv', 'adresses-france.csv.gz'),
       '01'
     )
@@ -374,7 +374,7 @@ async function main() {
     console.log('\n Adresses CSV-BAL...')
     await createNationalFile(
       path.join(distPath, 'csv-bal'),
-      /^adresses-\d+\.csv\.gz$/,
+      /^adresses-(?:\d+|2[aAbB])\.csv\.gz$/,
       path.join(distPath, 'csv-bal', 'adresses-france.csv.gz'),
       '01'
     )
