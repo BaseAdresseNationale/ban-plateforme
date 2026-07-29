@@ -111,6 +111,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       papaparse:
         specifier: ^5.4.1
         version: 5.5.3
@@ -225,6 +228,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
 
   apps/target-key:
     dependencies:
