@@ -1,15 +1,16 @@
 import {
   connectionConfig,
-  legacyRabbitExchanges,
-  legacyRabbitQueues,
+  exchangesConfig,
   queueOptions,
+  rabbitExchanges,
+  rabbitQueues,
   routingKeys,
   subscriptionDefaults,
   type RabbitMqBrokerConfig,
 } from '@ban/rabbitmq';
 
-const exchangeName = legacyRabbitExchanges.balEvents;
-const queueName = legacyRabbitQueues.serviceInput('writer');
+const exchangeName = rabbitExchanges.pipeline;
+const queueName = rabbitQueues.service('writer');
 
 export const subscriptions = {
   balReady: 'balReady',
@@ -20,13 +21,7 @@ export const rabbitmqConfig = {
     '/': {
       connection: connectionConfig,
       exchanges: {
-        [exchangeName]: {
-          type: 'topic',
-          assert: true,
-          options: {
-            durable: true,
-          },
-        },
+        [exchangeName]: exchangesConfig.pipeline,
       },
       queues: {
         [queueName]: {

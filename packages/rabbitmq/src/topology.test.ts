@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import {
   FatalMessageError,
-  LEGACY_RABBITMQ_EXCHANGES,
-  LEGACY_RABBITMQ_QUEUES,
   RABBITMQ_EXCHANGES,
   RABBITMQ_QUEUES,
   RABBITMQ_ROUTING_KEYS,
@@ -13,13 +11,10 @@ import {
   deadLetterQueueOptions,
   exchangesConfig,
   getRabbitMqConnectionConfig,
-  legacyRabbitExchanges,
-  legacyRabbitQueues,
   publishOptions,
   queueOptions,
   rabbitExchanges,
   rabbitQueues,
-  rabbitTopology,
   recoveryStrategies,
   retryPolicy,
   retryQueueOptions,
@@ -81,15 +76,6 @@ describe('shared RabbitMQ topology', () => {
     expect(RABBITMQ_QUEUES).toBe(rabbitQueues);
   });
 
-  it('keeps legacy messaging conventions explicit during migration', () => {
-    expect(legacyRabbitExchanges).toEqual({
-      balEvents: 'bal.events',
-    });
-    expect(legacyRabbitQueues.serviceInput('beautifier')).toBe('beautifier.in');
-    expect(LEGACY_RABBITMQ_EXCHANGES).toBe(legacyRabbitExchanges);
-    expect(LEGACY_RABBITMQ_QUEUES).toBe(legacyRabbitQueues);
-  });
-
   it('declares shared routing keys', () => {
     expect(routingKeys).toEqual({
       balUploaded: 'bal.uploaded',
@@ -108,7 +94,6 @@ describe('shared RabbitMQ topology', () => {
 
   it('declares shared connection and vhost configuration', () => {
     expect(RABBITMQ_VHOST).toBe('/');
-    expect(rabbitTopology).toEqual({ vhost: '/' });
     expect(connectionConfig.protocol).toBe('amqp');
     expect(connectionConfig.hostname).toEqual(expect.any(String));
     expect(connectionConfig.port).toEqual(expect.any(Number));

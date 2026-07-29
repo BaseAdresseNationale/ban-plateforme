@@ -1,15 +1,16 @@
 import {
   connectionConfig,
-  legacyRabbitExchanges,
-  legacyRabbitQueues,
+  exchangesConfig,
   publishOptions,
   queueOptions,
+  rabbitExchanges,
+  rabbitQueues,
   routingKeys,
   type RabbitMqBrokerConfig,
 } from '@ban/rabbitmq';
 
-const exchangeName = legacyRabbitExchanges.balEvents;
-const parserQueueName = legacyRabbitQueues.serviceInput('parser');
+const exchangeName = rabbitExchanges.pipeline;
+const parserQueueName = rabbitQueues.service('parser');
 
 export const publications = {
   default: 'default',
@@ -28,13 +29,7 @@ export const rabbitmqConfig = {
     '/': {
       connection: connectionConfig,
       exchanges: {
-        [exchangeName]: {
-          type: 'topic',
-          assert: true,
-          options: {
-            durable: true,
-          },
-        },
+        [exchangeName]: exchangesConfig.pipeline,
       },
       queues: {
         [parserQueueName]: {
