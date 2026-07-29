@@ -8,10 +8,6 @@ export const rabbitExchanges = {
   deadLetter: 'ban.dead-letter',
 } as const;
 
-export const legacyRabbitExchanges = {
-  balEvents: 'bal.events',
-} as const;
-
 export const exchangesConfig = {
   commands: {
     name: rabbitExchanges.commands,
@@ -46,10 +42,6 @@ export const exchangesConfig = {
 } as const satisfies Record<string, ExchangeConfig>;
 
 export const RABBITMQ_EXCHANGES = rabbitExchanges;
-export const LEGACY_RABBITMQ_EXCHANGES = legacyRabbitExchanges;
 
 export type RabbitMqExchangeName =
   typeof rabbitExchanges[keyof typeof rabbitExchanges];
-
-export type LegacyRabbitMqExchangeName =
-  typeof legacyRabbitExchanges[keyof typeof legacyRabbitExchanges];

@@ -1,16 +1,17 @@
 import {
   connectionConfig,
-  legacyRabbitExchanges,
-  legacyRabbitQueues,
+  exchangesConfig,
   publishOptions,
   queueOptions,
+  rabbitExchanges,
+  rabbitQueues,
   routingKeys,
   subscriptionDefaults,
   type RabbitMqBrokerConfig,
 } from '@ban/rabbitmq';
 
-const exchangeName = legacyRabbitExchanges.balEvents;
-const queueName = legacyRabbitQueues.serviceInput('beautifier');
+const exchangeName = rabbitExchanges.pipeline;
+const queueName = rabbitQueues.service('beautifier');
 
 export const subscriptions = {
   balToBeautify: 'balToBeautify',
@@ -25,13 +26,7 @@ export const rabbitmqConfig = {
     '/': {
       connection: connectionConfig,
       exchanges: {
-        [exchangeName]: {
-          type: 'topic',
-          assert: true,
-          options: {
-            durable: true,
-          },
-        },
+        [exchangeName]: exchangesConfig.pipeline,
       },
       queues: {
         [queueName]: {
