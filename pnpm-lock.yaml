@@ -285,6 +285,19 @@ importers:
         specifier: ^8.15.5
         version: 8.15.5
 
+  packages/rabbitmq:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../config
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
+    devDependencies:
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
+
   packages/shared-lib: {}
 
   packages/tools:
