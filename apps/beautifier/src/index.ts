@@ -1,49 +1,7 @@
 import rascal from 'rascal';
 import { beautifyUppercased, normalizeSuffixe, DEFAULT_ISO_CODE } from './string.js'
 
-import { env } from '@ban/config';
-
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
-
-const config = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [
-        { name: 'bal.events', type: 'topic' as const }
-      ],
-      queues: [
-        { name: 'beautifier.in', assert: true }
-      ],
-      bindings: [
-        {
-          source: 'bal.events',
-          destination: 'beautifier.in',
-          bindingKey: 'bal.enrich'
-        }
-      ]
-    }
-  },
-  subscriptions: {
-    'balToBeautify': {
-      queue: 'beautifier.in'
-    }
-  },
-  publications: {
-    'beautified': {
-      exchange: 'bal.events',
-      routingKey: 'bal.enriched.beautifier'
-    }
-  }
-};
+import { publications, rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 type Label = {
   isoCode: string;
@@ -65,9 +23,9 @@ const getLabelsFromRow = (row: Record<string, any>, colName: string, defaultIsoC
 
 async function main() {
   try {
-    const broker = await rascal.BrokerAsPromised.create(config);
+    const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
 
-    const subscription = await broker.subscribe('balToBeautify');
+    const subscription = await broker.subscribe(subscriptions.balToBeautify);
     subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
       const defaultIsoCode = DEFAULT_ISO_CODE; // TODO: replace by district default ISO code if available
 
@@ -82,7 +40,7 @@ async function main() {
         }))
       };
 
-      await broker.publish('beautified', JSON.stringify(enriched), {
+      await broker.publish(publications.beautified, JSON.stringify(enriched), {
         options: { contentType: 'application/json' }
       });
 
