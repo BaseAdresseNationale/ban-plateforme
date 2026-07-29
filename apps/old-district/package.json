@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ban-team/gazetteer": "^3.2.0",
-    "@ban/config": "workspace:*"
+    "@ban/config": "workspace:*",
+    "@ban/rabbitmq": "workspace:*"
   }
 }

@@ -1,57 +1,9 @@
 import rascal from 'rascal';
 import { createGazetteer } from '@ban-team/gazetteer'
 
-import { env } from '@ban/config';
-
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
+import { publications, rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 const serviceName = 'old-district';
-const exchangeName = 'bal.events';
-const queueName = 'old-district.in';
-const bindingKey = 'bal.enrich';
-const routingKey = 'bal.enriched.old-district';
-const subscriberName = 'balToOldDistrict';
-const publicationName = 'withOldDistrict';
-
-const config = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [
-        { name: exchangeName, type: 'topic' as const }
-      ],
-      queues: [
-        { name: queueName, assert: true }
-      ],
-      bindings: [
-        {
-          source: exchangeName,
-          destination: queueName,
-          bindingKey
-        }
-      ]
-    }
-  },
-  subscriptions: {
-    [subscriberName]: {
-      queue: queueName
-    }
-  },
-  publications: {
-    [publicationName]: {
-      exchange: exchangeName,
-      routingKey
-    }
-  }
-};
 
 const gazetteerOptions = {
   dbPath: './data/gazetteer.sqlite',
@@ -62,10 +14,10 @@ const gazetteerOptions = {
 
 async function main() {
   try {
-    const broker = await rascal.BrokerAsPromised.create(config);
+    const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
 
     const gazetteer = await createGazetteer(gazetteerOptions)
-    const subscription = await broker.subscribe(subscriberName);
+    const subscription = await broker.subscribe(subscriptions.balToOldDistrict);
 
     subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
 
@@ -87,7 +39,7 @@ async function main() {
         }))
       };
 
-      await broker.publish(publicationName, JSON.stringify(enriched), {
+      await broker.publish(publications.withOldDistrict, JSON.stringify(enriched), {
         options: { contentType: 'application/json' }
       });
 

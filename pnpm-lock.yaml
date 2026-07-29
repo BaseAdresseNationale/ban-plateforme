@@ -201,6 +201,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@etalab/adresses-util':
         specifier: ^0.8.2
         version: 0.8.2
@@ -222,6 +225,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
 
   apps/orchestrator:
     dependencies:
@@ -237,6 +243,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@nivalis/normadresse':
         specifier: ^2.0.1
         version: 2.0.1(typescript@5.8.3)
