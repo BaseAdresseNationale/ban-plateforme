@@ -4,41 +4,12 @@ import rascal, { type BrokerAsPromised } from 'rascal';
 import express from 'express';
 import multer from 'multer';
 
-import { env } from '@ban/config';
 import { logger } from '@ban/tools';
 
 import { parseBalForBan } from './parseBalForBan.js';
+import { publications, rabbitmqConfig } from './rabbitmq.config.js';
 
 import dataRoutes from './routes/data/index.js';
-
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
-
-const config = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [{ name: 'bal.events', type: 'topic' as const }],
-      queues: [{ name: 'parser.in', assert: true }],
-      bindings: [
-        { source: 'bal.events', destination: 'parser.in', bindingKey: 'bal.uploaded' }
-      ]
-    }
-  },
-  publications: {
-    'balUploaded': {
-      exchange: 'bal.events',
-      routingKey: 'bal.uploaded',
-    }
-  }
-};
 
 const upload = multer({ dest: 'uploads/' });
 const app = express();
@@ -69,7 +40,7 @@ app.post('/upload-bal', upload.single('file'), async (req, res) => {
   try {
     const fileStream = fsSync.createReadStream(req.file.path, { encoding: 'utf8' });
     const json = await parseBalForBan(fileStream);
-    await broker.publish('default', json); // publie sur exchange/routingKey par défaut
+    await broker.publish(publications.default, json); // publie sur exchange/routingKey par défaut
 
     logger.info('[ban-core-api] Fichier BAL envoyé vers RabbitMQ');
     res.status(200).json({ status: 'ok' });
@@ -91,7 +62,7 @@ app.post('/send-bal', express.text(), async (req, res) => {
     logger.info('JSON result', json);
 
     // Default Publish on exchange/routingKey
-    await broker.publish('default', json);
+    await broker.publish(publications.default, json);
 
     res.status(200).json({ status: 'ok' });
   } catch (error) {
@@ -110,7 +81,7 @@ app.post('/bal/file', upload.single('file'), async (req, res) => {
       payload: buffer,
       filename: req.file.originalname,
     };
-    await broker.publish('bal.uploaded', message);
+    await broker.publish(publications.legacyBalUploaded, message);
     logger.info('>>> bal.uploaded', message);
     logger.info('[ban-core-api] BAL fichier envoyée');
     res.status(202).json({ status: 'queued', source: 'file' });
@@ -133,7 +104,7 @@ app.post('/bal/text', express.text(), async (req, res) => {
       filename: 'via-text-body.csv',
     };
     // TODO AFTER
-    await broker.publish('balUploaded', message);
+    await broker.publish(publications.balUploaded, message);
     logger.info('[ban-core-api] BAL texte envoyée');
     res.status(202).json({ status: 'queued', source: 'text' });
   } catch (err) {
@@ -144,7 +115,7 @@ app.post('/bal/text', express.text(), async (req, res) => {
 
 app.listen(port, async () => {
   try {
-    broker = await rascal.BrokerAsPromised.create(config);
+    broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
     logger.info(`[ban-core-api] API démarrée sur http://localhost:${port} et broker RabbitMQ connecté`);
   } catch (error) {
     logger.error('[ban-core-api] Erreur de connexion au broker RabbitMQ:', error);
