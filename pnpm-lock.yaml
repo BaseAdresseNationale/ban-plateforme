@@ -182,6 +182,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@ban/tools':
         specifier: workspace:*
         version: link:../../packages/tools
@@ -216,6 +219,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
 
   apps/old-district:
     dependencies:
