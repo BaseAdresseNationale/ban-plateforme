@@ -12,6 +12,7 @@
   "dependencies": {
     "@ban/config": "workspace:*",
     "@ban/api": "workspace:*",
+    "@ban/rabbitmq": "workspace:*",
     "@ban/tools": "workspace:*",
     "mongodb": "^6.18.0",
     "pg": "^8.16.3"

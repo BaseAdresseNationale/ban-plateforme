@@ -6,46 +6,11 @@ import {getPrismaClient, writeInMongoDb, writeInPgDb, type MongoCollections} fro
 import { logger } from '@ban/tools';
 
 import { EMPTY_TOPONYM_BAL_IDENTIFIER, getBanObjectsFromBalRows } from './helper.js';
+import { rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 const prismaPg = getPrismaClient();
 
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
-
 const DEFAULT_ISO_CODE = 'fra'; // Default ISO code for labels
-
-const config = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [
-        { name: 'bal.events', type: 'topic' as const }
-      ],
-      queues: [
-        { name: 'writer.in', assert: true }
-      ],
-      bindings: [
-        {
-          source: 'bal.events',
-          destination: 'writer.in',
-          bindingKey: 'bal.ready'
-        }
-      ]
-    }
-  },
-  subscriptions: {
-    balReady: {
-      queue: 'writer.in'
-    }
-  }
-};
 
 const mongoUrl =
   env.MONGO.username && env.MONGO.password
@@ -65,8 +30,8 @@ async function main() {
     addresses: mongoDb.collection('addresses'),
   } as unknown as MongoCollections;
 
-  const broker = await rascal.BrokerAsPromised.create(config);
-  const subscription = await broker.subscribe('balReady');
+  const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
+  const subscription = await broker.subscribe(subscriptions.balReady);
 
   subscription.on('message', async (_message: any, content: any, ackOrNack: () => void) => {
     try {
