@@ -6,21 +6,15 @@ export {
 } from './config.js';
 
 export {
-  LEGACY_RABBITMQ_EXCHANGES,
   RABBITMQ_EXCHANGES,
   exchangesConfig,
-  legacyRabbitExchanges,
   rabbitExchanges,
-  type LegacyRabbitMqExchangeName,
   type RabbitMqExchangeName,
 } from './exchanges.js';
 
 export {
-  LEGACY_RABBITMQ_QUEUES,
   RABBITMQ_QUEUES,
-  legacyRabbitQueues,
   rabbitQueues,
-  type LegacyRabbitMqQueueName,
   type RabbitMqQueueName,
 } from './queues.js';
 
@@ -44,10 +38,6 @@ export {
   FatalMessageError,
   RetryableMessageError,
 } from './errors.js';
-
-export {
-  rabbitTopology,
-} from './topology.js';
 
 export type {
   RabbitMqBindingConfig,
