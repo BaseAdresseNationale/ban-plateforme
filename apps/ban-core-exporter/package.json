@@ -6,10 +6,13 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "dev": "tsx watch src/index.ts || true"
+    "dev": "tsx watch src/index.ts || true",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@ban/prisma-client": "workspace:*",
     "@ban/rabbitmq": "workspace:*",
-    "@ban/tools": "workspace:*"
+    "@ban/tools": "workspace:*",
+    "pg-cursor": "^2.17.0"
   }
 }
