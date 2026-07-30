@@ -8,6 +8,7 @@ import { logger } from '@ban/tools';
 
 import { parseBalForBan } from './parseBalForBan.js';
 import { publications, rabbitmqConfig } from './rabbitmq.config.js';
+import { setRabbitMqBroker } from './rabbitmq.broker.js';
 
 import dataRoutes from './routes/data/index.js';
 
@@ -116,6 +117,7 @@ app.post('/bal/text', express.text(), async (req, res) => {
 app.listen(port, async () => {
   try {
     broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
+    setRabbitMqBroker(broker);
     logger.info(`[ban-core-api] API démarrée sur http://localhost:${port} et broker RabbitMQ connecté`);
   } catch (error) {
     logger.error('[ban-core-api] Erreur de connexion au broker RabbitMQ:', error);
