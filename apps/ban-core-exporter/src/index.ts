@@ -2,22 +2,16 @@ import rascal from 'rascal';
 
 import { logger } from '@ban/tools';
 
+import type { DataExportRequestMessage } from './export/types.js';
+import { handleExportRequest } from './handleExportRequest.js';
 import { rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
-type DataExportType = 'ban' | 'diff';
-
-type ExportRequestedMessage = {
-  token: string;
-  exportType: DataExportType;
-  params: Record<string, unknown>;
-};
-
-const isExportRequestedMessage = (content: unknown): content is ExportRequestedMessage => {
+const isExportRequestedMessage = (content: unknown): content is DataExportRequestMessage => {
   if (!content || typeof content !== 'object') {
     return false;
   }
 
-  const message = content as Partial<ExportRequestedMessage>;
+  const message = content as Partial<DataExportRequestMessage>;
 
   return (
     typeof message.token === 'string'
@@ -40,13 +34,17 @@ async function main() {
         return;
       }
 
-      logger.info('[ban-core-exporter] Demande d\'export reçue', {
+      logger.info('[ban-core-exporter] Demande d\'export recue', {
         token: content.token,
         exportType: content.exportType,
       });
 
-      // La generation du fichier et les publications completed/failed seront ajoutees dans les prochains commits.
-      ackOrNack();
+      try {
+        await handleExportRequest(broker, content);
+        ackOrNack();
+      } catch (error) {
+        ackOrNack(error as Error);
+      }
     });
 
     logger.info('[ban-core-exporter] En ecoute...');

@@ -179,12 +179,18 @@ importers:
 
   apps/ban-core-exporter:
     dependencies:
+      '@ban/prisma-client':
+        specifier: workspace:*
+        version: link:../../packages/prisma-client
       '@ban/rabbitmq':
         specifier: workspace:*
         version: link:../../packages/rabbitmq
       '@ban/tools':
         specifier: workspace:*
         version: link:../../packages/tools
+      pg-cursor:
+        specifier: ^2.17.0
+        version: 2.17.0(pg@8.16.3)
 
   apps/ban-core-writer:
     dependencies:
