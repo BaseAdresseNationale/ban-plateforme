@@ -16,6 +16,14 @@ Service API minimaliste pour envoyer des fichiers BAL dans RabbitMQ.
 - `POST /bal/text`  
   Envoie un corps texte CSV brut au parser via `{ id, payload, filename }` sur RabbitMQ (`bal.uploaded`).
 
+- `GET /api/data/ban/:dep`  
+  Cree une demande d'export BAN asynchrone et renvoie un token de suivi.
+
+- `GET /api/data/diff/:dep`  
+  Cree une demande d'export differentiel asynchrone et renvoie un token de suivi.
+
+La documentation OpenAPI des routes d'export est disponible dans [openapi.yaml](./openapi.yaml).
+
 ## Démarrage
 
 ```bash
