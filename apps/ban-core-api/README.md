@@ -6,6 +6,12 @@ Service API minimaliste pour uploader des fichiers BAL et les envoyer dans Rabbi
 
 - `POST /upload-bal`  
   Envoie un fichier BAL (`multipart/form-data`) et le publie sur RabbitMQ (`bal.uploaded`)
+- `GET /api/data/ban/:dep`  
+  Cree une demande d'export BAN asynchrone et renvoie un token de suivi.
+- `GET /api/data/diff/:dep`  
+  Cree une demande d'export differentiel asynchrone et renvoie un token de suivi.
+
+La documentation OpenAPI des routes d'export est disponible dans [openapi.yaml](./openapi.yaml).
 
 ## Démarrage
 
