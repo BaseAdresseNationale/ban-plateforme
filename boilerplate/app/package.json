@@ -9,6 +9,6 @@
     "dev": "tsx watch src/index.ts || true"
   },
   "dependencies": {
-    "@ban/config": "workspace:*"
+    "@ban/rabbitmq": "workspace:*"
   }
 }
