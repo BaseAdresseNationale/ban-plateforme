@@ -177,6 +177,15 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
 
+  apps/ban-core-exporter:
+    dependencies:
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
+      '@ban/tools':
+        specifier: workspace:*
+        version: link:../../packages/tools
+
   apps/ban-core-writer:
     dependencies:
       '@ban/api':
