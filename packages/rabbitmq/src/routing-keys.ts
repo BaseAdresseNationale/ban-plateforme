@@ -7,6 +7,9 @@ export const routingKeys = {
   balEnrichedOldDistrict: 'bal.enriched.old-district',
   balEnrichedAll: 'bal.enriched.*',
   balReady: 'bal.ready',
+  exportRequested: 'export.requested',
+  exportCompleted: 'export.completed',
+  exportFailed: 'export.failed',
   retryAll: '#',
   deadLetterAll: '#',
 } as const;
