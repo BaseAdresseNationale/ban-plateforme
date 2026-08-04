@@ -2,9 +2,9 @@
 # Stack DEV BAN — services infra + outils
 #
 # Points clés:
-# - Healthchecks sur RabbitMQ, PostgreSQL et MongoDB
+# - Healthchecks sur RabbitMQ, PostgreSQL, MongoDB et RustFS
 # - depends_on avec condition: service_healthy pour mongo-express et pgadmin
-# - container_name stables (ban_rabbitmq, ban_postgres, ban_mongo, …)
+# - container_name stables (ban_rabbitmq, ban_postgres, ban_mongo, ban_rustfs, …)
 
 services:
   rabbitmq:
@@ -17,9 +17,9 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
       interval: 5s
-      timeout: 3s
+      timeout: 10s
       retries: 30
     restart: unless-stopped
     networks:
@@ -102,9 +102,58 @@ services:
     networks:
       - ban-net
 
+  rustfs:
+    image: rustfs/rustfs:1.0.0
+    container_name: ban_rustfs
+    ports:
+      - "${RUSTFS_API_PORT:-9000}:9000"
+      - "${RUSTFS_CONSOLE_PORT:-9002}:9001"
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-${MINIO_ROOT_USER:-rustfsadmin}}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-${MINIO_ROOT_PASSWORD:-rustfsadmin}}
+    volumes:
+      - rustfs_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    networks:
+      ban-net:
+        aliases:
+          - minio
+
+  rustfs-init:
+    image: amazon/aws-cli:2.27.55
+    container_name: ban_rustfs_init
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY:-${MINIO_ROOT_USER:-rustfsadmin}}
+      AWS_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY:-${MINIO_ROOT_PASSWORD:-rustfsadmin}}
+      AWS_DEFAULT_REGION: ${EXPORT_S3_REGION:-us-east-1}
+      AWS_EC2_METADATA_DISABLED: "true"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        if aws --endpoint-url http://rustfs:9000 s3api head-bucket --bucket ${EXPORT_S3_BUCKET:-ban-exports} >/dev/null 2>&1; then
+          exit 0
+        fi
+        aws --endpoint-url http://rustfs:9000 s3 mb s3://${EXPORT_S3_BUCKET:-ban-exports}
+    restart: "no"
+    networks:
+      - ban-net
+
 volumes:
   mongo_data:
   pg_data:
+  rustfs_data:
 
 networks:
   ban-net:
