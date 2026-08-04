@@ -63,9 +63,24 @@ PG_PORT=5432
 PGADMIN_PORT=8082
 PGADMIN_DEFAULT_EMAIL=admin@ban.fr
 PGADMIN_DEFAULT_PASSWORD=admin
+
+MINIO_API_PORT=9000
+MINIO_CONSOLE_PORT=9002
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+
+EXPORT_STORAGE=s3
+EXPORT_S3_BUCKET=ban-exports
+EXPORT_S3_ENDPOINT=http://localhost:9000
+EXPORT_S3_REGION=us-east-1
+EXPORT_S3_ACCESS_KEY_ID=minioadmin
+EXPORT_S3_SECRET_ACCESS_KEY=minioadmin
+EXPORT_S3_PREFIX=exports
+EXPORT_S3_FORCE_PATH_STYLE=true
 ```
 
 > Ces variables alimentent `docker-compose.dev.ban.yml` ainsi que les scripts de développement.
+> Pensez à maintenir votre `.env` local aligné avec `.env.example` lorsque de nouvelles variables sont ajoutées.
 
 ### 4. 🚀 Démarrer l’infrastructure + services Node
 
@@ -76,7 +91,7 @@ pnpm dev
 Ce script :
 
 - charge automatiquement les variables de `.env`,
-- démarre Postgres, Mongo, RabbitMQ, pgAdmin et Mongo-Express,
+- démarre Postgres, Mongo, RabbitMQ, MinIO, pgAdmin et Mongo-Express,
 - lance **toutes les apps Node** en mode `dev` avec hot-reload.
 
 ### 🔁 Démarrage quotidien (workflow développeur)
@@ -147,6 +162,7 @@ Après ça, votre base BAN locale est entièrement fonctionnelle.
 | RabbitMQ UI   | [http://localhost:15672](http://localhost:15672)                        | guest / guest                           |
 | Mongo Express | [http://localhost:8081](http://localhost:8081)                          | inspection Mongo                        |
 | pgAdmin       | [http://localhost:\${PGADMIN\_PORT}](http://localhost:\${PGADMIN_PORT}) | identifiants dans `.env`                |
+| MinIO Console | [http://localhost:9002](http://localhost:9002)                        | stockage S3 local, bucket `ban-exports` |
 | PostgreSQL    | localhost:\${PG\_PORT}                                                  | utilisateur / DB configurés dans `.env` |
 
 ---
