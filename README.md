@@ -19,6 +19,8 @@ La BAN-Platform est un environnement **multi-services** permettant :
 
 La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
 
+Les exports asynchrones BAN et différentiels sont documentés dans la section [Exports asynchrones](#-exports-asynchrones).
+
 Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
 ---
@@ -63,9 +65,24 @@ PG_PORT=5432
 PGADMIN_PORT=8082
 PGADMIN_DEFAULT_EMAIL=admin@ban.fr
 PGADMIN_DEFAULT_PASSWORD=admin
+
+RUSTFS_API_PORT=9000
+RUSTFS_CONSOLE_PORT=9002
+RUSTFS_ACCESS_KEY=rustfsadmin
+RUSTFS_SECRET_KEY=rustfsadmin
+
+EXPORT_STORAGE=s3
+EXPORT_S3_BUCKET=ban-exports
+EXPORT_S3_ENDPOINT=http://localhost:9000
+EXPORT_S3_REGION=us-east-1
+EXPORT_S3_ACCESS_KEY_ID=rustfsadmin
+EXPORT_S3_SECRET_ACCESS_KEY=rustfsadmin
+EXPORT_S3_PREFIX=exports
+EXPORT_S3_FORCE_PATH_STYLE=true
 ```
 
 > Ces variables alimentent `docker-compose.dev.ban.yml` ainsi que les scripts de développement.
+> Pensez à maintenir votre `.env` local aligné avec `.env.example` lorsque de nouvelles variables sont ajoutées.
 
 ### 4. 🚀 Démarrer l’infrastructure + services Node
 
@@ -76,7 +93,7 @@ pnpm dev
 Ce script :
 
 - charge automatiquement les variables de `.env`,
-- démarre Postgres, Mongo, RabbitMQ, pgAdmin et Mongo-Express,
+- démarre Postgres, Mongo, RabbitMQ, RustFS, pgAdmin et Mongo-Express,
 - lance **toutes les apps Node** en mode `dev` avec hot-reload.
 
 ### 🔁 Démarrage quotidien (workflow développeur)
@@ -147,6 +164,7 @@ Après ça, votre base BAN locale est entièrement fonctionnelle.
 | RabbitMQ UI   | [http://localhost:15672](http://localhost:15672)                        | guest / guest                           |
 | Mongo Express | [http://localhost:8081](http://localhost:8081)                          | inspection Mongo                        |
 | pgAdmin       | [http://localhost:\${PGADMIN\_PORT}](http://localhost:\${PGADMIN_PORT}) | identifiants dans `.env`                |
+| RustFS Console | [http://localhost:9002](http://localhost:9002)                         | stockage S3 local, bucket `ban-exports` |
 | PostgreSQL    | localhost:\${PG\_PORT}                                                  | utilisateur / DB configurés dans `.env` |
 
 ---
