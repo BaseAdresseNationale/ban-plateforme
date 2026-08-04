@@ -9,7 +9,7 @@ if ! docker info > /dev/null 2>&1; then
 fi
 
 echo "⚫️ - Lancement des outils et services essentiels via Docker…"
-docker compose -f docker-compose.dev.ban.yml up -d
+docker compose -f docker-compose.dev.ban.yml up -d --remove-orphans
 
 # Fonction de vérification de l'état des services
 check_health () {
@@ -42,6 +42,7 @@ echo "🟠 - Attente des services critiques…"
 wait_for ban_rabbitmq 180
 wait_for ban_postgres 180
 wait_for ban_mongo 180
+wait_for ban_rustfs 180
 
 echo "🟢 - Pret à démarrer les services en mode dev…"
 echo " ..."
