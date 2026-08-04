@@ -67,3 +67,17 @@ export type ExportFileResult = {
   filePath: string;
   stats: Record<string, unknown>;
 };
+
+export type ExportStorageOutput =
+  | {
+    storage: 'local';
+    path: string;
+  }
+  | {
+    storage: 's3';
+    bucket: string;
+    key: string;
+    endpoint: string;
+    url?: string;
+    size: number;
+  };
