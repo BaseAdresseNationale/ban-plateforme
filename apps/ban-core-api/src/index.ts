@@ -11,6 +11,7 @@ import { publications, rabbitmqConfig } from './rabbitmq.config.js';
 import { setRabbitMqBroker } from './rabbitmq.broker.js';
 
 import dataRoutes from './routes/data/index.js';
+import reportRoutes from './routes/reports/index.js';
 
 const upload = multer({ dest: 'uploads/' });
 const app = express();
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/data', dataRoutes);
+app.use('/api/reports', reportRoutes);
 
 
 // -------------------------
