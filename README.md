@@ -19,6 +19,8 @@ La BAN-Platform est un environnement **multi-services** permettant :
 
 La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
 
+Les exports asynchrones BAN et differentiels sont documentes dans la section [Exports asynchrones](#-exports-asynchrones).
+
 Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
 ---
@@ -162,8 +164,123 @@ Après ça, votre base BAN locale est entièrement fonctionnelle.
 | RabbitMQ UI   | [http://localhost:15672](http://localhost:15672)                        | guest / guest                           |
 | Mongo Express | [http://localhost:8081](http://localhost:8081)                          | inspection Mongo                        |
 | pgAdmin       | [http://localhost:\${PGADMIN\_PORT}](http://localhost:\${PGADMIN_PORT}) | identifiants dans `.env`                |
-| MinIO Console | [http://localhost:9002](http://localhost:9002)                        | stockage S3 local, bucket `ban-exports` |
+| MinIO Console | [http://localhost:9002](http://localhost:9002)                          | stockage S3 local, bucket `ban-exports` |
 | PostgreSQL    | localhost:\${PG\_PORT}                                                  | utilisateur / DB configurés dans `.env` |
+
+---
+
+## 📤 Exports asynchrones
+
+Les exports BAN et differentiels ne sont pas renvoyes directement par `ban-core-api`.
+L'API cree une demande d'export, renvoie un token de suivi, puis publie une commande RabbitMQ consommee par `ban-core-exporter`.
+
+```text
+client HTTP
+  GET {API_BASE_URL}/api/data/ban/{dep}
+  ou GET {API_BASE_URL}/api/data/diff/{dep}
+        │
+        ▼
+ban-core-api
+  cree ban.job_status en pending
+  publie export.requested -> ban.commands
+        │
+        ▼
+ban-core-exporter
+  genere le fichier NDJSON
+  stocke le fichier localement ou sur S3
+  met a jour ban.job_status
+  publie export.completed ou export.failed -> ban.events
+        │
+        ▼
+client HTTP
+  GET {API_BASE_URL}/api/reports/exports/{token}
+```
+
+Dans les exemples suivants, `API_BASE_URL` designe l'URL du service `ban-core-api`.
+En local, elle vaut generalement `http://localhost:3000`.
+
+### Demander un export BAN
+
+```shell
+API_BASE_URL=http://localhost:3000
+
+curl "${API_BASE_URL}/api/data/ban/33?format=raw"
+```
+
+Parametres principaux :
+
+- `dep` : code departement, ou plusieurs codes separes par des virgules ;
+- `format` : `raw`, `ban`, `standard-fr` ou `standard-fr-int` ; par defaut `raw` ;
+- `dataTypes` : `district`, `toponym`, `address`, separes par des virgules ; par defaut tous les types ;
+- `at` : date de snapshot BAN ; par defaut la date courante.
+
+### Demander un export differentiel
+
+```shell
+API_BASE_URL=http://localhost:3000
+
+curl "${API_BASE_URL}/api/data/diff/33?from=2026-01-01T00:00:00.000Z&format=raw"
+```
+
+Parametres principaux :
+
+- `dep` : code departement, ou plusieurs codes separes par des virgules ;
+- `from` : date de debut du differentiel, obligatoire ;
+- `to` : date de fin du differentiel ; par defaut la date courante ;
+- `format` : `raw`, `ban`, `standard-fr` ou `standard-fr-int` ; par defaut `raw` ;
+- `dataTypes` : `district`, `toponym`, `address`, separes par des virgules ; par defaut tous les types.
+
+Les routes de demande repondent en `202 Accepted` avec un token :
+
+```json
+{
+  "response": {
+    "token": "V1StGXR8_Z5jdHi6B-myT",
+    "exportType": "ban",
+    "status": "pending"
+  }
+}
+```
+
+### Suivre un export
+
+```shell
+API_BASE_URL=http://localhost:3000
+TOKEN=V1StGXR8_Z5jdHi6B-myT
+
+curl "${API_BASE_URL}/api/reports/exports/${TOKEN}"
+```
+
+La route retourne le statut courant de la demande :
+
+- `pending` : demande creee, pas encore traitee ;
+- `processing` : export en cours ;
+- `success` : fichier genere et stocke ;
+- `error` : generation ou stockage en erreur.
+
+Lorsque le stockage S3 est configure, le rapport contient les informations de sortie :
+
+```json
+{
+  "response": {
+    "token": "V1StGXR8_Z5jdHi6B-myT",
+    "status": "success",
+    "exportType": "ban",
+    "count": 42,
+    "report": {
+      "output": {
+        "storage": "s3",
+        "bucket": "ban-exports",
+        "key": "exports/ban/V1StGXR8_Z5jdHi6B-myT/V1StGXR8_Z5jdHi6B-myT.ban.raw.ndjson"
+      }
+    }
+  }
+}
+```
+
+En developpement local, MinIO fournit une API S3 compatible sur `http://localhost:9000` et une console sur [http://localhost:9002](http://localhost:9002). Le bucket local cree par defaut est `ban-exports`.
+
+La documentation OpenAPI des routes d'export est disponible dans [apps/ban-core-api/openapi.yaml](./apps/ban-core-api/openapi.yaml).
 
 ---
 

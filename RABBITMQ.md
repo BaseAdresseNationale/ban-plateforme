@@ -102,6 +102,9 @@ Le pipeline BAL actuel utilise les routing keys suivantes :
 | `bal.enriched.old-district` | Résultat d’enrichissement des anciennes communes |
 | `bal.enriched.*` | Binding du merger pour tous les résultats d’enrichissement |
 | `bal.ready` | La BAL fusionnée est prête à être écrite |
+| `export.requested` | Une demande d’export BAN ou différentiel doit être traitée |
+| `export.completed` | Une demande d’export s’est terminée avec succès |
+| `export.failed` | Une demande d’export a échoué |
 
 Le préfixe `bal.*` est conservé pour les routing keys, car il décrit le pipeline métier. Le namespace d’infrastructure RabbitMQ est porté par les exchanges et queues `ban.*`.
 
@@ -145,6 +148,44 @@ ban-core-writer
   queue : ban.writer
   consomme bal.ready
 ```
+
+## Flux des exports asynchrones
+
+Les exports BAN et différentiels utilisent un flux de commande séparé du pipeline BAL.
+
+```text
+ban-core-api
+  cree ban.job_status en pending
+  publie export.requested -> ban.commands
+
+ban-core-exporter
+  queue : ban.exporter
+  consomme export.requested depuis ban.commands
+  genere le fichier NDJSON
+  stocke le fichier localement ou sur S3
+  met a jour ban.job_status
+  publie export.completed ou export.failed -> ban.events
+
+ban-core-api
+  expose GET {API_BASE_URL}/api/reports/exports/{token}
+  lit ban.job_status pour retourner le rapport courant
+```
+
+Le message `export.requested` contient :
+
+- `token` : identifiant de suivi de la demande ;
+- `exportType` : `ban` ou `diff` ;
+- `params` : format, departements, types de donnees et fenetre temporelle.
+
+Le service `ban-core-exporter` publie ensuite :
+
+- `export.completed` avec le rapport d’export ;
+- `export.failed` avec le message d’erreur.
+
+Les fichiers générés sont stockés selon la configuration du service exporter :
+
+- `EXPORT_STORAGE=s3` avec les variables `EXPORT_S3_*` pour un stockage S3 ou MinIO ;
+- `EXPORT_STORAGE=local` pour conserver uniquement le fichier local en développement.
 
 ## Responsabilité locale des services
 
