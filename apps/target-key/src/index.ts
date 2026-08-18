@@ -1,57 +1,16 @@
 import rascal from 'rascal';
 
 import { normalize } from '@nivalis/normadresse';
-import { env } from '@ban/config';
 
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
-
-const config = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [
-        { name: 'bal.events', type: 'topic' as const }
-      ],
-      queues: [
-        { name: 'target-key.in', assert: true }
-      ],
-      bindings: [
-        {
-          source: 'bal.events',
-          destination: 'target-key.in',
-          bindingKey: 'bal.enrich'
-        }
-      ]
-    }
-  },
-  subscriptions: {
-    'balToTargetKey': {
-      queue: 'target-key.in'
-    }
-  },
-  publications: {
-    'withTargetKey': {
-      exchange: 'bal.events',
-      routingKey: 'bal.enriched.target-key'
-    }
-  }
-};
+import { publications, rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 const normalizeAFNOR = (input: string): string => normalize(input).replace(/\s+/g, '-');
 
 async function main() {
   try {
-    const broker = await rascal.BrokerAsPromised.create(config);
+    const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
 
-    const subscription = await broker.subscribe('balToTargetKey');
+    const subscription = await broker.subscribe(subscriptions.balToTargetKey);
     subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
 
       const enriched = {
@@ -78,7 +37,7 @@ async function main() {
         })
       };
 
-      await broker.publish('withTargetKey', JSON.stringify(enriched), {
+      await broker.publish(publications.withTargetKey, JSON.stringify(enriched), {
         options: { contentType: 'application/json' }
       });
 

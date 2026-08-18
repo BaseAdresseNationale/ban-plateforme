@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ban/config": "workspace:*",
+    "@ban/rabbitmq": "workspace:*",
     "@nivalis/normadresse": "^2.0.1"
   }
 }

@@ -111,6 +111,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       papaparse:
         specifier: ^5.4.1
         version: 5.5.3
@@ -133,6 +136,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@ban/tools':
         specifier: workspace:*
         version: link:../../packages/tools
@@ -179,6 +185,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@ban/tools':
         specifier: workspace:*
         version: link:../../packages/tools
@@ -198,6 +207,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@etalab/adresses-util':
         specifier: ^0.8.2
         version: 0.8.2
@@ -210,6 +222,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
 
   apps/old-district:
     dependencies:
@@ -219,18 +234,27 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
 
   apps/orchestrator:
     dependencies:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
 
   apps/target-key:
     dependencies:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@nivalis/normadresse':
         specifier: ^2.0.1
         version: 2.0.1(typescript@5.8.3)
@@ -284,6 +308,19 @@ importers:
       '@types/pg':
         specifier: ^8.15.5
         version: 8.15.5
+
+  packages/rabbitmq:
+    dependencies:
+      '@ban/config':
+        specifier: workspace:*
+        version: link:../config
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
+    devDependencies:
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
 
   packages/shared-lib: {}
 
