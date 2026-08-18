@@ -9,18 +9,26 @@ import {
   type RabbitMqBrokerConfig,
 } from '@ban/rabbitmq';
 
-const exchangeName = rabbitExchanges.pipeline;
+const commandsExchangeName = rabbitExchanges.commands;
+const pipelineExchangeName = rabbitExchanges.pipeline;
 const parserQueueName = rabbitQueues.service('parser');
 
 export const publications = {
   default: 'default',
   legacyBalUploaded: routingKeys.balUploaded,
   balUploaded: 'balUploaded',
+  exportRequested: 'exportRequested',
 } as const;
 
 const balUploadedPublication = {
-  exchange: exchangeName,
+  exchange: pipelineExchangeName,
   routingKey: routingKeys.balUploaded,
+  options: publishOptions,
+} as const;
+
+const exportRequestedPublication = {
+  exchange: commandsExchangeName,
+  routingKey: routingKeys.exportRequested,
   options: publishOptions,
 } as const;
 
@@ -29,7 +37,8 @@ export const rabbitmqConfig = {
     '/': {
       connection: connectionConfig,
       exchanges: {
-        [exchangeName]: exchangesConfig.pipeline,
+        [commandsExchangeName]: exchangesConfig.commands,
+        [pipelineExchangeName]: exchangesConfig.pipeline,
       },
       queues: {
         [parserQueueName]: {
@@ -38,8 +47,8 @@ export const rabbitmqConfig = {
         },
       },
       bindings: {
-        [`${exchangeName}[${routingKeys.balUploaded}] -> ${parserQueueName}`]: {
-          source: exchangeName,
+        [`${pipelineExchangeName}[${routingKeys.balUploaded}] -> ${parserQueueName}`]: {
+          source: pipelineExchangeName,
           destination: parserQueueName,
           bindingKey: routingKeys.balUploaded,
         },
@@ -48,6 +57,7 @@ export const rabbitmqConfig = {
         [publications.default]: { ...balUploadedPublication },
         [publications.legacyBalUploaded]: { ...balUploadedPublication },
         [publications.balUploaded]: { ...balUploadedPublication },
+        [publications.exportRequested]: { ...exportRequestedPublication },
       },
     },
   },

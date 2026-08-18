@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts || true",
     "build": "tsc --project tsconfig.json",
+    "test": "vitest run",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
