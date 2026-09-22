@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   FatalMessageError,
@@ -21,6 +21,20 @@ import {
   routingKeys,
   subscriptionDefaults,
 } from './index.js';
+
+const originalEnv = { ...process.env };
+
+afterEach(() => {
+  vi.resetModules();
+
+  for (const key of Object.keys(process.env)) {
+    if (!(key in originalEnv)) {
+      delete process.env[key];
+    }
+  }
+
+  Object.assign(process.env, originalEnv);
+});
 
 describe('shared RabbitMQ topology', () => {
   it('declares the shared exchange names', () => {
@@ -106,6 +120,35 @@ describe('shared RabbitMQ topology', () => {
 
     expect(copiedConnectionConfig).toEqual(connectionConfig);
     expect(copiedConnectionConfig).not.toBe(connectionConfig);
+  });
+
+  it('keeps RabbitMQ defaults limited to non-production environments', async () => {
+    vi.resetModules();
+    process.env.NODE_ENV = 'test';
+    process.env.RABBITMQ_HOST = '';
+    process.env.RABBITMQ_PORT = '';
+    process.env.RABBITMQ_USER = '';
+    process.env.RABBITMQ_PASSWORD = '';
+
+    const config = await import('./config.js');
+
+    expect(config.connectionConfig).toMatchObject({
+      hostname: 'localhost',
+      port: 5672,
+      user: 'guest',
+      password: 'guest',
+    });
+  });
+
+  it('requires explicit RabbitMQ configuration in production', async () => {
+    vi.resetModules();
+    process.env.NODE_ENV = 'production';
+    process.env.RABBITMQ_HOST = '';
+    process.env.RABBITMQ_PORT = '5672';
+    process.env.RABBITMQ_USER = 'guest';
+    process.env.RABBITMQ_PASSWORD = 'guest';
+
+    await expect(import('./config.js')).rejects.toThrow('Missing required environment variable RABBITMQ_HOST');
   });
 
   it('declares shared durability, publication, retry and recovery defaults', () => {
