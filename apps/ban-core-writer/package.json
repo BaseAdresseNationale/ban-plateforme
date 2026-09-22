@@ -15,7 +15,8 @@
     "@ban/rabbitmq": "workspace:*",
     "@ban/tools": "workspace:*",
     "mongodb": "^6.18.0",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "rascal": "^20.1.1"
   },
   "devDependencies": {
     "@types/pg": "^8.15.5"

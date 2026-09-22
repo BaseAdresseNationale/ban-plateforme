@@ -9,6 +9,7 @@
     "dev": "tsx watch src/index.ts || true"
   },
   "dependencies": {
-    "@ban/rabbitmq": "workspace:*"
+    "@ban/rabbitmq": "workspace:*",
+    "rascal": "^20.1.1"
   }
 }
