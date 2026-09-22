@@ -1,5 +1,6 @@
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
 import rascal, { type BrokerAsPromised } from 'rascal';
 import express from 'express';
 import multer from 'multer';
@@ -19,8 +20,10 @@ let broker: Awaited<ReturnType<typeof BrokerAsPromised.create>>;
 
 app.use(express.json({limit: '20mb'}))
 
+const createBalId = () => `bal--${new Date().toISOString().replaceAll(':', '-')}--${randomUUID()}`;
+
 const createParsedBalMessage = (rows: any[]) => ({
-  id: `bal-${Date.now()}`,
+  id: createBalId(),
   rows,
 });
 
@@ -81,7 +84,7 @@ app.post('/bal/file', upload.single('file'), async (req, res) => {
   try {
     const buffer = await fs.readFile(req.file.path, 'utf8');
     const message = {
-      id: `bal-${Date.now()}`,
+      id: createBalId(),
       payload: buffer,
       filename: req.file.originalname,
     };
@@ -103,7 +106,7 @@ app.post('/bal/text', express.text(), async (req, res) => {
 
   try {
     const message = {
-      id: `bal-${Date.now()}`,
+      id: createBalId(),
       payload: body,
       filename: 'via-text-body.csv',
     };
