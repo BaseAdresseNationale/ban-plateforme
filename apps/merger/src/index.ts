@@ -1,13 +1,6 @@
 import rascal from 'rascal';
 
-import { env } from '@ban/config';
-
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
+import { publications, rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 // Une ligne enrichie, de structure libre
 type EnrichedRow = Record<string, any>;
@@ -34,42 +27,6 @@ const timeoutMs = 5000;
 // État mémoire tampon : Map balId => données partielles
 const state = new Map<string, PendingBAL>();
 
-// Config Rascal pour RabbitMQ
-const config = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [
-        { name: 'bal.events', type: 'topic' as const }
-      ],
-      queues: [
-        { name: 'merger.in', assert: true }
-      ],
-      bindings: [
-        {
-          source: 'bal.events',
-          destination: 'merger.in',
-          bindingKey: 'bal.enriched.*' // fanout sur tous les enrichisseurs
-        }
-      ]
-    }
-  },
-  subscriptions: {
-    balEnriched: {
-      queue: 'merger.in'
-    }
-  },
-  publications: {
-    ready: {
-      exchange: 'bal.events',
-      routingKey: 'bal.ready' // une fois fusionné
-    }
-  }
-};
-
 // Fusionne les nouvelles lignes avec les existantes
 function mergeRows(existing: EnrichmentBuffer, newRows: EnrichedRow[]): EnrichmentBuffer {
   const merged = { ...existing };
@@ -82,10 +39,10 @@ function mergeRows(existing: EnrichmentBuffer, newRows: EnrichedRow[]): Enrichme
 }
 
 async function main() {
-  const broker = await rascal.BrokerAsPromised.create(config);
+  const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
 
   // Abonnement aux messages enrichis
-  const subscription = await broker.subscribe('balEnriched');
+  const subscription = await broker.subscribe(subscriptions.balEnriched);
   subscription.on('message', async (message: any, content: any, ackOrNack: () => void) => {
 
     try {
@@ -122,7 +79,7 @@ async function main() {
           meta: existing.meta,
           rows: Object.values(existing.rows)
         };
-        await broker.publish('ready', JSON.stringify(mergedMessage), {
+        await broker.publish(publications.ready, JSON.stringify(mergedMessage), {
           options: { contentType: 'application/json' }
         });
         console.log(`[merger] Fusion de ${parsed.rows.length} lignes pour ${balId}`);

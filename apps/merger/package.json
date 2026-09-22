@@ -9,6 +9,8 @@
     "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
-    "@ban/config": "workspace:*"
+    "@ban/config": "workspace:*",
+    "@ban/rabbitmq": "workspace:*",
+    "rascal": "^20.1.1"
   }
 }

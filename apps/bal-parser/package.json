@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@ban/config": "workspace:*",
+    "@ban/rabbitmq": "workspace:*",
     "papaparse": "^5.4.1",
+    "rascal": "^20.1.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

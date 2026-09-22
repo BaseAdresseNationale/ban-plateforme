@@ -111,9 +111,15 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       papaparse:
         specifier: ^5.4.1
         version: 5.5.3
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
       uuid:
         specifier: ^9.0.0
         version: 9.0.1
@@ -133,6 +139,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@ban/tools':
         specifier: workspace:*
         version: link:../../packages/tools
@@ -154,6 +163,9 @@ importers:
       pg:
         specifier: ^8.16.3
         version: 8.16.3
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
       uuid:
         specifier: ^9.0.0
         version: 9.0.1
@@ -179,6 +191,9 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@ban/tools':
         specifier: workspace:*
         version: link:../../packages/tools
@@ -188,6 +203,9 @@ importers:
       pg:
         specifier: ^8.16.3
         version: 8.16.3
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
     devDependencies:
       '@types/pg':
         specifier: ^8.15.5
@@ -198,18 +216,30 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@etalab/adresses-util':
         specifier: ^0.8.2
         version: 0.8.2
       '@nivalis/normadresse':
         specifier: ^2.0.1
         version: 2.0.1(typescript@5.8.3)
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
 
   apps/merger:
     dependencies:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
 
   apps/old-district:
     dependencies:
@@ -219,21 +249,39 @@ importers:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
 
   apps/orchestrator:
     dependencies:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
 
   apps/target-key:
     dependencies:
       '@ban/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ban/rabbitmq':
+        specifier: workspace:*
+        version: link:../../packages/rabbitmq
       '@nivalis/normadresse':
         specifier: ^2.0.1
         version: 2.0.1(typescript@5.8.3)
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
 
   packages/api:
     dependencies:
@@ -284,6 +332,19 @@ importers:
       '@types/pg':
         specifier: ^8.15.5
         version: 8.15.5
+
+  packages/rabbitmq:
+    dependencies:
+      dotenv:
+        specifier: ^17.2.1
+        version: 17.2.2
+      rascal:
+        specifier: ^20.1.1
+        version: 20.1.1(amqplib@0.10.8)
+    devDependencies:
+      '@types/rascal':
+        specifier: ^10.2.1
+        version: 10.2.1
 
   packages/shared-lib: {}
 

@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "files": ["dist"],
   "dependencies": {
-    "@ban/config": "workspace:*"
+    "@ban/config": "workspace:*",
+    "@ban/rabbitmq": "workspace:*",
+    "rascal": "^20.1.1"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json",

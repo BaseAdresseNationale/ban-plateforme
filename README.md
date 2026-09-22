@@ -17,6 +17,8 @@ La BAN-Platform est un environnement **multi-services** permettant :
 - l’enregistrement en base PostgreSQL (schéma BAN complet + triggers d’historisation),
 - l’exposition des données via des APIs (MongoDB).
 
+La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
+
 Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
 ---

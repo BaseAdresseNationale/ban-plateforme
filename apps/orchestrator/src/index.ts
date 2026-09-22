@@ -1,55 +1,10 @@
 import rascal from 'rascal';
 
-import '@ban/config';
-import { env } from '@ban/config';
-
-import type { BrokerConfig } from 'rascal';
-
-const rabbitConfig = {
-  hostname: env.RABBIT.host,
-  port: Number(env.RABBIT.port),
-  user: env.RABBIT.user,
-  password: env.RABBIT.password,
-};
-
-const config: BrokerConfig = {
-  vhosts: {
-    '/': {
-      connection: {
-        protocol: 'amqp',
-        ...rabbitConfig,
-      },
-      exchanges: [
-        { name: 'bal.events', type: "topic" as "topic" }
-      ],
-      queues: [
-        { name: 'orchestrator.in', assert: true }
-      ],
-      bindings: [
-        {
-          source: 'bal.events',
-          destination: 'orchestrator.in',
-          bindingKey: 'bal.parsed'
-        }
-      ]
-    }
-  },
-  publications: {
-    'fanout.enrichments': {
-      exchange: 'bal.events',
-      routingKey: 'bal.enrich'
-    }
-  },
-  subscriptions: {
-    'balParsed': {
-      queue: 'orchestrator.in'
-    }
-  }
-};
+import { publications, rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 async function main() {
   try {
-    const broker = await rascal.BrokerAsPromised.create(config);
+    const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
 
     interface EnrichedMessage {
       [key: string]: any;
@@ -58,7 +13,7 @@ async function main() {
       };
     }
 
-    const subscription = await broker.subscribe('balParsed');
+    const subscription = await broker.subscribe(subscriptions.balParsed);
     subscription.on('message', async (message: any, content: Record<string, any>, ackOrNack: () => void) => {
       console.log('[orchestrator] Message reçu depuis bal-parser:', typeof content, content.toString(), content.id);
 
@@ -67,7 +22,7 @@ async function main() {
         meta: { orchestratedAt: new Date().toISOString() }
       };
 
-      await broker.publish('fanout.enrichments', enriched);
+      await broker.publish(publications.fanoutEnrichments, enriched);
       console.log('[orchestrator] Message publié sur "bal.enrich"');
       ackOrNack();
     });
