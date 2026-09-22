@@ -109,7 +109,13 @@ Le préfixe `bal.*` est conservé pour les routing keys, car il décrit le pipel
 
 ```text
 ban-core-api
-  publie bal.uploaded -> ban.pipeline
+  routes /bal/file et /bal/text
+    publient bal.uploaded -> ban.pipeline
+    payload : { id, payload, filename }
+
+  routes internes /upload-bal et /send-bal
+    publient bal.parsed -> ban.pipeline
+    payload : { id, rows }
 
 bal-parser
   queue : ban.parser
@@ -178,7 +184,7 @@ Les services n’implémentent pas encore le flux retry/DLQ. Lorsqu’il sera aj
 
 ## Conventions Rascal
 
-Les publications et subscriptions doivent être déclarées dans le vhost du service :
+Les publications et subscriptions sont déclarées dans le vhost du service. Rascal 20 accepte cette forme et la normalise au démarrage en leur ajoutant le vhost correspondant :
 
 ```ts
 export const rabbitmqConfig = {
@@ -202,7 +208,7 @@ export const rabbitmqConfig = {
 };
 ```
 
-Cette convention évite de dépendre des valeurs implicites de Rascal au niveau racine et garantit que les publications résolvent correctement leur vhost.
+Cette convention évite de dépendre des valeurs implicites de Rascal au niveau racine et garantit que les publications résolvent correctement leur vhost. Les exchanges, queues et bindings sont déclarés sous forme d’objets indexés par nom, également supportée par Rascal.
 
 ## Notes de migration
 
