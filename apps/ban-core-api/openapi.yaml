@@ -1,0 +1,316 @@
+openapi: 3.1.0
+info:
+  title: BAN Core API
+  version: 0.1.0
+  description: API interne BAN Platform.
+paths:
+  /api/data/ban/{dep}:
+    get:
+      summary: Demander un export BAN asynchrone
+      description: |
+        Valide la demande d'export BAN, cree un token de suivi, enregistre un statut `pending`
+        et publie une commande RabbitMQ `export.requested`.
+
+        L'export n'est plus renvoye directement dans la reponse HTTP.
+      tags:
+        - Exports
+      parameters:
+        - $ref: '#/components/parameters/DepartmentPath'
+        - name: at
+          in: query
+          required: false
+          description: Date de l'etat BAN a exporter. Si absent, la date courante est utilisee.
+          schema:
+            type: string
+            format: date-time
+          example: '2026-01-31T00:00:00.000Z'
+        - $ref: '#/components/parameters/ExportFormat'
+        - $ref: '#/components/parameters/DataTypes'
+      responses:
+        '202':
+          description: Demande d'export acceptee.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncExportAcceptedResponse'
+              examples:
+                accepted:
+                  value:
+                    date: '2026-07-30T12:00:00.000Z'
+                    status: success
+                    message: Export request accepted
+                    response:
+                      token: V1StGXR8_Z5jdHi6B-myT
+                      exportType: ban
+                      status: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/data/diff/{dep}:
+    get:
+      summary: Demander un export differentiel asynchrone
+      description: |
+        Valide la demande d'export differentiel, cree un token de suivi, enregistre un statut
+        `pending` et publie une commande RabbitMQ `export.requested`.
+
+        L'export n'est plus renvoye directement dans la reponse HTTP.
+      tags:
+        - Exports
+      parameters:
+        - $ref: '#/components/parameters/DepartmentPath'
+        - name: from
+          in: query
+          required: true
+          description: Date de debut de la fenetre differentielle.
+          schema:
+            type: string
+            format: date-time
+          example: '2026-01-01T00:00:00.000Z'
+        - name: to
+          in: query
+          required: false
+          description: Date de fin de la fenetre differentielle. Si absent, la date courante est utilisee.
+          schema:
+            type: string
+            format: date-time
+          example: '2026-01-31T00:00:00.000Z'
+        - $ref: '#/components/parameters/ExportFormat'
+        - $ref: '#/components/parameters/DataTypes'
+      responses:
+        '202':
+          description: Demande d'export acceptee.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncExportAcceptedResponse'
+              examples:
+                accepted:
+                  value:
+                    date: '2026-07-30T12:00:00.000Z'
+                    status: success
+                    message: Export request accepted
+                    response:
+                      token: V1StGXR8_Z5jdHi6B-myT
+                      exportType: diff
+                      status: pending
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/reports/exports/{token}:
+    get:
+      summary: Consulter le rapport d'une demande d'export
+      description: |
+        Retourne le rapport courant d'une demande d'export asynchrone a partir du token
+        renvoye par les routes de demande d'export BAN ou differentiel.
+      tags:
+        - Exports
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Token de suivi de la demande d'export.
+          schema:
+            type: string
+          example: V1StGXR8_Z5jdHi6B-myT
+      responses:
+        '200':
+          description: Rapport de la demande d'export.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsyncExportStatusResponse'
+              examples:
+                success:
+                  value:
+                    date: '2026-07-30T12:05:00.000Z'
+                    status: success
+                    message: Export report
+                    response:
+                      token: V1StGXR8_Z5jdHi6B-myT
+                      exportType: ban
+                      status: success
+                      count: 42
+                      message: Export file generated
+                      report:
+                        output:
+                          storage: s3
+                          bucket: ban-exports
+                          key: exports/ban/V1StGXR8_Z5jdHi6B-myT/V1StGXR8_Z5jdHi6B-myT.ban.raw.ndjson
+                          endpoint: http://localhost:9000
+                          size: 12345
+                      createdAt: '2026-07-30T12:00:00.000Z'
+                      updatedAt: '2026-07-30T12:05:00.000Z'
+        '404':
+          description: Rapport d'export introuvable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    DepartmentPath:
+      name: dep
+      in: path
+      required: true
+      description: Un ou plusieurs codes departement separes par des virgules.
+      schema:
+        type: string
+      examples:
+        single:
+          value: '33'
+        multiple:
+          value: '33,24'
+    ExportFormat:
+      name: format
+      in: query
+      required: false
+      description: Format de sortie demande pour le fichier genere. Par defaut, `raw`.
+      schema:
+        type: string
+        enum:
+          - raw
+          - ban
+          - standard-fr
+          - standard-fr-int
+        default: raw
+    DataTypes:
+      name: dataTypes
+      in: query
+      required: false
+      description: Types de donnees a exporter, separes par des virgules. Par defaut, tous les types.
+      schema:
+        type: string
+      examples:
+        all:
+          value: district,toponym,address
+        addresses:
+          value: address
+  responses:
+    BadRequest:
+      description: Parametres invalides.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Erreur interne lors de la creation de la demande d'export.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ApiResponseBase:
+      type: object
+      required:
+        - date
+        - status
+        - message
+        - response
+      properties:
+        date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - success
+            - error
+        message:
+          type: string
+        response:
+          type: object
+    AsyncExportAcceptedResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            response:
+              type: object
+              required:
+                - token
+                - exportType
+                - status
+              properties:
+                token:
+                  type: string
+                  description: Token de suivi de la demande d'export.
+                exportType:
+                  type: string
+                  enum:
+                    - ban
+                    - diff
+                status:
+                  type: string
+                  enum:
+                    - pending
+    AsyncExportStatusResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            response:
+              type: object
+              required:
+                - token
+                - status
+                - exportType
+                - count
+                - message
+                - report
+                - createdAt
+                - updatedAt
+              properties:
+                token:
+                  type: string
+                  description: Token de suivi de la demande d'export.
+                status:
+                  type:
+                    - string
+                    - 'null'
+                  enum:
+                    - pending
+                    - processing
+                    - success
+                    - error
+                    - null
+                exportType:
+                  type:
+                    - string
+                    - 'null'
+                  enum:
+                    - ban
+                    - diff
+                    - null
+                count:
+                  type:
+                    - integer
+                    - 'null'
+                  description: Nombre de lignes exportees lorsque le traitement est termine.
+                message:
+                  type:
+                    - string
+                    - 'null'
+                report:
+                  type:
+                    - object
+                    - 'null'
+                  additionalProperties: true
+                createdAt:
+                  type: string
+                  format: date-time
+                updatedAt:
+                  type: string
+                  format: date-time
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - error
