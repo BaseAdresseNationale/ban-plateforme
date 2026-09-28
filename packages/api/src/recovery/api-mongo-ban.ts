@@ -1,4 +1,5 @@
 import { logger } from '@ban/tools';
+import type { BanObjects } from '../api/ban-generic.shema.js';
 
 export interface MongoCollections {
   districts: import('mongodb').Collection;
