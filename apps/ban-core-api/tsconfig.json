@@ -3,6 +3,8 @@
   "compilerOptions": {
     "module": "NodeNext",
     "outDir": "dist",
+    "skipLibCheck": true,
+    "rootDir": "src",
     "typeRoots": ["./src/types", "../../node_modules/@types"]
   },
   "composite": true,
