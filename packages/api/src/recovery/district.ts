@@ -1,5 +1,6 @@
 import { logger } from '@ban/tools';
 import { getPrismaClient } from '@ban/prisma-client'
+import type { BanObjects } from '../api/ban-generic.shema.js';
 
 import {
     banPgDistrictSchema,

@@ -112,15 +112,17 @@ export const metaIdfixSchema = z.object({
   hash: z.string(),
 });
 
-// -------------------------
-// Exported types & schemas
-// -------------------------
+export type PgDateString = z.infer<typeof pgDateString>;
+export type BanID = z.infer<typeof banID>;
+export type BanNumber = z.infer<typeof banNumber>;
+export type Label = z.infer<typeof label>;
 
-export {
-  type BanID,
-  type Label,
-  type BanNumber,
-  type PgDateString,
+export interface BanObjects {
+  districts: Record<string, any>; // FIXME: to be replaced with actual BanDistrict type when available
+  // commonToponyms: Record<string, BanCommonToponym>;
+  commonToponyms: Record<string, any>; // FIXME: to be replaced with actual BanCommonToponym type when available
+  // addresses: Record<string, BanAddress>;
+  addresses: Record<string, any>; // FIXME: to be replaced with actual BanAddress type when available
 }
 
 declare global {
@@ -140,14 +142,6 @@ declare global {
   // Geometry Types
   type BanGeometry = z.infer<typeof banGeometrySchema>;
 
-  // BanObjects type
-  interface BanObjects {
-    districts: Record<string, BanDistrict>;
-    // commonToponyms: Record<string, BanCommonToponym>;
-    commonToponyms: Record<string, any>; // FIXME: to be replaced with actual BanCommonToponym type when available
-    // addresses: Record<string, BanAddress>;
-    addresses: Record<string, any>; // FIXME: to be replaced with actual BanAddress type when available
-  }
 }
 
 

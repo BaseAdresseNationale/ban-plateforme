@@ -29,3 +29,4 @@ export default Ban;
 export type { MongoCollections } from './recovery/api-mongo-ban.js';
 export { writeInMongoDb } from './recovery/api-mongo-ban.js';
 export { writeInPgDb, getFromPgDb } from './recovery/api-pg-ban.js';
+export type { BanObjects } from './api/ban-generic.shema.js';
