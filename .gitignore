@@ -86,6 +86,10 @@ deploy/
 .services/
 .docker-compose.ban.generated.yml
 
+# Local data export files
+apps/ban-core-exporter/tmp/
+tmp/exports/
+
 docker-compose.*.generated.yml
 # Dépendance à Gazetteer à supprimer quand on aura une vraie base de données
 *.sqlite
