@@ -6,11 +6,10 @@
     "esModuleInterop": true,
     "strict": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
-      "@ban/*": ["packages/*/src"],
-      "@prisma": ["packages/prisma-client/generated/client/client.ts"],
-      "@prisma/*": ["packages/prisma-client/generated/client/*"]
+      "@ban/*": ["./packages/*/src"],
+      "@prisma": ["./packages/prisma-client/generated/client/client.ts"],
+      "@prisma/*": ["./packages/prisma-client/generated/client/*"]
     }
   }
 }
