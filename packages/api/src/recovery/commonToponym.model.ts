@@ -35,11 +35,7 @@ export const banPgCommonToponymSchema = genericCommonToponymSchema.extend({
     updateDate: pgDateString.default(() => new Date()),
 });
 
-// extract the inferred type
-declare global {
-  type BanCommonToponymMeta = z.infer<typeof metaCommonToponymSchema>;
-  type GenericCommonToponym = z.infer<typeof genericCommonToponymSchema>;
-  type BanCommonToponym = z.infer<typeof banCommonToponymSchema>;
-  type BanPgCommonToponym = z.infer<typeof banPgCommonToponymSchema>;
-}
-
+export type BanCommonToponymMeta = z.infer<typeof metaCommonToponymSchema>;
+export type GenericCommonToponym = z.infer<typeof genericCommonToponymSchema>;
+export type BanCommonToponym = z.infer<typeof banCommonToponymSchema>;
+export type BanPgCommonToponym = z.infer<typeof banPgCommonToponymSchema>;
