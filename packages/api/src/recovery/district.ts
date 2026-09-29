@@ -34,15 +34,15 @@ export const writeDistrictsInPgDb = async (prismaClient: PrismaClient, banObject
     const district = banDistrictToBanPgDistrict(districtRaw);
     logger.verbose('🏘️ Inserting district', district.id, '…');
     logger.dir(district, { depth: null });
-    const newDistrict = prismaClient.district.upsert({
+    const newDistrict = await prismaClient.district.upsert({
       where: { id: district.id },
       update: district,
       create: district,
-    }).then((result: BanPgDistrict) => result);
+    });
 
     logger.verbose('✅ District created:', district.id, '…');
     logger.dir(newDistrict, { depth: null });
-    return newDistrict;
+    return newDistrict as unknown as BanPgDistrict;
   })
 
   logger.info('🏙️ >>> Districts written in PG DB');
