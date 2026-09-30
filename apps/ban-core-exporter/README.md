@@ -96,6 +96,53 @@ Le rapport est consultable via :
 GET {API_BASE_URL}/api/reports/exports/{token}
 ```
 
+## Contrat BAN/DIFF v0.4
+
+Les formats `raw` et `standard-fr` appliquent le contrat BAN/DIFF v0.4. Il couvre
+les exports complets (`ban`) et différentiels (`diff`) des trois types de données :
+district/commune, toponym/odonyme et address/adresse.
+
+Les artefacts versionnés du contrat sont dans
+[specifications/ban-diff/v0.4](./specifications/ban-diff/v0.4/) :
+
+- la [spécification](./specifications/ban-diff/v0.4/specifications/SPECIFICATION_BAN_DIFF_V0.4.md) ;
+- les schémas JSON Schema, qui valident chaque ligne NDJSON ;
+- des fixtures valides et invalides ;
+- le validateur de flux, qui contrôle les contraintes portant sur plusieurs lignes.
+
+Un flux commence par `stream-start` et se termine par `stream-end`. Pour un DIFF,
+un événement `created` ou `disabled` embarque un état, tandis qu'un événement
+`updated` embarque l'état après puis l'état avant. Les événements sont écrits dans
+l'ordre des dépendances : créations et mises à jour commune → odonyme → adresse,
+puis désactivations adresse → odonyme → commune. Les compteurs de fin de flux
+correspondent aux lignes effectivement écrites.
+
+Les formats historiques `ban` et `standard-fr-int` restent disponibles, mais ne
+font pas partie de ce contrat v0.4.
+
+### Validation
+
+Les tests du service chargent les quatre schémas publics, valident les fixtures et
+exécutent le validateur de flux sur les cas valides comme invalides :
+
+```bash
+pnpm --filter @ban/ban-core-exporter test
+pnpm --filter @ban/ban-core-exporter build
+```
+
+Pour contrôler un fichier produit manuellement :
+
+```bash
+node specifications/ban-diff/v0.4/scripts/validate-ban-ndjson.mjs <fichier.ndjson>
+```
+
+### Limite de volumétrie connue
+
+L'ordonnancement DIFF conserve actuellement les lignes en mémoire avant leur
+écriture finale, afin de respecter l'ordre de dépendances. Avant de traiter des
+DIFF très volumineux, mesurer cette consommation mémoire et envisager un
+ordonnancement SQL global ou un stockage temporaire.
+
 ## Commandes utiles
 
 ```bash
