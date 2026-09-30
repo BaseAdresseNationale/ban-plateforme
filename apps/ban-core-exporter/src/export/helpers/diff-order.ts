@@ -1,8 +1,9 @@
-import type { DataType } from '../types.js';
-
 type WritableTarget = { write: (chunk: string) => boolean; once: (event: 'drain', listener: () => void) => void };
-const forward: DataType[] = ['district', 'toponym', 'address'];
-const reverse: DataType[] = [...forward].reverse();
+const dependencyTypes = [
+  ['district', 'commune'],
+  ['toponym', 'odonyme'],
+  ['address', 'adresse'],
+];
 
 export class DiffOrderBuffer {
   private readonly lines = new Map<string, string[]>();
@@ -20,9 +21,15 @@ export class DiffOrderBuffer {
 
   async flush(output: WritableTarget) {
     for (const event of ['created', 'updated']) {
-      for (const type of forward) await this.writeLines(output, this.lines.get(`${event}:${type}`) ?? []);
+      await this.writeEventInDependencyOrder(output, event, dependencyTypes);
     }
-    for (const type of reverse) await this.writeLines(output, this.lines.get(`disabled:${type}`) ?? []);
+    await this.writeEventInDependencyOrder(output, 'disabled', [...dependencyTypes].reverse());
+  }
+
+  private async writeEventInDependencyOrder(output: WritableTarget, event: string, types: string[][]) {
+    for (const names of types) {
+      for (const type of names) await this.writeLines(output, this.lines.get(`${event}:${type}`) ?? []);
+    }
   }
 
   private async writeLines(output: WritableTarget, lines: string[]) {

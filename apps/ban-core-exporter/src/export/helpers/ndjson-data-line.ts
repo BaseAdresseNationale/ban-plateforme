@@ -75,7 +75,7 @@ export const getStandardFrStartLine = (exportType: string, params: Record<string
 
 export const getStandardFrEndLine = (stats: Record<string, Record<string, number>>) => JSON.stringify({
   metadonnees: {
-    note: 'stream-end', generatedAt: new Date().toISOString(),
+    note: 'stream-end', genereLe: new Date().toISOString(),
     statistiques: Object.fromEntries(Object.entries(stats).map(([type, value]) => [standardFrType(type), value])),
   },
 }) + '\n';

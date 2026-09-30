@@ -135,4 +135,35 @@ describe('generateLocalExportFile', () => {
     expect(Object.keys(lines[2].meta).sort()).toEqual(['generatedAt', 'note', 'stats']);
     expect(lines[2].meta.stats.district.count).toBe(1);
   });
+
+  it('writes Standard FR metadata and payload names defined by v0.4', async () => {
+    const result = await generateLocalExportFile(
+      'export-token',
+      'ban',
+      {
+        format: 'standard-fr',
+        dataTypes: ['district'],
+        departements: ['33'],
+        address_ids: null,
+        common_toponym_ids: null,
+        district_ids: null,
+        at: '2026-01-31T00:00:00.000Z',
+      }
+    );
+
+    const lines = (await readFile(result.filePath, 'utf8'))
+      .trim()
+      .split('\n')
+      .map(line => JSON.parse(line));
+
+    expect(lines[0].metadonnees).toMatchObject({
+      versionFormat: '0.4', typeExport: 'ban', format: 'standard-fr', typesDonnees: ['commune'],
+    });
+    expect(lines[1]).toMatchObject({
+      type: 'commune',
+      donnees: { idCommune: '11111111-1111-4111-8111-111111111111', statut: 'active' },
+    });
+    expect(Object.keys(lines[2].metadonnees).sort()).toEqual(['genereLe', 'note', 'statistiques']);
+    expect(lines[2].metadonnees.statistiques.commune.count).toBe(1);
+  });
 });
