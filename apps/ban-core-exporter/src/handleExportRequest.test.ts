@@ -10,11 +10,13 @@ import type { DataExportRequestMessage } from './export/types.js';
 const mocks = vi.hoisted(() => ({
   generateLocalExportFile: vi.fn(),
   storeExportFile: vi.fn(),
+  removeLocalExportFile: vi.fn(),
   markExportError: vi.fn(),
   markExportProcessing: vi.fn(),
   markExportSuccess: vi.fn(),
   loggerError: vi.fn(),
   loggerInfo: vi.fn(),
+  loggerWarn: vi.fn(),
 }));
 
 // Le logger est neutralisé pour garder les tests lisibles.
@@ -22,6 +24,7 @@ vi.mock('@ban/tools', () => ({
   logger: {
     error: mocks.loggerError,
     info: mocks.loggerInfo,
+    warn: mocks.loggerWarn,
   },
 }));
 
@@ -36,6 +39,7 @@ vi.mock('./export/generate.js', () => ({
 // et utilise le résultat de stockage dans le rapport final.
 vi.mock('./export/storage.js', () => ({
   storeExportFile: mocks.storeExportFile,
+  removeLocalExportFile: mocks.removeLocalExportFile,
 }));
 
 // Les écritures en base sur ban.job_status sont mockées : ce test ne vérifie
@@ -74,6 +78,7 @@ describe('handleExportRequest', () => {
   // Chaque test démarre avec des mocks remis à zéro et un scénario nominal :
   // un fichier local généré, puis stocké sur S3.
   beforeEach(() => {
+    process.env.NODE_ENV = 'production';
     Object.values(mocks).forEach(mock => mock.mockReset());
     mocks.generateLocalExportFile.mockResolvedValue({
       filePath: '/tmp/export.ndjson',
@@ -144,6 +149,49 @@ describe('handleExportRequest', () => {
         },
       },
     });
+    expect(mocks.removeLocalExportFile).toHaveBeenCalledWith('/tmp/export.ndjson');
+  });
+
+  it('keeps the file when local storage is selected', async () => {
+    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
+    mocks.storeExportFile.mockResolvedValue({ storage: 'local', path: '/tmp/export.ndjson' });
+
+    await handleExportRequest(broker, message);
+
+    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
+  });
+
+  it('keeps the file outside production even when S3 is selected', async () => {
+    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
+    process.env.NODE_ENV = 'development';
+
+    await handleExportRequest(broker, message);
+
+    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
+  });
+
+  it('keeps the export successful when temporary-file cleanup fails', async () => {
+    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
+    mocks.removeLocalExportFile.mockRejectedValue(new Error('permission denied'));
+
+    await handleExportRequest(broker, message);
+
+    expect(mocks.markExportSuccess).toHaveBeenCalledOnce();
+    expect(broker.publish).toHaveBeenCalledWith('export.completed', expect.any(Object));
+    expect(mocks.loggerWarn).toHaveBeenCalledWith(
+      '[ban-core-exporter] Impossible de supprimer le fichier temporaire',
+      expect.objectContaining({ filePath: '/tmp/export.ndjson' })
+    );
+  });
+
+  it('keeps the file when S3 upload fails', async () => {
+    const error = new Error('S3 unavailable');
+    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
+    mocks.storeExportFile.mockRejectedValue(error);
+
+    await expect(handleExportRequest(broker, message)).rejects.toThrow(error);
+
+    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
   });
 
   // Échec : si une étape lève une erreur, le handler doit enregistrer l'échec,
@@ -172,5 +220,6 @@ describe('handleExportRequest', () => {
       status: 'error',
       error: 'export failed',
     });
+    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
   });
 });

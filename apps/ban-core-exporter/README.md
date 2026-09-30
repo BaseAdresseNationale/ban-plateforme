@@ -57,7 +57,16 @@ EXPORT_S3_ACCESS_KEY_ID=rustfsadmin
 EXPORT_S3_SECRET_ACCESS_KEY=rustfsadmin
 EXPORT_S3_PREFIX=exports
 EXPORT_S3_FORCE_PATH_STYLE=true
+# Facultatif : durée de conservation des fichiers temporaires en mode S3 (24 h par défaut)
+EXPORT_TEMP_FILE_MAX_AGE_HOURS=24
 ```
+
+En production, après un envoi S3 confirmé, le fichier temporaire local est
+supprimé. Le service nettoie aussi au démarrage les fichiers NDJSON temporaires
+de plus de 24 heures ; cette durée peut être modifiée avec
+`EXPORT_TEMP_FILE_MAX_AGE_HOURS`. Hors production, les fichiers temporaires sont
+conservés, y compris après un envoi S3. Une erreur de nettoyage ne met pas
+l'export en échec, puisque l'objet est déjà conservé dans S3.
 
 En developpement local, `docker-compose.dev.ban.yml` démarre RustFS :
 

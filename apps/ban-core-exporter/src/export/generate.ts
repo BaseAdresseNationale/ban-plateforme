@@ -10,6 +10,7 @@ import { logger } from '@ban/tools';
 
 import { banRequestConfigs } from './ban/ban-config.js';
 import { diffRequestConfigs } from './diff/diff-config.js';
+import { getExportOutputDir } from './output-directory.js';
 import {
   banToStandardFr,
   banToStandardFrInt,
@@ -37,10 +38,6 @@ import type {
 } from './types.js';
 
 const FETCH_SIZE = 500;
-
-const getExportOutputDir = () => path.resolve(
-  process.env.EXPORT_OUTPUT_DIR || path.join(process.cwd(), 'tmp/exports')
-);
 
 const exportConfigByType = {
   ban: {
