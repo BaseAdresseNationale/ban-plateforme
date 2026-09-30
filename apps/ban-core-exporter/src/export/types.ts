@@ -28,6 +28,7 @@ export interface NdjsonHeader {
   type: DataType;
   nodeKey?: string;
   nodekey?: string;
+  meta?: RawEntity;
 }
 
 export interface DiffLine extends NdjsonHeader {

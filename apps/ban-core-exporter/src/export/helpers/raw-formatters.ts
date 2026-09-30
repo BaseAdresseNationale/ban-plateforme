@@ -15,6 +15,8 @@ export const toRawEntity = (header: NdjsonHeader, rawValue: RawEntity): RawEntit
   const raw = asRecord(rawValue);
   const rawMeta = asRecord(raw.meta);
   const insee = asRecord(rawMeta.insee);
+  const headerMeta = asRecord(header.meta);
+  const headerInsee = asRecord(headerMeta.insee);
   const interop = asRecord(rawMeta.interop);
   const bal = asRecord(rawMeta.bal);
   const ban = asRecord(rawMeta.ban);
@@ -30,7 +32,7 @@ export const toRawEntity = (header: NdjsonHeader, rawValue: RawEntity): RawEntit
     updatedAt: raw.updatedAt ?? raw.updateDate ?? null,
     integratedAt: raw.integratedAt ?? bal.dateRevision ?? null,
     meta: {
-      insee: { cog: insee.cog },
+      insee: { cog: insee.cog ?? headerInsee.cog },
       source,
       ...(Object.keys(interop).length > 0 || bal.cleInterop || ban.cleInteropBAN ? {
         interop: {
