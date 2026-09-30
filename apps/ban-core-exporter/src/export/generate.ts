@@ -13,6 +13,7 @@ import { diffRequestConfigs } from './diff/diff-config.js';
 import {
   banToStandardFr,
   banToStandardFrInt,
+  DiffOrderBuffer,
   closeCursor,
   getDiffObjLine,
   getMetaLine,
@@ -85,6 +86,7 @@ const writeExportFile = async ({
   const { requestConfigs, formatter } = exportConfigByType[exportType];
   const dataTypes = getRequestedDataTypes(params.dataTypes, requestConfigs);
   const statsByDataType: Record<string, Record<string, number>> = {};
+  const diffBuffer = exportType === 'diff' ? new DiffOrderBuffer() : null;
   const client = await pgPool.connect();
   let activeCursor: Cursor | null = null;
 
@@ -105,7 +107,7 @@ const writeExportFile = async ({
         fetchSize: FETCH_SIZE,
         dataName,
         format: params.format,
-        output,
+        output: diffBuffer ?? output,
         banFormatter: formatter,
         converters: {
           raw: rawFormatters,
@@ -123,6 +125,8 @@ const writeExportFile = async ({
 
       logger.info(`[ban-core-exporter] Completed export for ${exportType}/${dataType}`, stats);
     }
+
+    if (diffBuffer) await diffBuffer.flush(output);
 
     output.write(params.format === 'raw' ? getRawEndLine(statsByDataType)
       : params.format === 'standard-fr' ? getStandardFrEndLine(statsByDataType)
