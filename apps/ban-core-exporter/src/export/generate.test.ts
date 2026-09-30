@@ -26,17 +26,20 @@ vi.mock('pg-cursor', () => ({
     rows: Record<string, unknown>[];
 
     constructor(public request: string, public params: unknown[]) {
+      const district = {
+        id: '11111111-1111-4111-8111-111111111111',
+        labels: [{ isoCode: 'fra', value: 'Bordeaux' }],
+        updateDate: '2026-01-15T00:00:00.000Z',
+        meta: { insee: { cog: '33063' }, source: 'bal' },
+      };
+      const isDiff = request.includes('diff_district_ndjson');
       this.rows = [
         {
-          snapshot_district_ndjson: JSON.stringify({
-            type: 'district',
-            nodeKey: 'DISTRICT:::11111111-1111-4111-8111-111111111111',
-            data: {
-              id: '11111111-1111-4111-8111-111111111111',
-              labels: [{ isoCode: 'fra', value: 'Bordeaux' }],
-              updateDate: '2026-01-15T00:00:00.000Z',
-              meta: { insee: { cog: '33063' }, source: 'bal' },
-            },
+          [isDiff ? 'diff_district_ndjson' : 'snapshot_district_ndjson']: JSON.stringify(isDiff ? {
+            event: 'updated', type: 'district', nodeKey: `DISTRICT:::${district.id}`,
+            datas: [{ ...district, meta: { ...district.meta, bal: { dateRevision: '2026-01-16T00:00:00.000Z' } } }, district],
+          } : {
+            type: 'district', nodeKey: `DISTRICT:::${district.id}`, data: district,
           }),
         },
       ];
@@ -165,5 +168,33 @@ describe('generateLocalExportFile', () => {
     });
     expect(Object.keys(lines[2].metadonnees).sort()).toEqual(['genereLe', 'note', 'statistiques']);
     expect(lines[2].metadonnees.statistiques.commune.count).toBe(1);
+  });
+
+  it('writes ordered Standard FR DIFF events instead of only their statistics', async () => {
+    const result = await generateLocalExportFile(
+      'export-token',
+      'diff',
+      {
+        format: 'standard-fr',
+        dataTypes: ['district'],
+        departements: ['33'],
+        address_ids: null,
+        common_toponym_ids: null,
+        district_ids: null,
+        from: '2026-01-01T00:00:00.000Z',
+        to: '2026-02-01T00:00:00.000Z',
+      }
+    );
+
+    const lines = (await readFile(result.filePath, 'utf8'))
+      .trim()
+      .split('\n')
+      .map(line => JSON.parse(line));
+
+    expect(lines).toHaveLength(3);
+    expect(lines[1]).toMatchObject({ evenement: 'updated', type: 'commune' });
+    expect(lines[1].donnees).toHaveLength(2);
+    expect(lines[1].donnees[0]).toMatchObject({ idCommune: '11111111-1111-4111-8111-111111111111' });
+    expect(lines[2].metadonnees.statistiques.commune).toEqual({ count: 1, created: 0, updated: 1, disabled: 0 });
   });
 });
