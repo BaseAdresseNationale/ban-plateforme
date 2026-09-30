@@ -30,10 +30,12 @@ vi.mock('pg-cursor', () => ({
         {
           snapshot_district_ndjson: JSON.stringify({
             type: 'district',
-            nodekey: 'district-1',
+            nodeKey: 'DISTRICT:::11111111-1111-4111-8111-111111111111',
             data: {
-              id: 'district-1',
+              id: '11111111-1111-4111-8111-111111111111',
               labels: [{ isoCode: 'fra', value: 'Bordeaux' }],
+              updateDate: '2026-01-15T00:00:00.000Z',
+              meta: { insee: { cog: '33063' }, source: 'bal' },
             },
           }),
         },
@@ -114,15 +116,23 @@ describe('generateLocalExportFile', () => {
       .map(line => JSON.parse(line));
 
     expect(lines[0].meta.note).toBe('stream-start');
+    expect(lines[0].meta).toMatchObject({
+      formatVersion: '0.4', exportType: 'ban', format: 'raw', departments: ['33'],
+    });
     expect(lines[1]).toEqual({
       type: 'district',
-      nodekey: 'district-1',
+      nodeKey: 'DISTRICT:::11111111-1111-4111-8111-111111111111',
       data: {
-        id: 'district-1',
+        id: '11111111-1111-4111-8111-111111111111',
         labels: [{ isoCode: 'fra', value: 'Bordeaux' }],
+        status: 'active',
+        updatedAt: '2026-01-15T00:00:00.000Z',
+        integratedAt: null,
+        meta: { insee: { cog: '33063' }, source: 'bal' },
       },
     });
     expect(lines[2].meta.note).toBe('stream-end');
+    expect(Object.keys(lines[2].meta).sort()).toEqual(['generatedAt', 'note', 'stats']);
     expect(lines[2].meta.stats.district.count).toBe(1);
   });
 });

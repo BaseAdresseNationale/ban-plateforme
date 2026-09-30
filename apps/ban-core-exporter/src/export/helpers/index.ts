@@ -9,9 +9,13 @@ export {
   rawToBan,
 } from './formatters.js';
 
+export { rawFormatters } from './raw-formatters.js';
+
 export {
   getDiffObjLine,
   getMetaLine,
+  getRawEndLine,
+  getRawStartLine,
   getSnapshotObjLine,
 } from './ndjson-data-line.js';
 

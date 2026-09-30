@@ -26,11 +26,13 @@ export type DataExportRequestMessage = {
 export interface NdjsonHeader {
   event?: EventType;
   type: DataType;
-  nodekey: string;
+  nodeKey?: string;
+  nodekey?: string;
 }
 
 export interface DiffLine extends NdjsonHeader {
-  datas: Record<string, unknown>[];
+  datas?: Record<string, unknown>[];
+  data?: Record<string, unknown>[];
 }
 
 export interface SnapshotLine extends NdjsonHeader {
@@ -43,6 +45,7 @@ export type Formatter = (ndjsonHeader: NdjsonHeader, raw: RawEntity) => Record<s
 
 export interface FormatConfigs {
   [dataType: string]: {
+    converter?: (ndjsonHeader: NdjsonHeader, raw: RawEntity) => RawEntity;
     formater?: Formatter;
     typeName?: string;
     excludedKeysOfCompare?: string[];
