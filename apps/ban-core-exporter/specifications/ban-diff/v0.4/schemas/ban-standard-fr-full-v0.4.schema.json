@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://ban.example/schemas/ban-standard-fr-full-v0.4.schema.json",
+  "title":"BAN Standard FR Full v0.4 ligne",
+  "description":"Valide chaque ligne NDJSON d'un export BAN complet Standard FR.",
+  "oneOf":[{"$ref":"#/$defs/debut"},{"$ref":"#/$defs/donnee"},{"$ref":"#/$defs/fin"}],
+  "$defs":{
+    "debut":{"type":"object","description":"Première ligne du flux Full.","required":["metadonnees"],"properties":{"metadonnees":{"type":"object","required":["note","versionFormat","typeExport","format","typesDonnees","departements","a"],"properties":{"note":{"const":"stream-start"},"versionFormat":{"const":"0.4"},"typeExport":{"const":"ban"},"format":{"const":"standard-fr"},"typesDonnees":{"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["commune","odonyme","adresse"]}},"departements":{"type":"array","items":{"type":"string"}},"a":{"type":"string","format":"date-time","description":"Instant de photographie."},"idsAdresses":{"type":"array","items":{"type":"string","format":"uuid"}},"idsOdonymes":{"type":"array","items":{"type":"string","format":"uuid"}},"idsCommunes":{"type":"array","items":{"type":"string","format":"uuid"}}},"additionalProperties":false}},"additionalProperties":false},
+    "donnee":{"oneOf":[
+      {"type":"object","required":["type","donnees"],"properties":{"type":{"const":"commune"},"nodeKey":{"type":"string"},"donnees":{"$ref":"ban-standard-fr-definitions-v0.4.schema.json#/$defs/commune"}},"additionalProperties":false},
+      {"type":"object","required":["type","donnees"],"properties":{"type":{"const":"odonyme"},"nodeKey":{"type":"string"},"donnees":{"$ref":"ban-standard-fr-definitions-v0.4.schema.json#/$defs/odonyme"}},"additionalProperties":false},
+      {"type":"object","required":["type","donnees"],"properties":{"type":{"const":"adresse"},"nodeKey":{"type":"string"},"donnees":{"$ref":"ban-standard-fr-definitions-v0.4.schema.json#/$defs/adresse"}},"additionalProperties":false}
+    ]},
+    "fin":{"type":"object","description":"Dernière ligne du flux Full.","required":["metadonnees"],"properties":{"metadonnees":{"type":"object","required":["note","genereLe","statistiques"],"properties":{"note":{"const":"stream-end"},"genereLe":{"type":"string","format":"date-time"},"statistiques":{"type":"object","additionalProperties":{"type":"object","required":["count"],"properties":{"count":{"type":"integer","minimum":0}},"additionalProperties":false}}},"additionalProperties":false}},"additionalProperties":false}
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://ban.example/schemas/ban-raw-diff-v0.4.schema.json",
+  "title":"BAN Raw DIFF v0.4 line",
+  "description":"Validates every individual NDJSON line of a BAN Raw differential stream.",
+  "oneOf":[{"$ref":"#/$defs/start"},{"$ref":"#/$defs/eventLine"},{"$ref":"#/$defs/end"}],
+  "$defs":{
+    "start":{"type":"object","description":"First line of a Raw DIFF stream.","required":["meta"],"properties":{"meta":{"type":"object","required":["note","formatVersion","exportType","format","dataTypes","departments","from","to"],"properties":{"note":{"const":"stream-start"},"formatVersion":{"const":"0.4"},"exportType":{"const":"diff"},"format":{"const":"raw"},"dataTypes":{"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["district","toponym","address"]}},"departments":{"type":"array","items":{"type":"string"}},"from":{"type":"string","format":"date-time","description":"Inclusive lower bound."},"to":{"type":"string","format":"date-time","description":"Exclusive upper bound."}},"additionalProperties":false}},"additionalProperties":false},
+    "eventLine":{"oneOf":[
+      {"$ref":"#/$defs/districtEvent"},{"$ref":"#/$defs/toponymEvent"},{"$ref":"#/$defs/addressEvent"}
+    ]},
+    "districtEvent":{"$ref":"#/$defs/eventDistrict"},
+    "toponymEvent":{"$ref":"#/$defs/eventToponym"},
+    "addressEvent":{"$ref":"#/$defs/eventAddress"},
+    "eventDistrict":{"$ref":"#/$defs/eventBaseDistrict"},
+    "eventToponym":{"$ref":"#/$defs/eventBaseToponym"},
+    "eventAddress":{"$ref":"#/$defs/eventBaseAddress"},
+    "eventBaseDistrict":{"oneOf":[{"$ref":"#/$defs/districtCreated"},{"$ref":"#/$defs/districtUpdated"},{"$ref":"#/$defs/districtDisabled"}]},
+    "eventBaseToponym":{"oneOf":[{"$ref":"#/$defs/toponymCreated"},{"$ref":"#/$defs/toponymUpdated"},{"$ref":"#/$defs/toponymDisabled"}]},
+    "eventBaseAddress":{"oneOf":[{"$ref":"#/$defs/addressCreated"},{"$ref":"#/$defs/addressUpdated"},{"$ref":"#/$defs/addressDisabled"}]},
+    "districtCreated":{"$ref":"#/$defs/createdDistrict"},"districtUpdated":{"$ref":"#/$defs/updatedDistrict"},"districtDisabled":{"$ref":"#/$defs/disabledDistrict"},
+    "toponymCreated":{"$ref":"#/$defs/createdToponym"},"toponymUpdated":{"$ref":"#/$defs/updatedToponym"},"toponymDisabled":{"$ref":"#/$defs/disabledToponym"},
+    "addressCreated":{"$ref":"#/$defs/createdAddress"},"addressUpdated":{"$ref":"#/$defs/updatedAddress"},"addressDisabled":{"$ref":"#/$defs/disabledAddress"},
+    "createdDistrict":{"$ref":"#/$defs/mkCreatedDistrict"},"updatedDistrict":{"$ref":"#/$defs/mkUpdatedDistrict"},"disabledDistrict":{"$ref":"#/$defs/mkDisabledDistrict"},
+    "createdToponym":{"$ref":"#/$defs/mkCreatedToponym"},"updatedToponym":{"$ref":"#/$defs/mkUpdatedToponym"},"disabledToponym":{"$ref":"#/$defs/mkDisabledToponym"},
+    "createdAddress":{"$ref":"#/$defs/mkCreatedAddress"},"updatedAddress":{"$ref":"#/$defs/mkUpdatedAddress"},"disabledAddress":{"$ref":"#/$defs/mkDisabledAddress"},
+    "mkCreatedDistrict":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"created"},"type":{"const":"district"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"allOf":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/district"},{"properties":{"status":{"const":"active"}}}]}],"items":false}},"additionalProperties":false},
+    "mkUpdatedDistrict":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"updated"},"type":{"const":"district"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/district"},{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/district"}],"items":false}},"additionalProperties":false},
+    "mkDisabledDistrict":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"disabled"},"type":{"const":"district"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"allOf":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/district"},{"properties":{"status":{"const":"disabled"}}}]}],"items":false}},"additionalProperties":false},
+    "mkCreatedToponym":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"created"},"type":{"const":"toponym"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"allOf":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/toponym"},{"properties":{"status":{"const":"active"}}}]}],"items":false}},"additionalProperties":false},
+    "mkUpdatedToponym":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"updated"},"type":{"const":"toponym"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/toponym"},{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/toponym"}],"items":false}},"additionalProperties":false},
+    "mkDisabledToponym":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"disabled"},"type":{"const":"toponym"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"allOf":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/toponym"},{"properties":{"status":{"const":"disabled"}}}]}],"items":false}},"additionalProperties":false},
+    "mkCreatedAddress":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"created"},"type":{"const":"address"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"allOf":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/address"},{"properties":{"status":{"const":"active"}}}]}],"items":false}},"additionalProperties":false},
+    "mkUpdatedAddress":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"updated"},"type":{"const":"address"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/address"},{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/address"}],"items":false}},"additionalProperties":false},
+    "mkDisabledAddress":{"type":"object","required":["event","type","data"],"properties":{"event":{"const":"disabled"},"type":{"const":"address"},"nodeKey":{"type":"string"},"data":{"type":"array","prefixItems":[{"allOf":[{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/address"},{"properties":{"status":{"const":"disabled"}}}]}],"items":false}},"additionalProperties":false},
+    "end":{"type":"object","description":"Last line of a Raw DIFF stream.","required":["meta"],"properties":{"meta":{"type":"object","required":["note","generatedAt","stats"],"properties":{"note":{"const":"stream-end"},"generatedAt":{"type":"string","format":"date-time"},"stats":{"type":"object","additionalProperties":{"type":"object","required":["count","created","updated","disabled"],"properties":{"count":{"type":"integer","minimum":0},"created":{"type":"integer","minimum":0},"updated":{"type":"integer","minimum":0},"disabled":{"type":"integer","minimum":0}},"additionalProperties":false}}},"additionalProperties":false}},"additionalProperties":false}
+  }
+}
