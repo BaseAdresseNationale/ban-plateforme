@@ -89,8 +89,11 @@ export async function streamCursorData({
 
       stats.count += 1;
 
-      if (typeof objLine === 'object' && 'event' in objLine && typeof objLine.event === 'string') {
-        stats[objLine.event] = (stats[objLine.event] || 0) + 1;
+      if (typeof objLine === 'object') {
+        const event = 'event' in objLine ? objLine.event : 'evenement' in objLine ? objLine.evenement : undefined;
+        if (typeof event === 'string') {
+          stats[event] = (stats[event] || 0) + 1;
+        }
       }
     }
   }

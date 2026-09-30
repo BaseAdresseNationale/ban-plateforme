@@ -18,9 +18,12 @@ import {
   getMetaLine,
   getRawEndLine,
   getRawStartLine,
+  getStandardFrEndLine,
+  getStandardFrStartLine,
   getQueryParams,
   getSnapshotObjLine,
   rawFormatters,
+  standardFrFormatters,
   streamCursorData,
 } from './helpers/index.js';
 import type {
@@ -86,9 +89,9 @@ const writeExportFile = async ({
   let activeCursor: Cursor | null = null;
 
   try {
-    output.write(params.format === 'raw'
-      ? getRawStartLine(exportType, params, dataTypes)
-      : getMetaLine('stream-start', { exportType, ...params, dataTypes }));
+    output.write(params.format === 'raw' ? getRawStartLine(exportType, params, dataTypes)
+      : params.format === 'standard-fr' ? getStandardFrStartLine(exportType, params, dataTypes)
+        : getMetaLine('stream-start', { exportType, ...params, dataTypes }));
 
     for (const dataType of dataTypes) {
       const { request, params: queryParamNames, dataName } = requestConfigs[dataType];
@@ -106,7 +109,7 @@ const writeExportFile = async ({
         banFormatter: formatter,
         converters: {
           raw: rawFormatters,
-          'standard-fr': banToStandardFr,
+          'standard-fr': standardFrFormatters,
           'standard-fr-int': banToStandardFrInt,
         },
       });
@@ -121,9 +124,9 @@ const writeExportFile = async ({
       logger.info(`[ban-core-exporter] Completed export for ${exportType}/${dataType}`, stats);
     }
 
-    output.write(params.format === 'raw'
-      ? getRawEndLine(statsByDataType)
-      : getMetaLine('stream-end', { exportType, ...params, dataTypes, stats: statsByDataType }));
+    output.write(params.format === 'raw' ? getRawEndLine(statsByDataType)
+      : params.format === 'standard-fr' ? getStandardFrEndLine(statsByDataType)
+        : getMetaLine('stream-end', { exportType, ...params, dataTypes, stats: statsByDataType }));
 
     return statsByDataType;
   } finally {

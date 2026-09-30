@@ -59,10 +59,31 @@ export const getRawEndLine = (stats: Record<string, Record<string, number>>) => 
   },
 }) + '\n';
 
+const standardFrType = (type: string) => ({ district: 'commune', toponym: 'odonyme', address: 'adresse' }[type] ?? type);
+
+/** Builds the current Standard FR stream opening line (BAN/DIFF v0.4). */
+export const getStandardFrStartLine = (exportType: string, params: Record<string, unknown>, dataTypes: string[]) => {
+  const period = exportType === 'diff' ? { de: params.from, a: params.to } : { a: params.at };
+  return JSON.stringify({ metadonnees: {
+    note: 'stream-start', versionFormat: '0.4', typeExport: exportType, format: 'standard-fr',
+    typesDonnees: dataTypes.map(standardFrType), departements: params.departements ?? [], ...period,
+    ...(presentArray(params.address_ids) ? { idsAdresses: params.address_ids } : {}),
+    ...(presentArray(params.common_toponym_ids) ? { idsOdonymes: params.common_toponym_ids } : {}),
+    ...(presentArray(params.district_ids) ? { idsCommunes: params.district_ids } : {}),
+  } }) + '\n';
+};
+
+export const getStandardFrEndLine = (stats: Record<string, Record<string, number>>) => JSON.stringify({
+  metadonnees: {
+    note: 'stream-end', generatedAt: new Date().toISOString(),
+    statistiques: Object.fromEntries(Object.entries(stats).map(([type, value]) => [standardFrType(type), value])),
+  },
+}) + '\n';
+
 export const getSnapshotObjLine = (
   dataRaw: DataLine,
   formatConfigs: FormatConfigs = {}
-): DataLine | null => {
+) => {
   if (!('data' in dataRaw)) {
     return null;
   }
@@ -77,17 +98,16 @@ export const getSnapshotObjLine = (
   const renamedType = (formatConfigs[type]?.typeName ?? type) as DataType;
   const formattedData = formater(ndjsonHeader, converter(ndjsonHeader, data));
 
-  return {
-    type: renamedType,
-    ...(nodeKey || nodekey ? { nodeKey: nodeKey ?? nodekey } : {}),
-    data: formattedData,
-  };
+  const envelope = { type: renamedType, ...(nodeKey || nodekey ? { nodeKey: nodeKey ?? nodekey } : {}) };
+  return formatConfigs[type]?.typeName
+    ? { ...envelope, donnees: formattedData }
+    : { ...envelope, data: formattedData };
 };
 
 export const getDiffObjLine = (
   dataRaw: DataLine,
   formatConfigs: FormatConfigs = {}
-): DataLine | null => {
+) => {
   if (!('datas' in dataRaw)) {
     return null;
   }
@@ -109,10 +129,9 @@ export const getDiffObjLine = (
     return null;
   }
 
-  return {
-    event,
-    type: renamedType,
-    ...(nodeKey || nodekey ? { nodeKey: nodeKey ?? nodekey } : {}),
-    data: event === 'updated' ? [dataAfter, dataBefore] : [dataAfter],
-  };
+  const states = event === 'updated' ? [dataAfter, dataBefore] : [dataAfter];
+  const envelope = { type: renamedType, ...(nodeKey || nodekey ? { nodeKey: nodeKey ?? nodekey } : {}) };
+  return formatConfigs[type]?.typeName
+    ? { ...envelope, evenement: event, donnees: states }
+    : { ...envelope, event, data: states };
 };
