@@ -32,7 +32,7 @@ export interface NdjsonHeader {
 }
 
 export interface DiffLine extends NdjsonHeader {
-  datas?: Record<string, unknown>[];
+  datas?: (Record<string, unknown> | null)[];
   data?: Record<string, unknown>[];
 }
 

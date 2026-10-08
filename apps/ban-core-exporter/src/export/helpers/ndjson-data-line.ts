@@ -112,17 +112,19 @@ export const getDiffObjLine = (
     return null;
   }
 
-  const { datas, ...ndjsonHeader } = dataRaw as { datas: RawEntity[] } & NdjsonHeader;
+  const { datas, ...ndjsonHeader } = dataRaw as { datas: (RawEntity | null)[] } & NdjsonHeader;
   const [afterRaw, beforeRaw] = datas;
   const { event, type, nodeKey, nodekey }: NdjsonHeader & { nodeKey?: string } = ndjsonHeader;
-  const converter = formatConfigs[type]?.converter ?? (type && rawToBan[type] ? rawToBan[type] : () => (afterRaw || beforeRaw));
+  const converter = formatConfigs[type]?.converter ?? (type && rawToBan[type] ? rawToBan[type] : (_header: NdjsonHeader, raw: RawEntity) => raw);
   const formater = type && formatConfigs[type]?.formater
     ? formatConfigs[type].formater
     : (_ndjsonHeader: NdjsonHeader, raw: RawEntity) => raw || null;
 
   const renamedType = (formatConfigs[type]?.typeName ?? type) as DataType;
-  const dataAfter = formater(ndjsonHeader, converter(ndjsonHeader, afterRaw));
-  const dataBefore = formater(ndjsonHeader, converter(ndjsonHeader, beforeRaw));
+  const dataAfter = afterRaw == null ? null : formater(ndjsonHeader, converter(ndjsonHeader, afterRaw));
+  const dataBefore = event === 'updated' && beforeRaw != null
+    ? formater(ndjsonHeader, converter(ndjsonHeader, beforeRaw))
+    : null;
   const excludedKeysOfCompare = formatConfigs[type]?.excludedKeysOfCompare ?? [];
 
   if (event === 'updated' && !isUnlike(dataBefore, dataAfter, excludedKeysOfCompare)) {

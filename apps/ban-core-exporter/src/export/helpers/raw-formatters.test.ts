@@ -43,3 +43,20 @@ describe('v0.4 INSEE serialization', () => {
     expect(standardFrEntity[standardFrType === 'odonyme' ? 'idOdonyme' : 'idAdresse']).toBe(entity.id);
   });
 });
+
+describe('optional address suffix', () => {
+  const header = { type: 'address' as const, meta: { insee: { cog: '75056' } } };
+
+  it.each([undefined, null, ''])('omits an absent suffix (%s) in Raw and Standard FR', suffix => {
+    const entity = { ...address, suffix };
+    expect(toRawEntity(header, entity)).not.toHaveProperty('suffix');
+    expect(toStandardFrEntity(header, entity)).not.toHaveProperty('indiceRepetition');
+    expect(entity.suffix).toBe(suffix);
+  });
+
+  it.each(['bis', 'ter', 'A'])('preserves the populated suffix %s in both formats', suffix => {
+    const entity = { ...address, suffix };
+    expect(toRawEntity(header, entity)).toHaveProperty('suffix', suffix);
+    expect(toStandardFrEntity(header, entity)).toHaveProperty('indiceRepetition', suffix);
+  });
+});

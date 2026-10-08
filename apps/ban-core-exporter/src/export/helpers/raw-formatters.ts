@@ -59,7 +59,7 @@ export const toRawEntity = (header: NdjsonHeader, rawValue: RawEntity): RawEntit
     mainToponymID: raw.mainToponymID ?? raw.mainCommonToponymID,
     secondaryToponymIDs: raw.secondaryToponymIDs ?? raw.secondaryCommonToponymIDs ?? [],
     ...optional('number', raw.number),
-    ...optional('suffix', raw.suffix),
+    ...optional('suffix', raw.suffix === '' ? null : raw.suffix),
     certified: raw.certified === true,
     positions: Array.isArray(raw.positions) ? raw.positions : [],
     postalCodes: postalCodes(raw.postalCodes ?? asRecord(rawMeta.laPoste).codePostal),
