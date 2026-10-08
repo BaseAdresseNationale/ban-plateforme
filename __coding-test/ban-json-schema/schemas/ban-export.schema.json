@@ -1,0 +1,346 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/ban-export.schema.json",
+  "title": "BAN export",
+  "description": "Schéma JSON de validation pour un export BAN (communes, odonymes, adresses).",
+  "type": "object",
+  "required": [
+    "date",
+    "status",
+    "response"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date de génération",
+      "description": "Date et heure de génération de l’export BAN."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "error"
+      ],
+      "title": "Statut",
+      "description": "Statut global de la réponse."
+    },
+    "response": {
+      "type": "object",
+      "title": "Contenu",
+      "description": "Listes de communes, d’odonymes et d’adresses.",
+      "required": [
+        "communes",
+        "odonymes",
+        "adresses"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "communes": {
+          "type": "array",
+          "title": "Communes",
+          "items": {
+            "$ref": "#/$defs/commune"
+          }
+        },
+        "odonymes": {
+          "type": "array",
+          "title": "Odonymes",
+          "items": {
+            "$ref": "#/$defs/odonyme"
+          }
+        },
+        "adresses": {
+          "type": "array",
+          "title": "Adresses",
+          "items": {
+            "$ref": "#/$defs/adresse"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "langueNom": {
+      "title": "Libellé multilingue",
+      "type": "object",
+      "required": [
+        "codeLangue",
+        "nom"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "codeLangue": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z]{2}|[A-Za-z]{3}|[A-Za-z]{2,3}-[A-Za-z0-9]+)$",
+          "description": "Code langue : soit ISO 639-1 (2 lettres, toléré), soit ISO 639-2 (3 lettres, attendu), soit tag de langue IETF simplifié (2–3 lettres + '-' + suffixe libre) pour langues régionales/non standard (ex: 'fr-gallo', 'oc-provenc')."
+        },
+        "nom": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "pointGeometry": {
+      "title": "Point GeoJSON",
+      "type": "object",
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "Point"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Longitude (WGS84)"
+            },
+            {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Latitude (WGS84)"
+            }
+          ],
+          "items": false,
+          "description": "Coordonnées WGS84 [lon, lat] (monde entier). Typiquement fournies avec ~7 décimales."
+        }
+      }
+    },
+    "position": {
+      "title": "Position",
+      "type": "object",
+      "required": [
+        "type",
+        "geometry"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/$defs/pointGeometry"
+        }
+      }
+    },
+    "positionComplementaireItem": {
+      "title": "Position complémentaire",
+      "type": "object",
+      "required": [
+        "type",
+        "geometry"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/$defs/pointGeometry"
+        }
+      }
+    },
+    "commune": {
+      "title": "Commune",
+      "type": "object",
+      "required": [
+        "nom",
+        "idCommune",
+        "codeInsee",
+        "nomsMultilinguesCommune",
+        "dateDerniereIntegrationBan",
+        "statutCommune"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "nom": {
+          "$ref": "#/$defs/langueNom"
+        },
+        "idCommune": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "codeInsee": {
+          "type": "string",
+          "pattern": "^[0-9A-Z]{5}$"
+        },
+        "nomsMultilinguesCommune": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/langueNom"
+          }
+        },
+        "dateDerniereIntegrationBan": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "statutCommune": {
+          "type": "string"
+        }
+      }
+    },
+    "odonyme": {
+      "title": "Odonyme",
+      "type": "object",
+      "required": [
+        "idOdonyme",
+        "idCommune",
+        "cleInterop",
+        "nom",
+        "nomsMultilinguesOdonyme"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "idOdonyme": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "idCommune": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "cleInterop": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "Clé en voie de dépréciation. Pour un odonyme, format attendu : codeInsee_toponyme (segments séparés par '_'). Underscore interdit dans les segments.",
+          "pattern": "^[0-9A-Z]{5}_[^_]+$"
+        },
+        "nom": {
+          "$ref": "#/$defs/langueNom"
+        },
+        "nomsMultilinguesOdonyme": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/langueNom"
+          }
+        }
+      }
+    },
+    "adresse": {
+      "title": "Adresse",
+      "type": "object",
+      "required": [
+        "position",
+        "idAdresseCommunale",
+        "cleInterop",
+        "idVoiePlaceLieudit",
+        "idCommune",
+        "certification",
+        "positionsComplementaires",
+        "dateDebut",
+        "dateDerniereMiseAJour",
+        "sources",
+        "parcellesCadastrales",
+        "codePostal"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "idAdresseCommunale": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "cleInterop": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "Clé en voie de dépréciation. Format attendu : codeInsee_toponyme_numero|x(_suffix). Underscore interdit dans les segments.",
+          "pattern": "^[0-9A-Z]{5}_[^_]+_(?:[0-9]+|x)(?:_[^_]+)?$"
+        },
+        "idVoiePlaceLieudit": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "idLieuditComplementaire": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "idCommune": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "codeInseeCommuneHistorique": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9A-Z]{5}$",
+          "description": "Code INSEE historique (si applicable)."
+        },
+        "numero": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99998,
+          "description": "Numéro dans la voie. Facultatif. Entre 0 et 99998 inclus."
+        },
+        "indiceRepetition": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Suffixe de répétition (ex: A, B). Null si absent. Chaîne vide interdite."
+        },
+        "certification": {
+          "type": "boolean"
+        },
+        "positionsComplementaires": {
+          "type": "array",
+          "minItems": 0,
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/positionComplementaireItem"
+          }
+        },
+        "dateDebut": {
+          "type": "string",
+          "format": "date",
+          "description": "Date de début de validité de l’adresse (ISO 8601 : YYYY-MM-DD)."
+        },
+        "dateDerniereMiseAJour": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date et heure de dernière mise à jour de l’adresse (ISO 8601)."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Liste des sources de l’adresse. Toujours présent, non vide."
+        },
+        "parcellesCadastrales": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Liste des parcelles cadastrales. Toujours présent (peut être vide si inconnue)."
+        },
+        "codePostal": {
+          "type": "string",
+          "pattern": "^[0-9]{5}$"
+        }
+      }
+    }
+  }
+}
