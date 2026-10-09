@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://ban.example/schemas/ban-standard-fr-definitions-v0.4.schema.json",
+  "title":"BAN Standard FR v0.4 définitions partagées",
+  "description":"Définitions d'objets documentées référencées par les schémas Full et DIFF Standard FR.",
+  "$defs":{
+    "uuid":{"type":"string","format":"uuid","description":"Identifiant BAN UUID."},
+    "dateTime":{"type":["string","null"],"format":"date-time","description":"Instant RFC 3339 UTC ; null uniquement si inconnu."},
+    "point":{"type":"object","description":"Point GeoJSON WGS84 : longitude puis latitude.","required":["type","coordonnees"],"properties":{"type":{"const":"Point"},"coordonnees":{"type":"array","prefixItems":[{"type":"number","minimum":-180,"maximum":180},{"type":"number","minimum":-90,"maximum":90}],"items":false}},"additionalProperties":false},
+    "libelle":{"type":"object","description":"Libellé dans une langue donnée.","required":["valeur","codeIso"],"properties":{"valeur":{"type":"string","minLength":1},"codeIso":{"type":"string","pattern":"^[a-z]{3}$"}},"additionalProperties":false},
+    "meta":{"type":"object","description":"Métadonnées métier de l'objet.","required":["insee","source"],"properties":{"insee":{"type":"object","required":["code"],"properties":{"code":{"type":"string","minLength":1}},"additionalProperties":false},"source":{"type":"string","minLength":1},"interop":{"type":"object","properties":{"cleFournieBAL":{"type":"string"},"cleCalculeeBAN":{"type":"string"},"idCsvHistorique":{"type":"string"}},"additionalProperties":false}},"additionalProperties":false},
+    "base":{"type":"object","required":["libelles","statut","dateDerniereMiseAJour","dateIntegrationBAN","metadonnees"],"properties":{"libelles":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/libelle"}},"statut":{"enum":["active","disabled"]},"dateDerniereMiseAJour":{"$ref":"#/$defs/dateTime"},"dateIntegrationBAN":{"$ref":"#/$defs/dateTime"},"metadonnees":{"$ref":"#/$defs/meta"}}},
+    "commune":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["idCommune"],"properties":{"idCommune":{"$ref":"#/$defs/uuid"},"idCommuneHistorique":{"$ref":"#/$defs/uuid"},"codeINSEECommuneHistorique":{"type":"string"}}}],"unevaluatedProperties":false},
+    "odonyme":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["idOdonyme","idCommune","geometrie"],"properties":{"idOdonyme":{"$ref":"#/$defs/uuid"},"idCommune":{"$ref":"#/$defs/uuid"},"geometrie":{"$ref":"#/$defs/point"},"idCommuneHistorique":{"$ref":"#/$defs/uuid"},"codeINSEECommuneHistorique":{"type":"string"}}}],"unevaluatedProperties":false},
+    "adresse":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["idAdresse","idCommune","idOdonyme","idsOdonymesComplementaires","certification","positions","codesPostaux"],"properties":{"idAdresse":{"$ref":"#/$defs/uuid"},"idCommune":{"$ref":"#/$defs/uuid"},"idOdonyme":{"$ref":"#/$defs/uuid"},"idsOdonymesComplementaires":{"type":"array","items":{"$ref":"#/$defs/uuid"}},"numero":{"type":"integer","minimum":1},"indiceRepetition":{"type":"string","minLength":1},"certification":{"type":"boolean"},"positions":{"type":"array","minItems":1,"items":{"type":"object","required":["type","geometrie"],"properties":{"type":{"type":"string","minLength":1},"geometrie":{"$ref":"#/$defs/point"}},"additionalProperties":false}},"codesPostaux":{"type":"array","items":{"type":"string"}},"idCommuneHistorique":{"$ref":"#/$defs/uuid"},"codeINSEECommuneHistorique":{"type":"string"}}}],"unevaluatedProperties":false}
+  },
+  "type":"object"
+}

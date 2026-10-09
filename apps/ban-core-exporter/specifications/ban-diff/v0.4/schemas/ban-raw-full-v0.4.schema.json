@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://ban.example/schemas/ban-raw-full-v0.4.schema.json",
+  "title":"BAN Raw Full v0.4 line",
+  "description":"Validates every individual NDJSON line of a complete BAN Raw export: stream start, typed entity, or stream end.",
+  "oneOf":[
+    {"$ref":"#/$defs/start"},{"$ref":"#/$defs/entity"},{"$ref":"#/$defs/end"}
+  ],
+  "$defs":{
+    "start":{"type":"object","description":"First line of a Raw Full stream.","required":["meta"],"properties":{"meta":{"type":"object","required":["note","formatVersion","exportType","format","dataTypes","departments","at"],"properties":{"note":{"const":"stream-start","description":"Marks the first line."},"formatVersion":{"const":"0.4","description":"Specification version."},"exportType":{"const":"ban","description":"Complete-export discriminator."},"format":{"const":"raw","description":"Raw serialization discriminator."},"dataTypes":{"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["district","toponym","address"]},"description":"Entity types included in the stream."},"departments":{"type":"array","items":{"type":"string"},"description":"Requested department codes."},"at":{"type":"string","format":"date-time","description":"Snapshot instant."},"addressIds":{"type":"array","items":{"type":"string","format":"uuid"}},"toponymIds":{"type":"array","items":{"type":"string","format":"uuid"}},"districtIds":{"type":"array","items":{"type":"string","format":"uuid"}}},"additionalProperties":false}},"additionalProperties":false},
+    "entity":{"oneOf":[
+      {"$ref":"#/$defs/districtLine"},{"$ref":"#/$defs/toponymLine"},{"$ref":"#/$defs/addressLine"}
+    ]},
+    "districtLine":{"type":"object","description":"District Full line.","required":["type","data"],"properties":{"type":{"const":"district"},"nodeKey":{"type":"string","description":"Optional technical streaming key."},"data":{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/district"}},"additionalProperties":false},
+    "toponymLine":{"type":"object","description":"Toponym Full line.","required":["type","data"],"properties":{"type":{"const":"toponym"},"nodeKey":{"type":"string","description":"Optional technical streaming key."},"data":{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/toponym"}},"additionalProperties":false},
+    "addressLine":{"type":"object","description":"Address Full line.","required":["type","data"],"properties":{"type":{"const":"address"},"nodeKey":{"type":"string","description":"Optional technical streaming key."},"data":{"$ref":"ban-raw-definitions-v0.4.schema.json#/$defs/address"}},"additionalProperties":false},
+    "end":{"type":"object","description":"Last line of a Raw Full stream.","required":["meta"],"properties":{"meta":{"type":"object","required":["note","generatedAt","stats"],"properties":{"note":{"const":"stream-end"},"generatedAt":{"type":"string","format":"date-time","description":"File generation instant."},"stats":{"type":"object","description":"Emitted entity counts.","additionalProperties":{"type":"object","required":["count"],"properties":{"count":{"type":"integer","minimum":0}},"additionalProperties":false}}},"additionalProperties":false}},"additionalProperties":false}
+  }
+}

@@ -10,14 +10,22 @@ import { logger } from '@ban/tools';
 
 import { banRequestConfigs } from './ban/ban-config.js';
 import { diffRequestConfigs } from './diff/diff-config.js';
+import { getExportOutputDir } from './output-directory.js';
 import {
   banToStandardFr,
   banToStandardFrInt,
+  DiffOrderBuffer,
   closeCursor,
   getDiffObjLine,
   getMetaLine,
+  getRawEndLine,
+  getRawStartLine,
+  getStandardFrEndLine,
+  getStandardFrStartLine,
   getQueryParams,
   getSnapshotObjLine,
+  rawFormatters,
+  standardFrFormatters,
   streamCursorData,
 } from './helpers/index.js';
 import type {
@@ -30,10 +38,6 @@ import type {
 } from './types.js';
 
 const FETCH_SIZE = 500;
-
-const getExportOutputDir = () => path.resolve(
-  process.env.EXPORT_OUTPUT_DIR || path.join(process.cwd(), 'tmp/exports')
-);
 
 const exportConfigByType = {
   ban: {
@@ -79,15 +83,14 @@ const writeExportFile = async ({
   const { requestConfigs, formatter } = exportConfigByType[exportType];
   const dataTypes = getRequestedDataTypes(params.dataTypes, requestConfigs);
   const statsByDataType: Record<string, Record<string, number>> = {};
+  const diffBuffer = exportType === 'diff' ? new DiffOrderBuffer() : null;
   const client = await pgPool.connect();
   let activeCursor: Cursor | null = null;
 
   try {
-    output.write(getMetaLine('stream-start', {
-      exportType,
-      ...params,
-      dataTypes,
-    }));
+    output.write(params.format === 'raw' ? getRawStartLine(exportType, params, dataTypes)
+      : params.format === 'standard-fr' ? getStandardFrStartLine(exportType, params, dataTypes)
+        : getMetaLine('stream-start', { exportType, ...params, dataTypes }));
 
     for (const dataType of dataTypes) {
       const { request, params: queryParamNames, dataName } = requestConfigs[dataType];
@@ -101,15 +104,18 @@ const writeExportFile = async ({
         fetchSize: FETCH_SIZE,
         dataName,
         format: params.format,
-        output,
+        output: diffBuffer ?? output,
         banFormatter: formatter,
         converters: {
-          'standard-fr': banToStandardFr,
+          raw: rawFormatters,
+          'standard-fr': standardFrFormatters,
           'standard-fr-int': banToStandardFrInt,
         },
       });
 
-      statsByDataType[dataType] = stats;
+      statsByDataType[dataType] = exportType === 'diff'
+        ? { count: stats.count, created: stats.created ?? 0, updated: stats.updated ?? 0, disabled: stats.disabled ?? 0 }
+        : stats;
 
       await closeCursor(activeCursor);
       activeCursor = null;
@@ -117,12 +123,11 @@ const writeExportFile = async ({
       logger.info(`[ban-core-exporter] Completed export for ${exportType}/${dataType}`, stats);
     }
 
-    output.write(getMetaLine('stream-end', {
-      exportType,
-      ...params,
-      dataTypes,
-      stats: statsByDataType,
-    }));
+    if (diffBuffer) await diffBuffer.flush(output);
+
+    output.write(params.format === 'raw' ? getRawEndLine(statsByDataType)
+      : params.format === 'standard-fr' ? getStandardFrEndLine(statsByDataType)
+        : getMetaLine('stream-end', { exportType, ...params, dataTypes, stats: statsByDataType }));
 
     return statsByDataType;
   } finally {
