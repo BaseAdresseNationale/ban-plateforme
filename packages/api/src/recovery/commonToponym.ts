@@ -2,25 +2,13 @@ import { logger } from '@ban/tools';
 import { getPrismaClient } from '@ban/prisma-client'
 import type { BanObjects } from '../api/ban-generic.shema.js';
 
-import { banPgCommonToponymSchema } from './commonToponym.model.js';
+import {
+  banPgCommonToponymSchema,
+  type BanCommonToponym,
+  type BanPgCommonToponym,
+} from './commonToponym.model.js';
 
 type PrismaClient = ReturnType<typeof getPrismaClient>;
-
-// TODO : Clean this TEMPORARY FIX ? :
-type BanPgCommonToponym = {
-  id: string;
-  districtID: string;
-  name?: string;
-  legalityDate?: Date;
-  updateDate: Date;
-}
-type BanCommonToponym = {
-  id: string;
-  districtID: string;
-  name?: string;
-  legalityDate?: Date;
-  updateDate: Date;
-}
 
 const banCommonToponymToBanPgCommonToponym = (commonToponymRaw: Partial<BanCommonToponym>): BanPgCommonToponym => {
     const parsedCommonToponym = banPgCommonToponymSchema.parse(commonToponymRaw);
@@ -41,11 +29,11 @@ export const writeCommonToponymsInPgDb = async (prismaClient: PrismaClient, banO
       where: { id: commonToponym.id },
       update: commonToponym,
       create: commonToponym,
-    }).then((result: BanPgCommonToponym) => result);
+    });
 
     logger.verbose('✅ Common toponym created:', commonToponym.id, '…');
     logger.dir(newCommonToponym, { depth: null });
-    return newCommonToponym;
+    return newCommonToponym as unknown as BanPgCommonToponym;
   });
 
   logger.info('📍 >>> Common toponyms written in PG DB');

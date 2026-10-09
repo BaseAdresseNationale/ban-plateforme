@@ -33,23 +33,10 @@ export const banPgDistrictSchema = banDistrictSchema.extend({
     updateDate: pgDateString.default(() => new Date()),
 });
 
-export {
-  DistrictCertificate,
-  DistrictConfig,
-  DistrictInseeMeta,
-  DistrictMeta,
-  GenericDistrict,
-  BanDistrict,
-  BanPgDistrict,
-};
-
-// extract the inferred type and declare as global
-declare global {
-  type DistrictCertificate = z.infer<typeof districtConfigSchema>['certificate'];
-  type DistrictConfig = z.infer<typeof districtConfigSchema>;
-  type DistrictInseeMeta = z.infer<typeof districtInseeMetaSchema>;
-  type DistrictMeta = z.infer<typeof districtMetaSchema>;
-  type GenericDistrict = z.infer<typeof banDistrictSchema>;
-  type BanDistrict = GenericDistrict;
-  type BanPgDistrict = z.infer<typeof banPgDistrictSchema>;
-}
+export type DistrictCertificate = z.infer<typeof districtConfigSchema>['certificate'];
+export type DistrictConfig = z.infer<typeof districtConfigSchema>;
+export type DistrictInseeMeta = z.infer<typeof districtInseeMetaSchema>;
+export type DistrictMeta = z.infer<typeof districtMetaSchema>;
+export type GenericDistrict = z.infer<typeof banDistrictSchema>;
+export type BanDistrict = GenericDistrict;
+export type BanPgDistrict = z.infer<typeof banPgDistrictSchema>;
