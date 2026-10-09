@@ -14,6 +14,10 @@ Il sert à disposer d'un même jeu de données dans l'équipe, tester les états
 scénarios sans casser leur chronologie. Ce kit est destiné au développement,
 **pas à une reprise de production**.
 
+Le JSON et le SQL du kit transportent les lignes des tables, historiques inclus.
+Pour tester les exports applicatifs après installation du jeu, suivre le
+[guide de l'exporteur](../../apps/ban-core-exporter/README.md).
+
 Le contenu métier et les scénarios sont décrits séparément dans
 [inventaire-et-evenements.md](inventaire-et-evenements.md).
 
@@ -58,6 +62,8 @@ séparées, prévoir leur initialisation et vérifier son comportement.
   `certificate` utilisées pour vérifier les dépendances exclues.
 - Cible locale déjà restaurée avec les mêmes colonnes/types, contraintes et
   les trois triggers appelant `public.historisation()`.
+  Les six tables ne doivent avoir aucun autre trigger utilisateur : une structure
+  différente est refusée et demande une adaptation relue du kit.
 - Compte d'import propriétaire des six tables, ou droits administratifs
   appropriés, pour désactiver/rétablir les triggers d'historisation.
 
@@ -77,7 +83,64 @@ Toutes les commandes partent de la racine du projet. Les noms du conteneur,
 du compte PostgreSQL, des bases et les chemins sont configurables. Les noms
 de connexion acceptent lettres, chiffres, `_`, `.` et `-`.
 
-## 1. Exporter le département 96 — lecture seule
+## J'ai reçu un jeu : comment l'installer ?
+
+1. Récupérer les scripts du kit et un `test-96.sql` relu. Conserver également
+   `data.json` et le catalogue du jeu pour comprendre les scénarios.
+2. Préparer une base locale BAN de structure compatible. Elle peut contenir
+   d'autres départements, mais **aucune donnée 96 ni UUID du jeu à importer**.
+   Le kit ne restaure pas la structure et ne remplace pas un jeu déjà installé.
+3. Vérifier le nom de la cible, les droits et les triggers avant d'importer.
+
+Depuis la racine du projet :
+
+```sh
+export POSTGRES_CONTAINER="ban_postgres"
+export PG_USERNAME="ban_user"
+export TARGET_DATABASE="ban_dev_tests"
+export CONFIRM_TARGET="$TARGET_DATABASE"
+export SQL_INPUT="/chemin/vers/le-jeu-relu/test-96.sql"
+export SHIFT_SECONDS="0"
+export ANCHOR_TIMESTAMP=""
+
+# Lecture seule : vérifier que la connexion arrive sur la cible prévue.
+docker exec "$POSTGRES_CONTAINER" psql --username="$PG_USERNAME" \
+  --dbname="$TARGET_DATABASE" --no-psqlrc --set=ON_ERROR_STOP=1 \
+  --command='BEGIN READ ONLY; SELECT current_database(), current_user; COMMIT;'
+
+# Cette commande insère le jeu et valide la transaction en cas de succès.
+bash scripts/test-data-96/import-test-96.sh --apply "$SQL_INPUT"
+```
+
+**Ne pas utiliser `ban` comme cible**, même sur un poste de développement :
+ce nom est protégé. L'import effectue un vrai COMMIT ; il n'existe pas de mode
+simulation dans ce wrapper. En cas de doute, ne pas lancer la seconde commande.
+
+Vérifier le code de sortie zéro et le `COMMIT`, puis consulter les communes et
+historiques via l'application aux dates du catalogue. Les compteurs affichés
+ne suffisent pas seuls à prouver la réussite. Pour actualiser les dates, voir
+[Dates d'origine ou dates actualisées](#dates-dorigine-ou-dates-actualisées).
+
+## Configuration
+
+| Variable | Usage et valeur |
+| --- | --- |
+| `POSTGRES_CONTAINER` | Nom du conteneur Docker ; défaut `ban_postgres`. |
+| `PG_USERNAME` | Rôle PostgreSQL ; défaut `ban_user`. |
+| `SOURCE_DATABASE` | Base à lire pour l'export ; défaut `ban`, pas nécessairement une base intermédiaire. |
+| `TARGET_DATABASE` | Base existante d'import ; obligatoire, sans défaut. |
+| `CONFIRM_TARGET` | Confirmation identique à `TARGET_DATABASE` ; obligatoire. |
+| `EXPORT_DIRECTORY` | Variable de chemin des exemples, passée comme argument à l'export ; nouveau dossier dont le parent existe. |
+| `SQL_INPUT` | Variable de chemin des exemples, passée comme argument à l'import ; fichier SQL relu existant. |
+| `SQL_OUTPUT` | Variable de chemin des exemples, passée comme argument au générateur ; nouveau fichier dont le parent existe. |
+| `SHIFT_SECONDS` | Décalage uniforme signé en secondes, maximum six décimales ; défaut `0`. |
+| `ANCHOR_TIMESTAMP` | Ancre temporelle finie, avec fuseau explicite recommandé ; défaut vide. |
+
+Les trois variables de chemin ne sont pas lues automatiquement par les scripts :
+les arguments `"$EXPORT_DIRECTORY"`, `"$SQL_INPUT"` et `"$SQL_OUTPUT"` sont
+nécessaires. Les valeurs des exemples sont à adapter à votre environnement.
+
+## Exporter le département 96 — lecture seule
 
 ```sh
 export POSTGRES_CONTAINER="ban_postgres"
@@ -106,7 +169,7 @@ Il n'y a ni `pg_dump` complet ni montage `/backups` nécessaire. Le SQL utilise
 du JSON lisible avec `jsonb_populate_recordset` pour conserver les types
 PostgreSQL sans construire manuellement des littéraux complexes de tableaux.
 
-## 2. Préparer et partager un export
+## Préparer et partager un export
 
 Une commune fictive ne garantit pas des métadonnées entièrement fictives.
 Vérifier en particulier `meta`, `config`, les labels et positions : noms,
@@ -140,7 +203,7 @@ Le SQL est aussi modifiable directement, mais sa régénération remplacera ces
 modifications dans un autre fichier. Ne jamais exécuter un SQL non relu : le
 wrapper n'est pas un bac à sable pour du SQL arbitraire ou malveillant.
 
-## 3. Importer dans une base de développement
+## Ce que fait l’import
 
 Choisir une base locale isolée **existante**. Cet exemple ne la crée pas et ne
 la restaure pas. La base `ban` est interdite par le wrapper et par le SQL,
@@ -225,25 +288,35 @@ explicitement un fuseau UTC pour l'ancre et adapter la date au scénario.
 Si le jeu est décalé, indiquer l'option utilisée avec les résultats des tests ;
 les dates du catalogue décrivent le jeu avant décalage.
 
-## Vérification et maintenance
+## Erreurs usuelles et limites
 
-```sh
-node --test scripts/test-data-96/fixture.test.mjs
-bash -n scripts/test-data-96/import-test-96.sh
-```
+| Situation | Que faire ? |
+| --- | --- |
+| Dossier/fichier de sortie déjà présent | Choisir un nouveau chemin ; ne pas écraser un export existant. |
+| Aucune commune fictive trouvée | Vérifier la source et ses codes INSEE ; un département absent n'est pas exporté comme un jeu vide. |
+| Actions, certificats ou référence hors du jeu | Revoir le périmètre avec l'équipe ; ne pas supprimer les références pour contourner le contrôle. |
+| Structure incompatible ou triggers inattendus | Comparer les versions du schéma ; ne pas modifier le JSON ou désactiver d'autres triggers pour forcer l'import. |
+| Département 96 ou UUID déjà présent | Utiliser une autre cible compatible ; pas de remplacement ni nettoyage automatique. |
+| Droits insuffisants | Vérifier le propriétaire des tables et les permissions avec le responsable de la base. |
+| Options de dates incompatibles | Choisir un décalage ou une ancre, pas les deux avec un décalage non nul. |
+| Verrou, délai SQL ou contrainte | Vérifier l'annulation et analyser l'erreur ; ne pas répéter aveuglément ni désactiver les contraintes. |
 
-Les tests couvrent le périmètre, les références, les orphelins, les doublons,
-les colonnes, les dépendances exclues, l'échappement du JSON et le refus
-d'écrasement. Ils ne remplacent pas une validation réelle sur PostgreSQL.
+L'export est chargé en mémoire avec une limite de sortie de 16 Mio et un délai
+SQL de 120 secondes : ce kit vise un petit jeu départemental, pas une copie
+nationale. Une évolution de ces limites nécessite de revoir les scripts et tests.
 
-Pour chaque évolution des scripts ou de la structure BAN, vérifier sur une
-cible isolée l'import, les périodes, l'état des triggers et les endpoints
-snapshot/diff à plusieurs dates. Un deuxième import doit échouer sans modifier
-le jeu déjà installé. Ce kit ne fournit pas de procédure de remplacement
-ou de suppression d'un jeu existant.
+La compatibilité du schéma et la cohérence des références ne démontrent pas
+la validité de tous les scénarios métier. Vérifier les libellés, périodes et
+résultats attendus dans l'application. Les comptes, droits et autres tables
+exclus ne sont pas recréés ; leur préparation reste distincte.
 
-Documenter les communes et événements dans
-[inventaire-et-evenements.md](inventaire-et-evenements.md), avec leurs UUID,
-dates, liens et résultats attendus. Ne pas déduire une fusion, division ou
-un renommage du seul nombre de lignes historiques : qualifier l'événement
-à partir des données et des règles métier.
+## Maintenance des scripts
+
+Les tests unitaires et les essais PostgreSQL transactionnels sont décrits dans
+[README-testing.md](README-testing.md). Ce guide précise la préparation des petites
+bases, les contrôles de décalage et rollback, ainsi que leur limite : aucun
+COMMIT persistant n'est testé automatiquement.
+
+Tenir le [catalogue métier](inventaire-et-evenements.md) à jour pour chaque jeu
+partagé. Ne pas déduire un renommage, une fusion ou une division du seul nombre
+de versions historiques.
