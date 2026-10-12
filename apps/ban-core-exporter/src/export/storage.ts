@@ -4,8 +4,9 @@ import path from 'node:path';
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
-import { logger } from '@ban/tools';
+import { BAN_EXPORT_FORMAT, logger } from '@ban/tools';
 
+import { getExportReferenceMonth } from './file-naming.js';
 import { getExportOutputDir } from './output-directory.js';
 import type {
   DataExportParams,
@@ -79,17 +80,17 @@ const createS3Client = (config: S3StorageConfig) => new S3Client({
 
 const getExportObjectKey = ({
   prefix,
-  token,
   exportType,
+  params,
   filePath,
 }: {
   prefix: string;
-  token: string;
   exportType: DataExportType;
+  params: DataExportParams;
   filePath: string;
 }) => {
   const fileName = path.basename(filePath);
-  const basePath = [prefix, exportType, token]
+  const basePath = [prefix, getExportReferenceMonth(exportType, params)]
     .map(trimSlashes)
     .filter(Boolean)
     .join('/');
@@ -128,8 +129,8 @@ export const storeExportFile = async ({
   const { size } = await stat(filePath);
   const key = getExportObjectKey({
     prefix: config.prefix,
-    token,
     exportType,
+    params,
     filePath,
   });
   const client = createS3Client(config);
@@ -143,7 +144,7 @@ export const storeExportFile = async ({
     Metadata: {
       token,
       'export-type': exportType,
-      format: params.format,
+      format: BAN_EXPORT_FORMAT,
     },
   }));
 
