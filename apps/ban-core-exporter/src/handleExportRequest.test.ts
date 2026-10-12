@@ -59,7 +59,6 @@ const message = {
   token: 'export-token',
   exportType: 'diff',
   params: {
-    format: 'raw',
     dataTypes: ['address'],
     departements: ['33'],
     address_ids: null,
@@ -93,7 +92,7 @@ describe('handleExportRequest', () => {
     mocks.storeExportFile.mockResolvedValue({
       storage: 's3',
       bucket: 'ban-exports',
-      key: 'exports/2026-01/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.raw.ndjson',
+      key: 'exports/2026-01/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson',
       endpoint: 'https://s3.gra.io.cloud.ovh.net',
       size: 123,
     });
@@ -127,7 +126,7 @@ describe('handleExportRequest', () => {
         output: {
           storage: 's3',
           bucket: 'ban-exports',
-          key: 'exports/2026-01/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.raw.ndjson',
+          key: 'exports/2026-01/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson',
           endpoint: 'https://s3.gra.io.cloud.ovh.net',
           size: 123,
         },
@@ -143,7 +142,7 @@ describe('handleExportRequest', () => {
         output: {
           storage: 's3',
           bucket: 'ban-exports',
-          key: 'exports/2026-01/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.raw.ndjson',
+          key: 'exports/2026-01/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson',
           endpoint: 'https://s3.gra.io.cloud.ovh.net',
           size: 123,
         },
