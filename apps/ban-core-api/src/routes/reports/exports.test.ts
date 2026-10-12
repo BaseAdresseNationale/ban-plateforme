@@ -47,14 +47,14 @@ describe('export report route', () => {
     mocks.getDataExportStatus.mockResolvedValue({
       token: 'export-token',
       status: 'success',
-      exportType: 'ban',
+      exportType: 'full',
       count: 42,
       message: 'Export file generated',
       report: {
         output: {
           storage: 's3',
           bucket: 'ban-exports',
-          key: 'exports/ban/export-token/export-token.ban.raw.ndjson',
+          key: 'exports/2026-01/full--dep-33--2026-01-31--export-token.ban-standard.ndjson',
         },
       },
       createdAt: new Date('2026-01-31T12:00:00.000Z'),
@@ -76,7 +76,7 @@ describe('export report route', () => {
       response: expect.objectContaining({
         token: 'export-token',
         status: 'success',
-        exportType: 'ban',
+        exportType: 'full',
         count: 42,
         message: 'Export file generated',
       }),

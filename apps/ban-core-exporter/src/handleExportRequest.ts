@@ -3,7 +3,7 @@ import type { BrokerAsPromised } from 'rascal';
 import { logger } from '@ban/tools';
 
 import { generateLocalExportFile } from './export/generate.js';
-import { storeExportFile } from './export/storage.js';
+import { removeLocalExportFile, storeExportFile } from './export/storage.js';
 import {
   markExportError,
   markExportProcessing,
@@ -44,6 +44,17 @@ export const handleExportRequest = async (
       status: 'success',
       report,
     });
+    if (process.env.NODE_ENV === 'production' && output.storage === 's3') {
+      try {
+        await removeLocalExportFile(filePath);
+      } catch (cleanupError) {
+        logger.warn('[ban-core-exporter] Impossible de supprimer le fichier temporaire', {
+          token: content.token,
+          filePath,
+          error: cleanupError,
+        });
+      }
+    }
     logger.info('[ban-core-exporter] Fichier export genere', {
       token: content.token,
       exportType: content.exportType,

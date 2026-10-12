@@ -15,7 +15,8 @@ vi.mock('@ban/prisma-client', () => ({
   },
 }));
 
-vi.mock('@ban/tools', () => ({
+vi.mock('@ban/tools', async importOriginal => ({
+  ...await importOriginal<typeof import('@ban/tools')>(),
   logger: {
     info: mocks.loggerInfo,
   },
