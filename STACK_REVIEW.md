@@ -95,3 +95,9 @@ un opt-in et une petite cible dédiée, sans qualification nouvelle de la candid
 Deuxième lot : 0008 présélectionne les identifiants d'adresses avant le choix
 temporel des versions. Les filtres finaux et la priorité courant/historique
 sont conservés ; lire les scénarios de chevauchement et bornes à la microseconde.
+
+Troisième lot : 0009 présélectionne les toponymes et résout les codes communes
+une fois par requête départementale. Les accès UUID ciblés restent distincts.
+Lire le contrôle d'extraction des trois définitions, les chevauchements et les
+scénarios de parents absents/désactivés. Les mesures historiques ne sont pas
+relancées par cette réorganisation.

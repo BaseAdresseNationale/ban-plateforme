@@ -58,8 +58,8 @@ Cas de consolidation confirmé sur le jeu synthétique : une période commençan
 avant la création d'une adresse et finissant après sa désactivation renvoie
 `created` avec `isActive=false`. Cette classification est conservée : la création
 décrit l'apparition de l'objet pendant la période, son statut décrit l'état final.
-Le contrat v0.4 autorise donc `created` avec `status: "disabled"` (ou `statut`
-en Standard FR). La migration de performance ne change pas cette règle métier.
+Le contrat v0.4 autorise donc `created` avec `status: "disabled"`.
+La migration de performance ne change pas cette règle métier.
 
 ## Benchmark de la candidate, en lecture seule
 
@@ -194,3 +194,123 @@ la comparer à la sauvegarde réelle avant une utilisation autorisée. Le retour
 arrière conserve la signature et le wrapper, mais n'annule pas automatiquement
 l'entrée Prisma : traiter le registre selon la procédure de déploiement retenue.
 Ni installation ni retour arrière ne sont automatiques.
+
+## Optimisation de la génération des snapshots (0009)
+
+`0009_optimize_snapshot_generation` est une optimisation durable des fonctions
+appelées par les exports FULL, pas un script à exécuter pour chaque fichier.
+Elle complète 0008 et remplace seulement :
+
+- `ban.snapshot_common_toponym` : présélection des identifiants des toponymes
+  du département avant la sélection/tri des versions valides ;
+- `ban.snapshot_common_toponym_ndjson` et `ban.snapshot_address_ndjson` :
+  résolution des codes communes une fois par requête non bornée par UUID,
+  au lieu de rappeler `snapshot_district_cog` pour chaque ligne.
+
+La résolution des communes est matérialisée dans un CTE : c'est un résultat
+temporaire interne à **une requête**, pas une table, une vue matérialisée ni
+un cache applicatif durable. Elle utilise la date demandée et les mêmes règles
+de priorité courant/historique que `snapshot_district`. Elle ne filtre pas les
+communes par département : cela pourrait changer le COG associé à un enfant
+lorsque des versions de commune se chevauchent entre les deux tables.
+Un éventuel filtre explicite de communes (`district_ids`) borne la résolution.
+Avec des UUID d'objets explicites (`ids` non `NULL`), les wrappers conservent
+la recherche ciblée par ligne, sans charger la résolution globale des communes.
+
+Le toponyme sélectionné conserve la priorité courant avant historique et le tri
+sur la borne supérieure de validité. La présélection concerne des **identifiants**,
+pas uniquement les versions qui correspondent au département. Les filtres finaux
+restent appliqués après le choix de la version, comme dans 0008 pour les adresses.
+Le fallback des métadonnées et les statuts sont inchangés.
+
+La migration est atomique (`BEGIN` / `COMMIT`). Elle n'ajoute ni index ni fonction,
+ne réécrit aucune donnée métier et conserve signatures, propriétaires et droits
+avec `CREATE OR REPLACE FUNCTION`. Elle ne touche pas aux fonctions DIFF,
+à `snapshot_address` (0008), à l'API ou au sérialiseur.
+Les requêtes applicatives existantes bénéficient du changement après installation.
+
+### Vérifier l'équivalence sur les petites bases existantes
+
+Utiliser `ban_export_validation_tmp` avec le jeu synthétique et
+`ban_fixture_validation_tmp` sans données, préparées plus haut. Examiner d'abord
+leur état ; ne pas les supprimer ou les réinitialiser automatiquement.
+
+```sh
+RUN_BAN_POSTGRES_TESTS=1 node --test packages/prisma-client/tests/snapshot-generation.postgres.test.mjs
+```
+
+Les 164 tests couvrent six dates, douze sélections de toponymes, quatorze
+sélections d'adresses, les bornes à la microseconde, les UUID et tableaux vides,
+les versions courant/historique, les COG historiques et conflits de départements,
+les parents désactivés ou `NULL`, les métadonnées de fallback, les libellés
+d'adresse facultatifs, la base vide, les droits et le retour arrière.
+Les résultats métier sont comparés exactement ; l'ordre des lignes est normalisé
+pour la comparaison SQL, puisque ces fonctions n'exposent pas de garantie `ORDER BY`.
+
+Les tests installent la référence 0008 et les définitions proposées uniquement
+dans leurs transactions, puis les annulent. Ils extraient les trois définitions
+sans le `BEGIN` / `COMMIT` du fichier de migration afin que celui-ci ne puisse
+pas valider les jeux temporaires créés par un test. Un contrôle statique vérifie
+qu'aucune autre instruction n'est omise lors de cette extraction.
+Sans `RUN_BAN_POSTGRES_TESTS=1`, seul ce contrôle statique s'exécute.
+
+Pour lancer les trois suites PostgreSQL dans une même commande, utiliser
+`--test-concurrency=1` : elles partagent la petite base et modifient des fonctions
+dans leurs transactions. Ne pas lancer plusieurs suites opt-in indépendantes
+simultanément sur la même base.
+
+### Diagnostic SQL du 31, sans installation
+
+Depuis la racine du dépôt :
+
+```sh
+RUN_BAN_POSTGRES_TESTS=1 node packages/prisma-client/tests/benchmark-snapshot-generation.mjs \
+  working/snapshot-generation-diagnostic-NOUVEAU.json
+```
+
+Ce diagnostic est volontairement limité à la candidate locale
+`ban_restore_validation`, dans `ban_postgres`, rôle `ban_user`, **avant 0009**.
+Il exige 17 fonctions, neuf migrations terminées et les définitions de référence
+de 0008. Sa date est le 1er juin 2026 à minuit Europe/Paris ; son département est
+le 31. Pour une autre cible, date ou version, adapter explicitement le diagnostic.
+
+Il exécute seulement des `SELECT` et `EXPLAIN` dans des transactions `READ ONLY`
+avec un délai de 30 secondes par requête. Le rapport doit être nouveau.
+Les définitions SQL proposées sont évaluées comme sous-requêtes : **aucune
+fonction n'est créée ou remplacée sur la candidate**, aucun export n'est demandé.
+Les catalogues et migrations sont comparés avant/après.
+
+Le diagnostic inspecte les plans départementaux sans exécuter la sélection large
+historique. Il compare ensuite deux modes sur au plus 200 identifiants réellement
+présents dans chaque table métier :
+
+- `departmentalCacheProbe` : source bornée à l'échantillon mais cache de communes
+  actif, pour isoler le coût de résolution des métadonnées ; ce n'est pas un appel
+  départemental complet ;
+- `explicitUuidRequest` : sélection UUID effective, cache global contourné.
+
+La comparaison de contenu est exacte. Les mesures d'exécution incluent aussi la
+sélection et la fabrication SQL des lignes NDJSON de l'échantillon ; elles ne
+mesurent pas les en-têtes, la sérialisation applicative, RabbitMQ ou S3.
+Enfin, seule la nouvelle sélection départementale des toponymes reçoit un
+`EXPLAIN ANALYZE`, toujours avec le même délai maximum.
+Ce diagnostic ne chronomètre pas un export FULL. Les caches et la charge
+ne sont pas contrôlés et aucun facteur de gain national n'est extrapolé.
+
+### Installation, qualification et retour arrière
+
+Après relecture et autorisation distinctes, sauvegarder les définitions réelles,
+vérifier la cible et appliquer via le workflow de migrations Prisma. Ne pas
+modifier les migrations 0000 à 0008 déjà appliquées. Rejouer ensuite un export
+FULL du 31 au 1er juin 2026 et comparer ses objets/métadonnées métier et ses
+volumes avec une référence conforme au contrat, hors timestamps de génération.
+Les exports utilisent les fonctions optimisées ; leurs tests de contrat
+complètent les contrôles SQL. La comparaison porte également sur `integratedAt`,
+qui représente la première intégration explicitement fournie, ou `null`.
+
+`support/rollback-snapshot-generation.sql` contient les trois définitions de
+référence avant 0009 et une transaction atomique. Ce retour arrière doit être
+comparé aux définitions sauvegardées, puis explicitement autorisé. Il ne remet
+pas automatiquement à jour le registre Prisma et ne remplace pas une procédure
+de déploiement. La qualification de l'export complet reste une étape distincte
+des tests de préparation et du diagnostic SQL.
