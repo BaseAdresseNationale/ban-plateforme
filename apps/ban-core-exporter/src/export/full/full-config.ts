@@ -1,6 +1,6 @@
 import type { ExportRequestConfigs } from '../types.js';
 
-export const banRequestConfigs = {
+export const fullRequestConfigs = {
   district: {
     dataName: 'snapshot_district_ndjson',
     request: `
