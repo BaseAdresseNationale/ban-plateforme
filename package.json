@@ -31,6 +31,7 @@
     "dev": "pnpm dev:start || true",
     "build": "pnpm --recursive run build",
     "build:packages": "pnpm --filter './packages/*' run build",
+    "test": "pnpm -r --if-present run test",
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
