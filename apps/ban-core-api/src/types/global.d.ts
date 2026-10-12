@@ -26,19 +26,4 @@ declare global {
 
   type DataLine = DiffLine | SnapshotLine
 
-  type Formatter = (ndjsonHeader: NdjsonHeader, raw: RawEntity) => Record<string, unknown>;
-
-  interface FormatConfigs {
-    [dataType: string]: {
-      formater?: Formatter;
-      typeName?: string;
-      excludedKeysOfCompare?: string[];
-    }
-  }
-
-  interface Formatters {
-    [formatName: string]: FormatConfigs
-  }
-
-  type BanFormatter = (objLine: DataLine, converters?: FormatConfigs) => unknown;
 }

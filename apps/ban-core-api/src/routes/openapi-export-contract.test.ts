@@ -38,14 +38,14 @@ describe('OpenAPI export contract', () => {
   it('documents the async export request routes', async () => {
     const { openApi } = await readContractFiles();
 
-    expectPathDocumented(openApi, '/api/data/ban/{dep}');
+    expectPathDocumented(openApi, '/api/data/full/{dep}');
     expectPathDocumented(openApi, '/api/data/diff/{dep}');
 
-    expect(openApi).toContain('summary: Demander un export BAN asynchrone');
+    expect(openApi).toContain('summary: Demander un export FULL asynchrone');
     expect(openApi).toContain('summary: Demander un export differentiel asynchrone');
     expect(openApi).toContain("'202':");
     expect(openApi).toContain("$ref: '#/components/schemas/AsyncExportAcceptedResponse'");
-    expect(openApi).toContain('exportType: ban');
+    expect(openApi).toContain('exportType: full');
     expect(openApi).toContain('exportType: diff');
     expect(openApi).toContain('- pending');
   });

@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm, utimes } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -12,6 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   send: vi.fn(),
   loggerWarn: vi.fn(),
+  loggerInfo: vi.fn(),
 }));
 
 // Le SDK S3 est remplacé par un faux client en mémoire.
@@ -31,10 +32,11 @@ vi.mock('@aws-sdk/client-s3', () => ({
 vi.mock('@ban/tools', () => ({
   logger: {
     warn: mocks.loggerWarn,
+    info: mocks.loggerInfo,
   },
 }));
 
-const { getExportStorageConfig, storeExportFile } = await import('./storage.js');
+const { cleanupStaleS3ExportFiles, getExportStorageConfig, storeExportFile } = await import('./storage.js');
 
 // Fixtures et préparation
 // -----------------------
@@ -50,6 +52,8 @@ const envKeys = [
   'EXPORT_S3_SECRET_ACCESS_KEY',
   'EXPORT_S3_PREFIX',
   'EXPORT_S3_PUBLIC_BASE_URL',
+  'EXPORT_OUTPUT_DIR',
+  'EXPORT_TEMP_FILE_MAX_AGE_HOURS',
 ];
 
 // Tests
@@ -64,6 +68,7 @@ describe('export storage', () => {
     envKeys.forEach(key => delete process.env[key]);
     mocks.send.mockReset();
     mocks.loggerWarn.mockReset();
+    mocks.loggerInfo.mockReset();
     tmpDir = await mkdtemp(path.join(os.tmpdir(), 'ban-core-export-storage-'));
     filePath = path.join(tmpDir, 'export-token.ban.raw.ndjson');
     await writeFile(filePath, '{"meta":{"note":"stream-start"}}\n');
@@ -141,5 +146,44 @@ describe('export storage', () => {
         format: 'raw',
       },
     });
+  });
+
+  it('removes stale temporary NDJSON files at startup when S3 is configured', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.EXPORT_STORAGE = 's3';
+    process.env.EXPORT_S3_BUCKET = 'ban-exports';
+    process.env.EXPORT_S3_ENDPOINT = 'https://s3.gra.io.cloud.ovh.net';
+    process.env.EXPORT_S3_REGION = 'gra';
+    process.env.EXPORT_S3_ACCESS_KEY_ID = 'access-key';
+    process.env.EXPORT_S3_SECRET_ACCESS_KEY = 'secret-key';
+    process.env.EXPORT_OUTPUT_DIR = tmpDir;
+    process.env.EXPORT_TEMP_FILE_MAX_AGE_HOURS = '1';
+    const staleFile = path.join(tmpDir, 'stale.ban.raw.ndjson');
+    const freshFile = path.join(tmpDir, 'fresh.ban.raw.ndjson');
+    await writeFile(staleFile, 'stale');
+    await writeFile(freshFile, 'fresh');
+    await utimes(staleFile, new Date(Date.now() - 2 * 60 * 60 * 1000), new Date(Date.now() - 2 * 60 * 60 * 1000));
+
+    await cleanupStaleS3ExportFiles();
+
+    await expect(readFile(staleFile)).rejects.toMatchObject({ code: 'ENOENT' });
+    await expect(readFile(freshFile, 'utf8')).resolves.toBe('fresh');
+    expect(mocks.loggerInfo).toHaveBeenCalledWith(
+      '[ban-core-exporter] Fichiers temporaires obsoletes supprimes',
+      expect.objectContaining({ count: 1, outputDirectory: tmpDir })
+    );
+  });
+
+  it('keeps temporary files outside production', async () => {
+    process.env.NODE_ENV = 'development';
+    process.env.EXPORT_STORAGE = 's3';
+    process.env.EXPORT_OUTPUT_DIR = tmpDir;
+    const staleFile = path.join(tmpDir, 'stale.ban.raw.ndjson');
+    await writeFile(staleFile, 'stale');
+    await utimes(staleFile, new Date(Date.now() - 2 * 60 * 60 * 1000), new Date(Date.now() - 2 * 60 * 60 * 1000));
+
+    await cleanupStaleS3ExportFiles();
+
+    await expect(readFile(staleFile, 'utf8')).resolves.toBe('stale');
   });
 });

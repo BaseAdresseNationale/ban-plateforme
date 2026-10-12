@@ -1,8 +1,8 @@
 import type { Request } from 'express';
+import { normalizeExportSelection } from '@ban/tools';
 
 import {
   VALID_DATA_TYPES,
-  VALID_FORMATS,
   dateStringToPgTimestamptz,
 } from '../helpers/index.js';
 
@@ -21,18 +21,20 @@ type CommonExportRequestParamsResult =
 
 const ISO_8601_DATE_MESSAGE = 'Expected an ISO 8601 date or date-time (e.g. 2026-01-01 or 2026-01-01T12:00:00Z).';
 
+const QUERY_PARAMETERS = {
+  full: ['deps', 'dataTypes', 'at'],
+  diff: ['deps', 'dataTypes', 'from', 'to'],
+};
+
+const validateSelection = (type: 'full' | 'diff', params: DataExportRequestParams): ExportRequestParamsResult => {
+  try { return { ok: true, params: normalizeExportSelection(type, params) }; }
+  catch (error) { return { ok: false, status: 400, message: error instanceof Error ? error.message : 'Invalid export selection' }; }
+};
+
 const getDepartements = (req: Request) => String(req.params.dep || req.query.deps || '')
   .split(',')
   .filter(Boolean)
   .map(dep => dep.trim());
-
-const getFormat = (queryFormat: string | null) => {
-  if (!queryFormat) {
-    return 'raw';
-  }
-
-  return VALID_FORMATS.includes(queryFormat) ? queryFormat : undefined;
-};
 
 const getDataTypes = (queryDataTypes: string | undefined, requestConfig: RequestConfig) => {
   if (!queryDataTypes) {
@@ -47,23 +49,24 @@ const getDataTypes = (queryDataTypes: string | undefined, requestConfig: Request
 
 const getCommonExportRequestParams = (
   req: Request,
-  requestConfig: RequestConfig
+  requestConfig: RequestConfig,
+  exportType: 'full' | 'diff'
 ): CommonExportRequestParamsResult => {
+  const unsupportedParameter = Object.keys(req.query)
+    .find(name => !QUERY_PARAMETERS[exportType].includes(name));
+  if (unsupportedParameter !== undefined) {
+    return {
+      ok: false,
+      status: 400,
+      message: `Unsupported query parameter: ${unsupportedParameter}`,
+    };
+  }
+
   const departements = getDepartements(req);
-  const queryFormat = String(typeof req.query.format === 'string' ? req.query.format : 'raw');
   const queryDataTypes = req.query.dataTypes ? String(req.query.dataTypes) : undefined;
 
   if (departements.length === 0) {
     return { ok: false, status: 400, message: 'The `deps` parameter is required.' };
-  }
-
-  const format = getFormat(queryFormat);
-  if (!format) {
-    return {
-      ok: false,
-      status: 400,
-      message: `Invalid 'format' value: ${queryFormat} (available values: ${VALID_FORMATS.join(', ')})`,
-    };
   }
 
   if (queryDataTypes) {
@@ -80,7 +83,6 @@ const getCommonExportRequestParams = (
   return {
     ok: true,
     params: {
-      format,
       address_ids: null,
       common_toponym_ids: null,
       district_ids: null,
@@ -90,11 +92,11 @@ const getCommonExportRequestParams = (
   };
 };
 
-export const getBanExportRequestParams = (
+export const getFullExportRequestParams = (
   req: Request,
   requestConfig: RequestConfig
 ): ExportRequestParamsResult => {
-  const commonParams = getCommonExportRequestParams(req, requestConfig);
+  const commonParams = getCommonExportRequestParams(req, requestConfig, 'full');
 
   if (!commonParams.ok) {
     return commonParams;
@@ -108,20 +110,14 @@ export const getBanExportRequestParams = (
     return { ok: false, status: 400, message: `Invalid date format for 'at' parameter. ${ISO_8601_DATE_MESSAGE}` };
   }
 
-  return {
-    ok: true,
-    params: {
-      ...commonParams.params,
-      at,
-    },
-  };
+  return validateSelection('full', { ...commonParams.params, at });
 };
 
 export const getDiffExportRequestParams = (
   req: Request,
   requestConfig: RequestConfig
 ): ExportRequestParamsResult => {
-  const commonParams = getCommonExportRequestParams(req, requestConfig);
+  const commonParams = getCommonExportRequestParams(req, requestConfig, 'diff');
 
   if (!commonParams.ok) {
     return commonParams;
@@ -144,12 +140,5 @@ export const getDiffExportRequestParams = (
     return { ok: false, status: 400, message: `Invalid date format for 'to' parameter. ${ISO_8601_DATE_MESSAGE}` };
   }
 
-  return {
-    ok: true,
-    params: {
-      ...commonParams.params,
-      from,
-      to,
-    },
-  };
+  return validateSelection('diff', { ...commonParams.params, from, to });
 };
