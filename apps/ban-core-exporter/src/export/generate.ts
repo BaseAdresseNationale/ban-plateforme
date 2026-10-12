@@ -6,7 +6,7 @@ import { finished } from 'node:stream/promises';
 import Cursor from 'pg-cursor';
 
 import { pool as pgPool } from '@ban/prisma-client';
-import { logger } from '@ban/tools';
+import { logger, normalizeExportSelection } from '@ban/tools';
 
 import { fullRequestConfigs } from './full/full-config.js';
 import { diffRequestConfigs } from './diff/diff-config.js';
@@ -131,6 +131,7 @@ export const generateLocalExportFile = async (
   exportType: DataExportType,
   params: DataExportParams
 ): Promise<ExportFileResult> => {
+  params = normalizeExportSelection(exportType, params);
   await mkdir(getExportOutputDir(), { recursive: true });
 
   const filePath = getExportFilePath(token, exportType, params.format);

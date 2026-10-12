@@ -38,3 +38,13 @@ Les premières fonctions de formatage et leur fermeture de fichier sûre sont
 livrées ensemble ; les filtres, le stockage et les qualifications sont isolés
 dans les commits suivants. La migration fonctionnelle 0006 reste dans cet étage.
 Les migrations de performance 0007–0009 sont sur la branche enfant SQL.
+
+### Sélection et migration fonctionnelle
+
+Les filtres UUID sont internes ; l'API publique n'en expose pas de nouveaux.
+Les listes et périodes sont validées avant mise en file et avant exécution ;
+les microsecondes sont préservées. Lire `packages/tools/src/export-selection.ts`
+et les tests des routes/consommateur pour les valeurs par défaut et les limites.
+La migration 0006 normalise les arguments de filtre et reste inchangée par
+rapport à la version déjà appliquée. La compilation et les tests n'appliquent
+aucune migration. Le workflow Prisma de déploiement reste une opération distincte.
