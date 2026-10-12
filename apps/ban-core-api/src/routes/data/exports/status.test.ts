@@ -29,7 +29,7 @@ describe('getDataExportStatus', () => {
   });
 
   it('returns the stored export destination unchanged', async () => {
-    const key = 'exports/2026-01/ban--dep-33--2026-01-31--export-token.ban-standard.ndjson';
+    const key = 'exports/2026-01/full--dep-33--2026-01-31--export-token.ban-standard.ndjson';
     mocks.pgQuery.mockResolvedValue({
       rows: [{
         id: 'export-token',
