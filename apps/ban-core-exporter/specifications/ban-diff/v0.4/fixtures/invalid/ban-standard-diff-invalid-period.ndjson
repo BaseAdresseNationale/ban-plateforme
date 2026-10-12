@@ -1,0 +1,2 @@
+{"meta":{"note":"stream-start","formatVersion":"0.4","exportType":"diff","format":"ban-standard","request":{"dataTypes":["district","toponym","address"],"departments":["96"],"from":"2026-09-29T00:00:00Z","to":"2026-09-22T00:00:00Z"}}}
+{"meta":{"note":"stream-end","generatedAt":"2026-10-12T00:00:00Z","stats":{"district":{"count":0,"created":0,"updated":0,"disabled":0},"toponym":{"count":0,"created":0,"updated":0,"disabled":0},"address":{"count":0,"created":0,"updated":0,"disabled":0}}}}

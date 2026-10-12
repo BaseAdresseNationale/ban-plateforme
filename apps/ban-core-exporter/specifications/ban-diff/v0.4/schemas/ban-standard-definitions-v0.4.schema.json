@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ban.example/schemas/ban-standard-definitions-v0.4.schema.json",
+  "title": "BAN Standard définitions v0.4",
+  "description": "Contrat de publication FULL/DIFF v0.4 ; équivalents français conseillés et correspondances conceptuelles avec le Standard Adresse CNIG.",
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Canonical BAN identifier."
+    },
+    "datetime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "RFC 3339 instant in UTC; null only when explicitly unknown."
+    },
+    "point": {
+      "type": "object",
+      "description": "WGS84 GeoJSON Point, longitude then latitude.",
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "properties": {
+        "type": {
+          "const": "Point",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "coordinates": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Deux nombres WGS84, longitude puis latitude, à la précision fournie. Équivalent conseillé pour un Standard-FR-CNIG : coordonnees. Correspondance conceptuelle CNIG : Coordonnées de Position.geometrie (GM_Point), deux dimensions (p. 25, 40-41)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "label": {
+      "type": "object",
+      "description": "A localized label.",
+      "required": [
+        "value",
+        "isoCode"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Valeur renseignée du libellé. Équivalent conseillé pour un Standard-FR-CNIG : valeur. Correspondance conceptuelle CNIG : NomLangue.nom pour les noms de commune/odonyme (p. 28, 32)."
+        },
+        "isoCode": {
+          "type": "string",
+          "pattern": "^[a-z]{3}$",
+          "description": "Code de langue ISO 639-3, en minuscules. Équivalent conseillé pour un Standard-FR-CNIG : codeIso. Correspondance conceptuelle CNIG : NomLangue.langue, ISO 639-3 (p. 21, 28, 40)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "meta": {
+      "type": "object",
+      "description": "Object business metadata.",
+      "required": [
+        "insee",
+        "source"
+      ],
+      "properties": {
+        "insee": {
+          "type": "object",
+          "required": [
+            "cog"
+          ],
+          "properties": {
+            "cog": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Code INSEE courant de la commune associée à cet état. Équivalent conseillé pour un Standard-FR-CNIG : code. Correspondance conceptuelle CNIG : Commune.codeINSEE (p. 27)."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Informations du Code Officiel Géographique. Équivalent conseillé pour un Standard-FR-CNIG : insee. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Provenance BAN, chaîne non vide ; assemblage pour une composition de données. Équivalent conseillé pour un Standard-FR-CNIG : source. Correspondance conceptuelle CNIG : Source de la donnée par adresse (p. 45)."
+        },
+        "interop": {
+          "type": "object",
+          "properties": {
+            "balProvidedKey": {
+              "type": "string",
+              "description": "Clé d’interopérabilité fournie par la BAL. Équivalent conseillé pour un Standard-FR-CNIG : cleFournieBAL. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "banComputedKey": {
+              "type": "string",
+              "description": "Clé calculée BAN. Équivalent conseillé pour un Standard-FR-CNIG : cleCalculeeBAN. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "legacyCsvId": {
+              "type": "string",
+              "description": "Identifiant historique d’export CSV. Équivalent conseillé pour un Standard-FR-CNIG : idCsvHistorique. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Identifiants d’interopérabilité et clés historiques. Équivalent conseillé pour un Standard-FR-CNIG : interop. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "base": {
+      "type": "object",
+      "description": "Fields shared by every BAN entity.",
+      "required": [
+        "id",
+        "labels",
+        "status",
+        "updatedAt",
+        "integratedAt",
+        "meta"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid",
+          "description": "Identifiant BAN stable de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : idCommune (district), idOdonyme (toponym), idAdresse (address). Correspondance conceptuelle CNIG : AdresseCommunale.idAdresseCommunale ou Odonyme.idOdonyme selon l’objet ; UUID communal spécifique à BAN (p. 24, 31, 54-55)."
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/label"
+          },
+          "description": "Libellés renseignés, dans leur ordre d’origine ; premier élément de référence, autres traductions ou variantes. Vide autorisé pour une adresse. Équivalent conseillé pour un Standard-FR-CNIG : libelles. Correspondance conceptuelle CNIG : NomLangue et nom/nomMultilingue pour commune/odonyme (p. 27-33). Libellé propre d’adresse : extension BAN."
+        },
+        "status": {
+          "enum": [
+            "active",
+            "disabled"
+          ],
+          "description": "État BAN active ou disabled ; les objets du FULL sont actifs. Équivalent conseillé pour un Standard-FR-CNIG : statut. Correspondance conceptuelle CNIG : TypeStatut pour le cycle de vie (p. 38-39) ; valeurs BAN active/disabled."
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/datetime",
+          "description": "Date de dernière modification fournie par BAN. Équivalent conseillé pour un Standard-FR-CNIG : dateDerniereMiseAJour. Correspondance conceptuelle CNIG : Date métier BAN de modification."
+        },
+        "integratedAt": {
+          "$ref": "#/$defs/datetime",
+          "description": "Date de première intégration explicitement fournie ; null si inconnue. Équivalent conseillé pour un Standard-FR-CNIG : dateIntegrationBAN. Correspondance conceptuelle CNIG : Date métier BAN de première intégration."
+        },
+        "meta": {
+          "$ref": "#/$defs/meta",
+          "description": "Métadonnées du flux ou de l’objet, selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : metadonnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      }
+    },
+    "district": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "historicalDistrictID": {
+              "$ref": "#/$defs/uuid",
+              "description": "Lien UUID BAN vers la commune historique, lorsqu’il est connu. Équivalent conseillé pour un Standard-FR-CNIG : idCommuneHistorique. Correspondance conceptuelle CNIG : Relation à CommuneHistorique, représentée par un UUID BAN."
+            },
+            "historicalInseeCode": {
+              "type": "string",
+              "description": "Code INSEE de la commune historique, lorsqu’il est connu. Équivalent conseillé pour un Standard-FR-CNIG : codeINSEECommuneHistorique. Correspondance conceptuelle CNIG : CommuneHistorique.codeINSEE (p. 29)."
+            },
+            "labels": {
+              "minItems": 1,
+              "description": "Libellés renseignés, dans leur ordre d’origine ; premier élément de référence, autres traductions ou variantes. Vide autorisé pour une adresse. Équivalent conseillé pour un Standard-FR-CNIG : libelles. Correspondance conceptuelle CNIG : NomLangue et nom/nomMultilingue pour commune/odonyme (p. 27-33). Libellé propre d’adresse : extension BAN."
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "toponym": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "districtID",
+            "geometry"
+          ],
+          "properties": {
+            "districtID": {
+              "$ref": "#/$defs/uuid",
+              "description": "Référence UUID BAN de la commune de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : idCommune. Correspondance conceptuelle CNIG : Relation à Commune, représentée par un UUID BAN."
+            },
+            "geometry": {
+              "description": "Point GeoJSON WGS84 ; null autorisé pour la géométrie inconnue d’un toponyme historique. Équivalent conseillé pour un Standard-FR-CNIG : geometrie. Correspondance conceptuelle CNIG : Position.geometrie (GM_Point) pour une position d’adresse (p. 25-26) ; géométrie propre au toponyme spécifique à BAN.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/point"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "historicalDistrictID": {
+              "$ref": "#/$defs/uuid",
+              "description": "Lien UUID BAN vers la commune historique, lorsqu’il est connu. Équivalent conseillé pour un Standard-FR-CNIG : idCommuneHistorique. Correspondance conceptuelle CNIG : Relation à CommuneHistorique, représentée par un UUID BAN."
+            },
+            "historicalInseeCode": {
+              "type": "string",
+              "description": "Code INSEE de la commune historique, lorsqu’il est connu. Équivalent conseillé pour un Standard-FR-CNIG : codeINSEECommuneHistorique. Correspondance conceptuelle CNIG : CommuneHistorique.codeINSEE (p. 29)."
+            },
+            "labels": {
+              "minItems": 1,
+              "description": "Libellés renseignés, dans leur ordre d’origine ; premier élément de référence, autres traductions ou variantes. Vide autorisé pour une adresse. Équivalent conseillé pour un Standard-FR-CNIG : libelles. Correspondance conceptuelle CNIG : NomLangue et nom/nomMultilingue pour commune/odonyme (p. 27-33). Libellé propre d’adresse : extension BAN."
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "address": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "districtID",
+            "mainToponymID",
+            "secondaryToponymIDs",
+            "certified",
+            "positions",
+            "postalCodes"
+          ],
+          "properties": {
+            "districtID": {
+              "$ref": "#/$defs/uuid",
+              "description": "Référence UUID BAN de la commune de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : idCommune. Correspondance conceptuelle CNIG : Relation à Commune, représentée par un UUID BAN."
+            },
+            "mainToponymID": {
+              "$ref": "#/$defs/uuid",
+              "description": "Référence UUID BAN du toponyme principal, obligatoire pour l’adresse. Équivalent conseillé pour un Standard-FR-CNIG : idOdonyme. Correspondance conceptuelle CNIG : Relation à VoiePlaceLieudit/Odonyme (p. 31-33)."
+            },
+            "secondaryToponymIDs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/uuid"
+              },
+              "description": "Références UUID BAN des toponymes complémentaires ; tableau vide si absents. Équivalent conseillé pour un Standard-FR-CNIG : idsOdonymesComplementaires. Correspondance conceptuelle CNIG : Relations aux LieuditComplementaire/Odonyme (p. 33)."
+            },
+            "number": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Numéro facultatif, entier ≥ 0, omis si absent. Zéro toléré pour compatibilité historique, déconseillé pour les nouvelles données. Équivalent conseillé pour un Standard-FR-CNIG : numero. Correspondance conceptuelle CNIG : Numero.numero ; composant Numero facultatif (p. 34). Zéro est une tolérance historique BAN."
+            },
+            "suffix": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Indice de répétition facultatif, chaîne non vide ; absent, null ou vide à la source entraîne son omission. Équivalent conseillé pour un Standard-FR-CNIG : indiceRepetition. Correspondance conceptuelle CNIG : Numero.indiceRepetition (p. 34)."
+            },
+            "certified": {
+              "type": "boolean",
+              "description": "Certification communale, booléen BAN. Équivalent conseillé pour un Standard-FR-CNIG : certification. Correspondance conceptuelle CNIG : AdresseCommunale.certification : codes numériques extensibles 0/1 (p. 26, 40) ; représentation BAN booléenne."
+            },
+            "positions": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "geometry"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                  },
+                  "geometry": {
+                    "$ref": "#/$defs/point",
+                    "description": "Point GeoJSON WGS84 ; null autorisé pour la géométrie inconnue d’un toponyme historique. Équivalent conseillé pour un Standard-FR-CNIG : geometrie. Correspondance conceptuelle CNIG : Position.geometrie (GM_Point) pour une position d’adresse (p. 25-26) ; géométrie propre au toponyme spécifique à BAN."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "description": "Positions de l’adresse ; première principale, suivantes complémentaires ; au moins une position requise. Équivalent conseillé pour un Standard-FR-CNIG : positions. Correspondance conceptuelle CNIG : Position principale et positionComplementaire ; BAN les regroupe dans un tableau ordonné (p. 25-26)."
+            },
+            "postalCodes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Codes postaux associés ; tableau de chaînes, vide lorsqu’ils sont inconnus. Équivalent conseillé pour un Standard-FR-CNIG : codesPostaux. Correspondance conceptuelle CNIG : ZonePostale.codePostal, représenté ici par un tableau (p. 30-31)."
+            },
+            "historicalDistrictID": {
+              "$ref": "#/$defs/uuid",
+              "description": "Lien UUID BAN vers la commune historique, lorsqu’il est connu. Équivalent conseillé pour un Standard-FR-CNIG : idCommuneHistorique. Correspondance conceptuelle CNIG : Relation à CommuneHistorique, représentée par un UUID BAN."
+            },
+            "historicalInseeCode": {
+              "type": "string",
+              "description": "Code INSEE de la commune historique, lorsqu’il est connu. Équivalent conseillé pour un Standard-FR-CNIG : codeINSEECommuneHistorique. Correspondance conceptuelle CNIG : CommuneHistorique.codeINSEE (p. 29)."
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "record": {
+      "type": "object",
+      "description": "A full-export data line.",
+      "required": [
+        "type",
+        "data"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "district",
+            "toponym",
+            "address"
+          ],
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/district"
+            },
+            {
+              "$ref": "#/$defs/toponym"
+            },
+            {
+              "$ref": "#/$defs/address"
+            }
+          ],
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "diffRecord": {
+      "type": "object",
+      "description": "A differential event line. Updated states are after then before.",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "enum": [
+            "created",
+            "updated",
+            "disabled"
+          ],
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "enum": [
+            "district",
+            "toponym",
+            "address"
+          ],
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/district"
+              },
+              {
+                "$ref": "#/$defs/toponym"
+              },
+              {
+                "$ref": "#/$defs/address"
+              }
+            ]
+          },
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object"
+}
