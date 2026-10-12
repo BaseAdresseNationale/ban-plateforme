@@ -8,14 +8,15 @@ import Cursor from 'pg-cursor';
 import { pool as pgPool } from '@ban/prisma-client';
 import { logger } from '@ban/tools';
 
-import { banRequestConfigs } from './ban/ban-config.js';
+import { fullRequestConfigs } from './full/full-config.js';
 import { diffRequestConfigs } from './diff/diff-config.js';
+import { getExportOutputDir } from './output-directory.js';
 import {
-  banToStandardFr,
-  banToStandardFrInt,
+  DiffOrderBuffer,
   closeCursor,
   getDiffObjLine,
-  getMetaLine,
+  getBanStandardEndLine,
+  getBanStandardStartLine,
   getQueryParams,
   getSnapshotObjLine,
   streamCursorData,
@@ -31,13 +32,9 @@ import type {
 
 const FETCH_SIZE = 500;
 
-const getExportOutputDir = () => path.resolve(
-  process.env.EXPORT_OUTPUT_DIR || path.join(process.cwd(), 'tmp/exports')
-);
-
 const exportConfigByType = {
-  ban: {
-    requestConfigs: banRequestConfigs,
+  full: {
+    requestConfigs: fullRequestConfigs,
     formatter: getSnapshotObjLine,
   },
   diff: {
@@ -79,15 +76,12 @@ const writeExportFile = async ({
   const { requestConfigs, formatter } = exportConfigByType[exportType];
   const dataTypes = getRequestedDataTypes(params.dataTypes, requestConfigs);
   const statsByDataType: Record<string, Record<string, number>> = {};
+  const diffBuffer = exportType === 'diff' ? new DiffOrderBuffer() : null;
   const client = await pgPool.connect();
   let activeCursor: Cursor | null = null;
 
   try {
-    output.write(getMetaLine('stream-start', {
-      exportType,
-      ...params,
-      dataTypes,
-    }));
+    output.write(getBanStandardStartLine(exportType, params, dataTypes));
 
     for (const dataType of dataTypes) {
       const { request, params: queryParamNames, dataName } = requestConfigs[dataType];
@@ -100,16 +94,13 @@ const writeExportFile = async ({
         cursor: activeCursor,
         fetchSize: FETCH_SIZE,
         dataName,
-        format: params.format,
-        output,
+        output: diffBuffer ?? output,
         banFormatter: formatter,
-        converters: {
-          'standard-fr': banToStandardFr,
-          'standard-fr-int': banToStandardFrInt,
-        },
       });
 
-      statsByDataType[dataType] = stats;
+      statsByDataType[dataType] = exportType === 'diff'
+        ? { count: stats.count, created: stats.created ?? 0, updated: stats.updated ?? 0, disabled: stats.disabled ?? 0 }
+        : stats;
 
       await closeCursor(activeCursor);
       activeCursor = null;
@@ -117,12 +108,9 @@ const writeExportFile = async ({
       logger.info(`[ban-core-exporter] Completed export for ${exportType}/${dataType}`, stats);
     }
 
-    output.write(getMetaLine('stream-end', {
-      exportType,
-      ...params,
-      dataTypes,
-      stats: statsByDataType,
-    }));
+    if (diffBuffer) await diffBuffer.flush(output);
+
+    output.write(getBanStandardEndLine(statsByDataType));
 
     return statsByDataType;
   } finally {
@@ -148,6 +136,9 @@ export const generateLocalExportFile = async (
   const filePath = getExportFilePath(token, exportType, params.format);
   const output = createWriteStream(filePath, { encoding: 'utf8' });
 
+  const completion = finished(output);
+  void completion.catch(() => undefined);
+
   try {
     const stats = await writeExportFile({
       output,
@@ -156,7 +147,7 @@ export const generateLocalExportFile = async (
     });
 
     output.end();
-    await finished(output);
+    await completion;
 
     return {
       filePath,
@@ -172,6 +163,7 @@ export const generateLocalExportFile = async (
     };
   } catch (error) {
     output.destroy();
+    await completion.catch(() => undefined);
     throw error;
   }
 };

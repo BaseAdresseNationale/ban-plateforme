@@ -26,3 +26,15 @@ signalés dans la matrice, sans nouvelle règle implicite.
 Validation : `pnpm test` et compilation des services. Les tests de contrat
 ne nécessitent ni Docker, ni base, ni S3. Une validation de schéma n'est pas une
 qualification SQL ou une politique exhaustive des mutations administratives.
+
+## 2. Implémentation — `codex/ban-diff-v0.4-exporter`
+
+Base : `feat/ban-diff-v0.4`. Lire les sérialiseurs Raw/Standard FR et leurs
+régressions, puis la validation de sélection, la comparaison DIFF, le nommage et
+le stockage, enfin les tests transversaux. Les règles sont celles du contrat,
+sans nouvel arbitrage métier lié au découpage.
+
+Les premières fonctions de formatage et leur fermeture de fichier sûre sont
+livrées ensemble ; les filtres, le stockage et les qualifications sont isolés
+dans les commits suivants. La migration fonctionnelle 0006 reste dans cet étage.
+Les migrations de performance 0007–0009 sont sur la branche enfant SQL.
