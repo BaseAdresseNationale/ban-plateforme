@@ -1,4 +1,4 @@
-# Relecture de la stack BAN/DIFF v0.4
+# Relecture de la stack FULL/DIFF v0.4
 
 Ce guide distingue le contrat, son implémentation, les optimisations PostgreSQL
 et le kit développeurs. Chaque branche se compare à sa parente, pas à `main`.
@@ -29,7 +29,7 @@ qualification SQL ou une politique exhaustive des mutations administratives.
 
 ## 2. Implémentation — `codex/ban-diff-v0.4-exporter`
 
-Base : `feat/ban-diff-v0.4`. Lire les sérialiseurs Raw/Standard FR et leurs
+Base : `feat/ban-diff-v0.4`. Lire le sérialiseur `ban-standard` et ses
 régressions, puis la validation de sélection, la comparaison DIFF, le nommage et
 le stockage, enfin les tests transversaux. Les règles sont celles du contrat,
 sans nouvel arbitrage métier lié au découpage.
@@ -51,7 +51,7 @@ aucune migration. Le workflow Prisma de déploiement reste une opération distin
 
 ### Événements et changements techniques
 
-Lire `ndjson-data-line.helpers.ts`, les deux sérialiseurs et
+Lire `ndjson-data-line.helpers.ts`, `ban-standard-formatters.ts` et
 `technical-changes.test.ts`. Les exclusions affectent la comparaison, pas les
 états diffusés. Une création finale désactivée conserve son événement `created`.
 Un recalcul de clé ou une configuration technique seuls peuvent laisser la date
@@ -63,6 +63,18 @@ silencieusement pendant la reconstruction.
 
 Lire `file-naming.ts`, `storage.ts` et les tests associés. Les noms décrivent
 le périmètre et les dates de la demande ; le token reste un suffixe de fichier
-et l'identifiant du job. BAN et DIFF sont stockés sous le mois de référence
+et l'identifiant du job. FULL et DIFF sont stockés sous le mois de référence
 Europe/Paris, sans dossier par token. Les tests S3 sont simulés ; aucun fichier
 du stockage réel n'est déplacé ou renommé par la reconstruction.
+
+### Qualifications transversales
+
+`administrative-contract.test.ts` reconstruit les cinq étapes fictives avec le
+générateur réel puis applique les DIFF à un consommateur de test indépendant.
+Les fichiers `test-support/` sont réservés aux tests, sans route ni export réel.
+Les fixtures sont ordonnées `step-0_` à `step-4_`.
+
+Le bootstrap PostgreSQL partagé et le contrôle d'exports vides appartiennent
+à cet étage, indépendamment des optimisations. Leur documentation commune est
+dans `packages/prisma-client/tests/README.md`. La qualification hors base ne
+crée ni base ni données et n'exécute pas ce bootstrap.
