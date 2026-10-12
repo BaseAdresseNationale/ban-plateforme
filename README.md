@@ -19,7 +19,7 @@ La BAN-Platform est un environnement **multi-services** permettant :
 
 La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
 
-Les exports asynchrones BAN et différentiels sont documentés dans la section [Exports asynchrones](#-exports-asynchrones).
+Les exports asynchrones FULL et DIFF sont documentés dans la section [Exports asynchrones](#-exports-asynchrones).
 
 Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
@@ -171,12 +171,15 @@ Après ça, votre base BAN locale est entièrement fonctionnelle.
 
 ## 📤 Exports asynchrones
 
-Les exports BAN et differentiels ne sont pas renvoyes directement par `ban-core-api`.
+- **FULL — export complet** : photographie des objets actifs à l'instant `at`, pour le périmètre sélectionné.
+- **DIFF — export différentiel** : changements consolidés entre `from` inclus et `to` exclu : créations, mises à jour et désactivations. Il permet d'actualiser un état de départ compatible.
+
+Les fichiers ne sont pas renvoyés directement par `ban-core-api`.
 L'API cree une demande d'export, renvoie un token de suivi, puis publie une commande RabbitMQ consommee par `ban-core-exporter`.
 
 ```text
 client HTTP
-  GET {API_BASE_URL}/api/data/ban/{dep}
+  GET {API_BASE_URL}/api/data/full/{dep}
   ou GET {API_BASE_URL}/api/data/diff/{dep}
         │
         ▼
@@ -199,27 +202,26 @@ client HTTP
 Dans les exemples suivants, `API_BASE_URL` designe l'URL du service `ban-core-api`.
 En local, elle vaut generalement `http://localhost:3000`.
 
-### Demander un export BAN
+### Demander un export FULL
 
 ```shell
 API_BASE_URL=http://localhost:3000
 
-curl "${API_BASE_URL}/api/data/ban/33?format=raw"
+curl "${API_BASE_URL}/api/data/full/33"
 ```
 
 Parametres principaux :
 
 - `dep` : code departement, ou plusieurs codes separes par des virgules ;
-- `format` : `raw`, `ban`, `standard-fr` ou `standard-fr-int` ; par defaut `raw` ;
 - `dataTypes` : `district`, `toponym`, `address`, separes par des virgules ; par defaut tous les types ;
-- `at` : date de snapshot BAN ; par defaut la date courante.
+- `at` : date de snapshot FULL ; par defaut la date courante.
 
 ### Demander un export differentiel
 
 ```shell
 API_BASE_URL=http://localhost:3000
 
-curl "${API_BASE_URL}/api/data/diff/33?from=2026-01-01T00:00:00.000Z&format=raw"
+curl "${API_BASE_URL}/api/data/diff/33?from=2026-01-01T00:00:00.000Z"
 ```
 
 Parametres principaux :
@@ -227,7 +229,6 @@ Parametres principaux :
 - `dep` : code departement, ou plusieurs codes separes par des virgules ;
 - `from` : date de debut du differentiel, obligatoire ;
 - `to` : date de fin du differentiel ; par defaut la date courante ;
-- `format` : `raw`, `ban`, `standard-fr` ou `standard-fr-int` ; par defaut `raw` ;
 - `dataTypes` : `district`, `toponym`, `address`, separes par des virgules ; par defaut tous les types.
 
 Les routes de demande repondent en `202 Accepted` avec un token :
@@ -236,7 +237,7 @@ Les routes de demande repondent en `202 Accepted` avec un token :
 {
   "response": {
     "token": "V1StGXR8_Z5jdHi6B-myT",
-    "exportType": "ban",
+    "exportType": "full",
     "status": "pending"
   }
 }
@@ -265,13 +266,13 @@ Lorsque le stockage S3 est configure, le rapport contient les informations de so
   "response": {
     "token": "V1StGXR8_Z5jdHi6B-myT",
     "status": "success",
-    "exportType": "ban",
+    "exportType": "full",
     "count": 42,
     "report": {
       "output": {
         "storage": "s3",
         "bucket": "ban-exports",
-        "key": "exports/ban/V1StGXR8_Z5jdHi6B-myT/V1StGXR8_Z5jdHi6B-myT.ban.raw.ndjson"
+        "key": "exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ban-standard.ndjson"
       }
     }
   }

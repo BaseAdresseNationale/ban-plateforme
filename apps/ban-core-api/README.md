@@ -16,8 +16,8 @@ Service API minimaliste pour envoyer des fichiers BAL dans RabbitMQ.
 - `POST /bal/text`  
   Envoie un corps texte CSV brut au parser via `{ id, payload, filename }` sur RabbitMQ (`bal.uploaded`).
 
-- `GET {API_BASE_URL}/api/data/ban/{dep}`  
-  Cree une demande d'export BAN asynchrone et renvoie un token de suivi.
+- `GET {API_BASE_URL}/api/data/full/{dep}`  
+  Cree une demande d'export FULL asynchrone et renvoie un token de suivi.
 
 - `GET {API_BASE_URL}/api/data/diff/{dep}`  
   Cree une demande d'export differentiel asynchrone et renvoie un token de suivi.
@@ -29,7 +29,15 @@ La documentation OpenAPI des routes d'export est disponible dans [openapi.yaml](
 
 ## Exports asynchrones
 
+- **FULL — export complet** : photographie des objets actifs à l'instant `at`, pour le périmètre sélectionné.
+- **DIFF — export différentiel** : changements consolidés entre `from` inclus et `to` exclu : créations, mises à jour et désactivations. Il permet d'actualiser un état de départ compatible.
+
 Les routes d'export repondent en `202 Accepted`. Elles ne renvoient pas le fichier exporte directement.
+
+Les paramètres de requête sont validés selon le type d'export : `at` pour un
+FULL, `from` et `to` pour un DIFF, et `dataTypes` pour les deux. Le département
+est fourni dans le chemin. Un paramètre inconnu entraîne une réponse `400` avec
+le message `Unsupported query parameter: <nom reçu>`.
 
 Le fonctionnement est le suivant :
 
@@ -45,7 +53,7 @@ Exemple :
 API_BASE_URL=http://localhost:3000
 TOKEN=<token>
 
-curl "${API_BASE_URL}/api/data/ban/33?format=raw"
+curl "${API_BASE_URL}/api/data/full/33"
 curl "${API_BASE_URL}/api/reports/exports/${TOKEN}"
 ```
 

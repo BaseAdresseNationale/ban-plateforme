@@ -33,7 +33,7 @@ describe('getDataExportStatus', () => {
       rows: [{
         id: 'export-token',
         status: 'success',
-        jobType: 'ban',
+        jobType: 'full',
         count: 42,
         message: 'Export file generated',
         report: {
@@ -51,7 +51,7 @@ describe('getDataExportStatus', () => {
     await expect(getDataExportStatus('export-token')).resolves.toEqual({
       token: 'export-token',
       status: 'success',
-      exportType: 'ban',
+      exportType: 'full',
       count: 42,
       message: 'Export file generated',
       report: {
