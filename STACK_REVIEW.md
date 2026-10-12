@@ -91,3 +91,7 @@ Premier lot : 0007 reformule la planification des filtres DIFF d'adresses.
 Lire `migration.sql`, `address-diff.postgres.test.mjs` et le rollback associé.
 Les contrôles de reconstruction sont hors base ; les essais SQL nécessitent
 un opt-in et une petite cible dédiée, sans qualification nouvelle de la candidate.
+
+Deuxième lot : 0008 présélectionne les identifiants d'adresses avant le choix
+temporel des versions. Les filtres finaux et la priorité courant/historique
+sont conservés ; lire les scénarios de chevauchement et bornes à la microseconde.
