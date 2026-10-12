@@ -100,3 +100,97 @@ Un retour arrière SQL n'efface pas automatiquement l'entrée de migration Prism
 traiter le registre selon le workflow de déploiement retenu, sans le réécrire
 aveuglément. Aucun retour arrière n'est automatique.
 
+## Optimisation des snapshots d'adresses (0008)
+
+`0008_optimize_address_snapshot_filters` remplace uniquement `ban.snapshot_address`.
+L'objectif est d'éviter un parcours et un tri nationaux avant d'appliquer un
+filtre départemental. Elle utilise les index existants, sans nouvelle table,
+index, réécriture de données, changement de signature, propriétaire ou droits.
+Le wrapper NDJSON reste inchangé et utilise la fonction après son installation.
+
+La fonction présélectionne les **identifiants** ayant une version active valide
+dans les départements demandés à la date du snapshot. Pour chaque identifiant,
+elle recherche ensuite toutes ses versions actives valides, puis applique la
+priorité existante (table actuelle avant historique) et les filtres finaux.
+Elle ne filtre pas directement toutes les versions avant leur sélection : cela
+pourrait faire réapparaître un état historique si l'état courant ne correspond
+plus au département ou au toponyme demandé. Un accès `LATERAL` avec `OFFSET 0`
+conserve les recherches par identifiant, y compris aux dates historiques, au
+lieu de laisser le planificateur reformer un parcours global. Sans filtre
+départemental (`NULL`), le chemin non restreint conserve la sélection précédente.
+
+### Tests d'équivalence isolés
+
+Utiliser la petite base `ban_export_validation_tmp` préparée plus haut, avec
+le jeu synthétique ; ne pas la recréer ni la réinitialiser si elle existe.
+Depuis la racine du dépôt :
+
+```sh
+RUN_BAN_POSTGRES_TESTS=1 node --test packages/prisma-client/tests/address-snapshot.postgres.test.mjs
+```
+
+Les **88 tests** couvrent six dates et quatorze combinaisons de filtres, les
+bornes temporelles à la microseconde, les tableaux vides et sélections absentes,
+l'équivalence exacte fonction/wrapper NDJSON, les valeurs nulles et libellés
+vides, les droits et le retour arrière.
+Un scénario supplémentaire crée uniquement dans la transaction des versions
+actuelle/historique qui se chevauchent entre les deux tables : la version actuelle
+reste prioritaire même si sa commune ou son toponyme ne correspond pas au filtre.
+Ces chevauchements inter-tables sont permis par la structure de test ; aucune
+contrainte d'exclusion historique n'est désactivée. Chaque essai se termine par
+**ROLLBACK** ; aucun changement n'est conservé sur cette base de tests. Sans
+opt-in, seul le contrôle statique s'exécute et les essais PostgreSQL sont ignorés.
+
+### Mesurer le SELECT proposé sans installer la fonction
+
+```sh
+RUN_BAN_POSTGRES_TESTS=1 node packages/prisma-client/tests/benchmark-address-snapshot.mjs \
+  /chemin/vers/jeu-96/data.json \
+  /chemin/vers/un-nouveau-rapport.json
+```
+
+Ce diagnostic est explicitement limité à la candidate locale
+`ban_restore_validation`, rôle `ban_user`, dans `ban_postgres`, avant installation
+de 0008 : il exige huit migrations terminées, 17 fonctions et la définition de
+référence de 0006. Il ne fonctionne pas tel quel sur une autre base ou après
+0008 ; adapter explicitement ce diagnostic si sa cible/référence change.
+
+Il exécute la variante **SELECT** dans des transactions `READ ONLY`, bornées à
+30 secondes, et ne crée aucune fonction. Le jeu JSON doit couvrir le département
+96 et comporter des versions historiques : ses UUID bornent une référence
+indépendante des états réels. Les douze comparaisons portent sur six dates,
+département seul puis département avec UUID. L'ancienne variante sans UUID
+reçoit uniquement un `EXPLAIN` sans exécution ; la nouvelle reçoit un
+`EXPLAIN ANALYZE`. Les sorties sont comparées aux états des tables et à la
+fonction installée appelée avec UUID. Fonctions, propriétaires/ACL et registre
+Prisma sont contrôlés identiques avant/après. Le rapport doit être nouveau ;
+ne pas remplacer une tentative précédente. Les erreurs et cas interrompus sont
+consignés, pas comptés comme validations réussies.
+
+Mesures locales du 9 octobre 2026 : douze comparaisons exactes réussies.
+La sélection départementale seule prend environ **0,94 à 0,98 seconde** selon
+la date, et retrouve notamment 21 adresses actuelles ou trois historiques.
+Les sélections avec UUID prennent environ **5 à 18 ms**. Ce sont des durées
+de SELECT local, pas celles d'un export complet ni une garantie nationale ;
+la charge, le cache et la taille des départements influencent les résultats.
+La comparaison sur ce jeu ne garantit pas les performances de tous les filtres.
+
+Le département fictif 96 est un jeu de **couverture des cas d'usage**, pas un jeu
+représentatif de performance. Les mesures ci-dessus servent au diagnostic du
+plan SQL. La qualification de performance de l'équipe doit faire l'objet d'un
+lot distinct sur le département 31, avec périodes, volumes et sélections définis.
+
+### Installation et retour arrière distincts
+
+La préparation et ces tests **n'installent pas 0008 sur la candidate**. Après
+relecture et autorisation de déploiement, contrôler la base cible, les migrations
+déjà terminées et les index de support, puis sauvegarder sa définition réelle.
+Appliquer via le workflow Prisma et rejouer les exports applicatifs sans UUID,
+les cas absents, les schémas et la sémantique dans les formats concernés.
+
+Ne pas modifier 0006/0007 déjà appliquées : leurs empreintes sont enregistrées.
+`support/rollback-address-snapshot.sql` fournit la définition de référence ;
+la comparer à la sauvegarde réelle avant une utilisation autorisée. Le retour
+arrière conserve la signature et le wrapper, mais n'annule pas automatiquement
+l'entrée Prisma : traiter le registre selon la procédure de déploiement retenue.
+Ni installation ni retour arrière ne sont automatiques.
