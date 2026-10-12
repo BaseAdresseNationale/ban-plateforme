@@ -1,11 +1,17 @@
-const getObjectForFilter = (data: Record<string, unknown>, excludeKeys: string[] = []) => {
-  return Object.entries(data).reduce((acc, [key, value]) => {
-    if (!excludeKeys.includes(key)) {
-      acc[key] = value;
-    }
-
-    return acc;
-  }, {} as Record<string, unknown>);
+// Dotted paths affect comparison only; the states serialized in the event stay intact.
+const getObjectForFilter = (data: Record<string, unknown>, excludeKeys: string[] = []): Record<string, unknown> => {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (excludeKeys.includes(key)) continue;
+    const nestedPaths = excludeKeys.filter(path => path.startsWith(`${key}.`))
+      .map(path => path.slice(key.length + 1));
+    if (nestedPaths.length && value && typeof value === 'object' && !Array.isArray(value)) {
+      const nested = getObjectForFilter(value as Record<string, unknown>, nestedPaths);
+      // An optional interop container with only an ignored key is equivalent to absence.
+      if (Object.keys(nested).length) result[key] = nested;
+    } else result[key] = value;
+  }
+  return result;
 };
 
 export const isUnlike = (
