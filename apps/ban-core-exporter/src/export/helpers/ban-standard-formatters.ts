@@ -75,5 +75,6 @@ export const banStandardFormatters = Object.fromEntries(
   (['district', 'toponym', 'address'] as DataType[]).map(type => [type, {
     converter: toBanStandardEntity,
     formater: (_header: NdjsonHeader, raw: RawEntity) => raw,
+    excludedKeysOfCompare: ['updatedAt', 'meta.interop.banComputedKey'],
   }])
 );
