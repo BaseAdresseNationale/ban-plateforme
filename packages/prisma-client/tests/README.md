@@ -69,3 +69,7 @@ rester dans leurs transactions et se terminer par `ROLLBACK`. Ne pas exécuter
 plusieurs suites modifiant les mêmes fonctions simultanément sur la même base.
 Les diagnostics, migrations et retours arrière ne sont jamais déclenchés par
 la préparation de ces bases.
+
+Les tests d'équivalence, diagnostics et retours arrière des optimisations sont
+décrits séparément dans [README-performance.md](README-performance.md), sur la
+branche enfant `codex/ban-export-sql-optimizations`.
