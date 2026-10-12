@@ -29,7 +29,8 @@ vi.mock('@aws-sdk/client-s3', () => ({
 
 // Le logger est mocké pour vérifier le warning du fallback local en dev
 // sans écrire inutilement dans la sortie de test.
-vi.mock('@ban/tools', () => ({
+vi.mock('@ban/tools', async importOriginal => ({
+  ...await importOriginal<typeof import('@ban/tools')>(),
   logger: {
     warn: mocks.loggerWarn,
     info: mocks.loggerInfo,
@@ -70,7 +71,7 @@ describe('export storage', () => {
     mocks.loggerWarn.mockReset();
     mocks.loggerInfo.mockReset();
     tmpDir = await mkdtemp(path.join(os.tmpdir(), 'ban-core-export-storage-'));
-    filePath = path.join(tmpDir, 'export-token.ban.raw.ndjson');
+    filePath = path.join(tmpDir, 'full--dep-33--2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson');
     await writeFile(filePath, '{"meta":{"note":"stream-start"}}\n');
   });
 
@@ -113,9 +114,8 @@ describe('export storage', () => {
 
     const output = await storeExportFile({
       token: 'export-token',
-      exportType: 'ban',
+      exportType: 'full',
       params: {
-        format: 'raw',
         dataTypes: ['district'],
         departements: ['33'],
         address_ids: null,
@@ -129,23 +129,49 @@ describe('export storage', () => {
     expect(output).toEqual({
       storage: 's3',
       bucket: 'ban-exports',
-      key: 'custom-exports/ban/export-token/export-token.ban.raw.ndjson',
+      key: 'custom-exports/2026-01/full--dep-33--2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson',
       endpoint: 'https://s3.gra.io.cloud.ovh.net',
-      url: 'https://exports.example.test/custom-exports/ban/export-token/export-token.ban.raw.ndjson',
+      url: 'https://exports.example.test/custom-exports/2026-01/full--dep-33--2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson',
       size: 33,
     });
     expect(mocks.send).toHaveBeenCalledOnce();
     expect(mocks.send.mock.calls[0][0].input).toMatchObject({
       Bucket: 'ban-exports',
-      Key: 'custom-exports/ban/export-token/export-token.ban.raw.ndjson',
+      Key: 'custom-exports/2026-01/full--dep-33--2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson',
       ContentLength: 33,
       ContentType: 'application/x-ndjson',
       Metadata: {
         token: 'export-token',
-        'export-type': 'ban',
-        format: 'raw',
+        'export-type': 'full',
+        format: 'ban-standard',
       },
     });
+  });
+
+  it('stores BAN and DIFF together under the Paris reference month, without a token directory', async () => {
+    process.env.EXPORT_STORAGE = 's3';
+    process.env.EXPORT_S3_BUCKET = 'ban-exports';
+    process.env.EXPORT_S3_ENDPOINT = 'http://localhost:9000';
+    process.env.EXPORT_S3_REGION = 'us-east-1';
+    process.env.EXPORT_S3_ACCESS_KEY_ID = 'test';
+    process.env.EXPORT_S3_SECRET_ACCESS_KEY = 'test';
+    process.env.EXPORT_S3_PREFIX = '/exports/';
+    mocks.send.mockResolvedValue({});
+    for (const type of ['full', 'diff'] as const) {
+      const name = type === 'full' ? 'full--dep-31--2026-06-01--job.ban-standard.ndjson'
+        : 'diff--dep-31--2026-05-25_2026-06-01--job.ban-standard.ndjson';
+      const file = path.join(tmpDir, name);
+      await writeFile(file, '{}\n');
+      const output = await storeExportFile({ token: 'job', exportType: type, filePath: file,
+        params: { dataTypes: ['address'], departements: ['31'],
+          address_ids: null, common_toponym_ids: null, district_ids: null,
+          ...(type === 'full' ? { at: '2026-05-31T22:00:00Z' }
+            : { from: '2026-05-24T22:00:00Z', to: '2026-05-31T22:00:00Z' }),
+        },
+      });
+      expect(output).toMatchObject({ storage: 's3', key: `exports/2026-06/${name}` });
+      expect(mocks.send.mock.lastCall?.[0].input.Metadata).toEqual({ token: 'job', 'export-type': type, format: 'ban-standard' });
+    }
   });
 
   it('removes stale temporary NDJSON files at startup when S3 is configured', async () => {
@@ -158,8 +184,8 @@ describe('export storage', () => {
     process.env.EXPORT_S3_SECRET_ACCESS_KEY = 'secret-key';
     process.env.EXPORT_OUTPUT_DIR = tmpDir;
     process.env.EXPORT_TEMP_FILE_MAX_AGE_HOURS = '1';
-    const staleFile = path.join(tmpDir, 'stale.ban.raw.ndjson');
-    const freshFile = path.join(tmpDir, 'fresh.ban.raw.ndjson');
+    const staleFile = path.join(tmpDir, 'stale.full.ban-standard.ndjson');
+    const freshFile = path.join(tmpDir, 'fresh.full.ban-standard.ndjson');
     await writeFile(staleFile, 'stale');
     await writeFile(freshFile, 'fresh');
     await utimes(staleFile, new Date(Date.now() - 2 * 60 * 60 * 1000), new Date(Date.now() - 2 * 60 * 60 * 1000));
@@ -178,7 +204,7 @@ describe('export storage', () => {
     process.env.NODE_ENV = 'development';
     process.env.EXPORT_STORAGE = 's3';
     process.env.EXPORT_OUTPUT_DIR = tmpDir;
-    const staleFile = path.join(tmpDir, 'stale.ban.raw.ndjson');
+    const staleFile = path.join(tmpDir, 'stale.full.ban-standard.ndjson');
     await writeFile(staleFile, 'stale');
     await utimes(staleFile, new Date(Date.now() - 2 * 60 * 60 * 1000), new Date(Date.now() - 2 * 60 * 60 * 1000));
 
