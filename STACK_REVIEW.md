@@ -58,3 +58,11 @@ Un recalcul de clé ou une configuration technique seuls peuvent laisser la date
 et la clé calculée du consommateur différentes du FULL ; le contenu métier
 actif reste la référence. Ce comportement est documenté et testé, pas corrigé
 silencieusement pendant la reconstruction.
+
+### Nommage et stockage
+
+Lire `file-naming.ts`, `storage.ts` et les tests associés. Les noms décrivent
+le périmètre et les dates de la demande ; le token reste un suffixe de fichier
+et l'identifiant du job. BAN et DIFF sont stockés sous le mois de référence
+Europe/Paris, sans dossier par token. Les tests S3 sont simulés ; aucun fichier
+du stockage réel n'est déplacé ou renommé par la reconstruction.

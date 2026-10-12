@@ -10,6 +10,7 @@ import { logger, normalizeExportSelection } from '@ban/tools';
 
 import { fullRequestConfigs } from './full/full-config.js';
 import { diffRequestConfigs } from './diff/diff-config.js';
+import { getExportFileName } from './file-naming.js';
 import { getExportOutputDir } from './output-directory.js';
 import {
   DiffOrderBuffer,
@@ -49,8 +50,8 @@ const exportConfigByType = {
 const getExportFilePath = (
   token: string,
   exportType: DataExportType,
-  format: string
-) => path.join(getExportOutputDir(), `${token}.${exportType}.${format}.ndjson`);
+  params: DataExportParams
+) => path.join(getExportOutputDir(), getExportFileName(token, exportType, params));
 
 const getRequestedDataTypes = (
   requestedDataTypes: string[],
@@ -134,9 +135,10 @@ export const generateLocalExportFile = async (
   params = normalizeExportSelection(exportType, params);
   await mkdir(getExportOutputDir(), { recursive: true });
 
-  const filePath = getExportFilePath(token, exportType, params.format);
+  const filePath = getExportFilePath(token, exportType, params);
   const output = createWriteStream(filePath, { encoding: 'utf8' });
-
+  // Observe file errors from the first write, including pending writes destroyed
+  // after a formatter/SQL error. Defer propagation until the normal await below.
   const completion = finished(output);
   void completion.catch(() => undefined);
 
