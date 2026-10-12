@@ -48,3 +48,13 @@ et les tests des routes/consommateur pour les valeurs par défaut et les limites
 La migration 0006 normalise les arguments de filtre et reste inchangée par
 rapport à la version déjà appliquée. La compilation et les tests n'appliquent
 aucune migration. Le workflow Prisma de déploiement reste une opération distincte.
+
+### Événements et changements techniques
+
+Lire `ndjson-data-line.helpers.ts`, les deux sérialiseurs et
+`technical-changes.test.ts`. Les exclusions affectent la comparaison, pas les
+états diffusés. Une création finale désactivée conserve son événement `created`.
+Un recalcul de clé ou une configuration technique seuls peuvent laisser la date
+et la clé calculée du consommateur différentes du FULL ; le contenu métier
+actif reste la référence. Ce comportement est documenté et testé, pas corrigé
+silencieusement pendant la reconstruction.
