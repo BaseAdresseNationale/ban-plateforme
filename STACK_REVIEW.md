@@ -78,3 +78,26 @@ Le bootstrap PostgreSQL partagé et le contrôle d'exports vides appartiennent
 à cet étage, indépendamment des optimisations. Leur documentation commune est
 dans `packages/prisma-client/tests/README.md`. La qualification hors base ne
 crée ni base ni données et n'exécute pas ce bootstrap.
+
+## 3. Optimisations — `codex/ban-export-sql-optimizations`
+
+Base : `codex/ban-diff-v0.4-exporter`. Les migrations sont inchangées, avec leurs
+tests d'équivalence, diagnostics et retours arrière dans des commits séparés.
+La documentation de qualification est dans `README-performance.md`, distincte
+du support commun. Ne pas exécuter de benchmark historique sans vérifier ses
+préconditions, ni installer une migration par une commande de test.
+
+Premier lot : 0007 reformule la planification des filtres DIFF d'adresses.
+Lire `migration.sql`, `address-diff.postgres.test.mjs` et le rollback associé.
+Les contrôles de reconstruction sont hors base ; les essais SQL nécessitent
+un opt-in et une petite cible dédiée, sans qualification nouvelle de la candidate.
+
+Deuxième lot : 0008 présélectionne les identifiants d'adresses avant le choix
+temporel des versions. Les filtres finaux et la priorité courant/historique
+sont conservés ; lire les scénarios de chevauchement et bornes à la microseconde.
+
+Troisième lot : 0009 présélectionne les toponymes et résout les codes communes
+une fois par requête départementale. Les accès UUID ciblés restent distincts.
+Lire le contrôle d'extraction des trois définitions, les chevauchements et les
+scénarios de parents absents/désactivés. Les mesures historiques ne sont pas
+relancées par cette réorganisation.
