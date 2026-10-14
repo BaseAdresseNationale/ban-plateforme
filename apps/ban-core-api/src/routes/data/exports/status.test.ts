@@ -28,19 +28,20 @@ describe('getDataExportStatus', () => {
     mocks.pgQuery.mockReset();
   });
 
-  it('returns the export status mapped from ban.job_status', async () => {
+  it('returns the stored export destination unchanged', async () => {
+    const key = 'exports/2026-01/full--dep-33--2026-01-31--export-token.ban-standard.ndjson';
     mocks.pgQuery.mockResolvedValue({
       rows: [{
         id: 'export-token',
         status: 'success',
-        jobType: 'ban',
+        jobType: 'full',
         count: 42,
         message: 'Export file generated',
         report: {
           output: {
             storage: 's3',
             bucket: 'ban-exports',
-            key: 'exports/ban/export-token/export-token.ban.raw.ndjson',
+            key,
           },
         },
         createdAt,
@@ -51,14 +52,14 @@ describe('getDataExportStatus', () => {
     await expect(getDataExportStatus('export-token')).resolves.toEqual({
       token: 'export-token',
       status: 'success',
-      exportType: 'ban',
+      exportType: 'full',
       count: 42,
       message: 'Export file generated',
       report: {
         output: {
           storage: 's3',
           bucket: 'ban-exports',
-          key: 'exports/ban/export-token/export-token.ban.raw.ndjson',
+          key,
         },
       },
       createdAt,
