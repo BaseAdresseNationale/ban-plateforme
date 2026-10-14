@@ -381,6 +381,34 @@ Ce script :
 
 ---
 
+## 🧪 Tests automatiques du monorepo
+
+Depuis la racine, lancer tous les scripts `test` disponibles dans les applications
+et les packages partagés :
+
+```shell
+pnpm test
+```
+
+Les packages sans script `test` sont ignorés ; aucun script vide n'est nécessaire.
+L'échec d'une suite exécutée fait échouer la commande. Une exécution réussie
+signifie que les suites disponibles passent, pas que chaque service est couvert.
+Pour ajouter une suite, définir un vrai script `test` dans le package concerné :
+il sera automatiquement pris en compte par la commande globale.
+
+Cette commande ne lance pas les scripts `test:postgres`, les benchmarks, les
+migrations ni les imports de données. Les validations nécessitant des services
+externes ou des écritures SQL doivent rester dans des commandes explicites
+propres au package concerné, avec leurs prérequis et protections.
+
+Pour ne tester qu'un package :
+
+```shell
+pnpm --filter @ban/ban-core-exporter test
+```
+
+---
+
 ## 🧪 Tester Prisma
 
 ```shell
