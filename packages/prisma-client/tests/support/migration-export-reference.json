@@ -1,0 +1,202 @@
+{
+  "description": "Définitions de référence de la candidate qualifiée avant correction des migrations ; empreintes SHA-256 des corps SQL, espaces externes retirés.",
+  "historicalMigrations": [
+    {
+      "name": "0000_baseline",
+      "sha256": "9b5af3d70312feff7ef1f6583599eb680547e5daace5e2ba7c66ab26d3c9760d"
+    },
+    {
+      "name": "0001_add_indexes_for_diff_functions",
+      "sha256": "71df2866ea156f42c8905d91a207af99949380cb480b06a22561831a8f069cd1"
+    },
+    {
+      "name": "0002_add_diff_functions",
+      "sha256": "3b9885424a435ce176922bc69068abcf76dfe2c4aaa577c6fbc55f6d1e2a2ef9"
+    },
+    {
+      "name": "0003_add_diff_functions_ndjson",
+      "sha256": "47a988a1f88485efd7f4ba26028d30ad5ea56053407a6352bf57ab86cac1ba76"
+    },
+    {
+      "name": "0004_add_snapshot_functions",
+      "sha256": "4607fe89ad96004aa84db68fc419d7167edd175964b1573e65c3ed839dc92c57"
+    },
+    {
+      "name": "0005_add_snapshot_functions_ndjson",
+      "sha256": "f4d4c483629c62ff9aa9883d585423f33e30440361d939d1b70af79841151748"
+    },
+    {
+      "name": "0006_normalize_export_filter_arguments",
+      "sha256": "5b3d3dfa2b7ce3f4a25c943fe52dfb239bcf286f2089b5a209d6663ff61f7b12"
+    },
+    {
+      "name": "0007_optimize_address_diff_filters",
+      "sha256": "29d8bfcb48cfcaa798acc8790bf68d5fdeb07c036e57b0ef2b4fe64df33f6978"
+    },
+    {
+      "name": "0008_optimize_address_snapshot_filters",
+      "sha256": "5970f2389dedb013c5a12d1f187553d01c275ab709514e0a5f00e31dbbae43d4"
+    },
+    {
+      "name": "0009_optimize_snapshot_generation",
+      "sha256": "1652a9dba67586a2bf087523c01b4efa1528ef1f473515578b14a20d2caebe45"
+    }
+  ],
+  "functions": [
+    {
+      "name": "dept_code_from_cog",
+      "signature": "ban.dept_code_from_cog(text)",
+      "bodySha256": "a64664dcd7b76b169d07e169765a5bf7dbd93d29a677c9bf702fd1e4357db1a8"
+    },
+    {
+      "name": "diff_address_ndjson",
+      "signature": "ban.diff_address_ndjson(timestamp with time zone,timestamp with time zone,uuid[],uuid[],uuid[],text[])",
+      "bodySha256": "9b2a0439d76cf2c454c39ee6e3853067fc2f159fd8d526010fbca410f87f3e85"
+    },
+    {
+      "name": "diff_address",
+      "signature": "ban.diff_address(timestamp with time zone,timestamp with time zone,uuid[],uuid[],uuid[],text[])",
+      "bodySha256": "6baeb10dc58831bf3757aaa02b42008060b91c1ae085edbd1cdc973bdaa6abc8"
+    },
+    {
+      "name": "diff_common_toponym_ndjson",
+      "signature": "ban.diff_common_toponym_ndjson(timestamp with time zone,timestamp with time zone,uuid[],uuid[],text[])",
+      "bodySha256": "ca0d7620719dec7cbef37036d8bb520f7bb4889adf1a9296c69862750af3319a"
+    },
+    {
+      "name": "diff_common_toponym",
+      "signature": "ban.diff_common_toponym(timestamp with time zone,timestamp with time zone,uuid[],uuid[],text[])",
+      "bodySha256": "a72b8be3dbf0c82525b9dc958769f6936e174b46083a1c565949c11d5bfb409f"
+    },
+    {
+      "name": "diff_district_ndjson",
+      "signature": "ban.diff_district_ndjson(timestamp with time zone,timestamp with time zone,uuid[],text[])",
+      "bodySha256": "230a35cca8d9ea613333998bda270a47bb90b61340d948dc109f679cc0bf7ade"
+    },
+    {
+      "name": "diff_district",
+      "signature": "ban.diff_district(timestamp with time zone,timestamp with time zone,uuid[],text[])",
+      "bodySha256": "88bfe0e80a538efab9e06a7a6bc5e51cbdc820bac9a45179a8f8bcb081c03ac2"
+    },
+    {
+      "name": "export_line_meta",
+      "signature": "ban.export_line_meta(jsonb,text)",
+      "bodySha256": "0d20344e107847b3008e50d3208c66d705cfd729970121c83b5ee4587c8242c8"
+    },
+    {
+      "name": "merge_export_line_meta",
+      "signature": "ban.merge_export_line_meta(jsonb,jsonb,text)",
+      "bodySha256": "503e7f2e87acadfe021d1bd398044514befc31f50360892e2689dbaa340506a4"
+    },
+    {
+      "name": "snapshot_address_ndjson",
+      "signature": "ban.snapshot_address_ndjson(timestamp with time zone,uuid[],uuid[],uuid[],text[])",
+      "bodySha256": "33f2217406929220ba0f21a3151e0bed0dd030f088ed3baad8c9b970db0d9afa"
+    },
+    {
+      "name": "snapshot_address",
+      "signature": "ban.snapshot_address(timestamp with time zone,uuid[],uuid[],uuid[],text[])",
+      "bodySha256": "5077a45646dc28d3b869ac7118b8eb309f79e1594e5ae0c686ca4a9e100fe35e"
+    },
+    {
+      "name": "snapshot_common_toponym_ndjson",
+      "signature": "ban.snapshot_common_toponym_ndjson(timestamp with time zone,uuid[],uuid[],text[])",
+      "bodySha256": "be201cfd6e3fbe162bd0b2d001ab7d1622d63e673a7eda4062d386cf69c763bf"
+    },
+    {
+      "name": "snapshot_common_toponym",
+      "signature": "ban.snapshot_common_toponym(timestamp with time zone,uuid[],uuid[],text[])",
+      "bodySha256": "55c74b9a2c9f185f4ab3e39ea7a1f3328f2d16e4db396f7b0c30d090546a78ae"
+    },
+    {
+      "name": "snapshot_district_cog",
+      "signature": "ban.snapshot_district_cog(timestamp with time zone,uuid)",
+      "bodySha256": "ef542770a04e3a4ec9bd81e7ac318b89dd7f0457bad775b50ab75143ccd6f861"
+    },
+    {
+      "name": "_snapshot_district_ids",
+      "signature": "ban._snapshot_district_ids(timestamp with time zone,text[])",
+      "bodySha256": "6494e4eeab68f8b2ab04b5d39b082f91256a996c39e2668e067ec50f1de8523d"
+    },
+    {
+      "name": "snapshot_district_ndjson",
+      "signature": "ban.snapshot_district_ndjson(timestamp with time zone,uuid[],text[])",
+      "bodySha256": "9753fab2d7f2f514fa33012f834ba43d1c0935720731add69857da94f9e35e72"
+    },
+    {
+      "name": "snapshot_district",
+      "signature": "ban.snapshot_district(timestamp with time zone,uuid[],text[])",
+      "bodySha256": "79113446676eb1b50198ccec45518b3e3605b1c87f44a5fe8f01d0208989bfb4"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "address_district_lower_range_idx",
+      "definition": "CREATE INDEX address_district_lower_range_idx ON ban.address USING btree (\"districtID\", lower(range_validity))"
+    },
+    {
+      "name": "address_h_district_id_idx",
+      "definition": "CREATE INDEX address_h_district_id_idx ON ban.address_h USING btree (\"districtID\")"
+    },
+    {
+      "name": "address_h_district_range_gist",
+      "definition": "CREATE INDEX address_h_district_range_gist ON ban.address_h USING gist (\"districtID\", range_validity)"
+    },
+    {
+      "name": "address_h_main_common_toponym_id_idx",
+      "definition": "CREATE INDEX address_h_main_common_toponym_id_idx ON ban.address_h USING btree (\"mainCommonToponymID\")"
+    },
+    {
+      "name": "address_h_mainct_range_gist",
+      "definition": "CREATE INDEX address_h_mainct_range_gist ON ban.address_h USING gist (\"mainCommonToponymID\", range_validity)"
+    },
+    {
+      "name": "address_h_range_validity_idx",
+      "definition": "CREATE INDEX address_h_range_validity_idx ON ban.address_h USING gist (range_validity)"
+    },
+    {
+      "name": "address_h_secondary_common_toponym_ids_gin",
+      "definition": "CREATE INDEX address_h_secondary_common_toponym_ids_gin ON ban.address_h USING gin (\"secondaryCommonToponymIDs\")"
+    },
+    {
+      "name": "address_lower_range_idx",
+      "definition": "CREATE INDEX address_lower_range_idx ON ban.address USING btree (lower(range_validity))"
+    },
+    {
+      "name": "address_secondary_common_toponym_ids_gin",
+      "definition": "CREATE INDEX address_secondary_common_toponym_ids_gin ON ban.address USING gin (\"secondaryCommonToponymIDs\")"
+    },
+    {
+      "name": "common_toponym_district_lower_range_idx",
+      "definition": "CREATE INDEX common_toponym_district_lower_range_idx ON ban.common_toponym USING btree (\"districtID\", lower(range_validity))"
+    },
+    {
+      "name": "common_toponym_h_district_id_idx",
+      "definition": "CREATE INDEX common_toponym_h_district_id_idx ON ban.common_toponym_h USING btree (\"districtID\")"
+    },
+    {
+      "name": "common_toponym_h_district_range_gist",
+      "definition": "CREATE INDEX common_toponym_h_district_range_gist ON ban.common_toponym_h USING gist (\"districtID\", range_validity)"
+    },
+    {
+      "name": "common_toponym_h_range_validity_idx",
+      "definition": "CREATE INDEX common_toponym_h_range_validity_idx ON ban.common_toponym_h USING gist (range_validity)"
+    },
+    {
+      "name": "common_toponym_lower_range_idx",
+      "definition": "CREATE INDEX common_toponym_lower_range_idx ON ban.common_toponym USING btree (lower(range_validity))"
+    },
+    {
+      "name": "district_cog_idx",
+      "definition": "CREATE INDEX district_cog_idx ON ban.district USING btree ((((meta -> 'insee'::text) ->> 'cog'::text)))"
+    },
+    {
+      "name": "district_dept_code_idx",
+      "definition": "CREATE INDEX district_dept_code_idx ON ban.district USING btree ((\nCASE\n    WHEN (\"left\"(((meta -> 'insee'::text) ->> 'cog'::text), 2) = ANY (ARRAY['97'::text, '98'::text])) THEN \"left\"(((meta -> 'insee'::text) ->> 'cog'::text), 3)\n    ELSE \"left\"(((meta -> 'insee'::text) ->> 'cog'::text), 2)\nEND))"
+    },
+    {
+      "name": "district_lower_range_idx",
+      "definition": "CREATE INDEX district_lower_range_idx ON ban.district USING btree (lower(range_validity))"
+    }
+  ]
+}
