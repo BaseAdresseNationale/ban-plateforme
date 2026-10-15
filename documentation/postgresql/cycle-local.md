@@ -60,7 +60,8 @@ peuvent accroître les WAL après les précontrôles.
 
 Conserver les journaux et comparer source/candidate : données et historiques,
 contraintes/GiST, fonctions, droits et migrations. Suivre l'[audit de mise à niveau](mise-a-niveau-apres-restauration.md)
-puis les tests applicatifs ; `check.sh` fournit seulement l'inventaire technique.
+pour contrôler la baseline, appliquer les migrations Prisma puis exécuter les tests
+applicatifs ; `check.sh` fournit seulement l'inventaire technique.
 Faire approuver la bascule et la fenêtre de retour arrière, et garder l'ancienne
 configuration en privé. Si la base reçoit des écritures, arrêter les écrivains
 et prévoir la reprise des changements postérieurs au dump.
