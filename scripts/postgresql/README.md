@@ -2,6 +2,8 @@
 
 Sauvegarder, restaurer dans une **nouvelle base** et contrôler l'inventaire.
 Prérequis : Node.js 24+, Bash, Docker CLI et conteneur Linux PostgreSQL démarré.
+Hôte Linux/macOS : terminal Bash ; Windows : WSL (environnement Linux), avec
+Node.js et Docker CLI disponibles dans WSL. Les exemples ne sont pas des commandes PowerShell.
 Vérifier le contexte Docker local, les clients/extensions et l'authentification
 du rôle dans le conteneur. Il doit pouvoir lire les paramètres et tailles,
 notamment `data_directory`, et disposer des droits nécessaires à l'opération.
@@ -41,7 +43,8 @@ bash scripts/postgresql/backup.sh --current ban --source ban \
 # Après examen : relancer sans --dry-run, confirmer « SAUVEGARDER ban ».
 ```
 
-Archive custom sans ACL ; rapport avec taille de référence, inventaire et SHA-256.
+Archive custom sans droits d'accès d'origine (ACL) ; rapport avec taille de
+référence, inventaire et empreinte SHA-256 permettant de vérifier l'intégrité du fichier.
 Tester sa restauration isolée. Pour S3 ou les droits de production, voir les
 [guides PostgreSQL](../../documentation/postgresql/README.md).
 
@@ -94,6 +97,8 @@ Table/extension attendue absente, index invalide/non prêt, contrainte non valid
 ou trigger désactivé : signalement et code non nul, sans correction automatique.
 Comparer à la source et vérifier séparément fonctions, droits et migrations.
 Les rapports contiennent des informations sensibles : les garder privés et hors Git.
+Vérifier les droits effectifs du support, notamment sur un partage Windows : les
+modes de permissions Linux ne suffisent pas à prouver sa confidentialité.
 
 L'[audit de mise à niveau](../../documentation/postgresql/mise-a-niveau-apres-restauration.md)
 et les tests métier précèdent la [bascule manuelle](../../documentation/postgresql/cycle-local.md).
