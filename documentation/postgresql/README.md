@@ -12,8 +12,10 @@ l'équipe exploitant BAN Platform.
 | Enchaîner les mises à jour, basculer et préparer un retour arrière | [Cycle local](cycle-local.md) |
 | Utiliser les scripts et leurs précontrôles | [Outils PostgreSQL](../../scripts/postgresql/README.md) |
 
-Parcours local : **archive vérifiée → nouvelle base → restauration → audit des
-migrations → tests → bascule approuvée**.
+Parcours local : **archive vérifiée → restauration dans une nouvelle base →
+contrôle de la baseline et migrations Prisma → tests → bascule approuvée**.
+Prisma installe la couche SQL d’export ; les outils de sauvegarde/restauration
+ne déclenchent ni migration ni bascule.
 
 ## Noms utilisés et cycle de vie
 

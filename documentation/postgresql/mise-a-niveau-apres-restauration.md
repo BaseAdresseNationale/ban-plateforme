@@ -3,7 +3,9 @@
 ## Objectif
 
 Adapter une candidate isolée à une version du dépôt, en préservant historiques
-et droits. La bascule applicative reste une étape séparée.
+et droits : **contrôler → reconnaître la baseline si nécessaire → appliquer les
+migrations Prisma → tester → autoriser la bascule**. Les outils de restauration
+ne migrent pas automatiquement la base.
 
 ## 1. Vérifier la cible et conserver un état de référence
 
@@ -32,42 +34,43 @@ ou migration inachevée/annulée avant d'agir.
 
 | Situation | Suite |
 | --- | --- |
-| Registre présent, migrations et structure cohérentes | Examiner les migrations en attente et leurs prérequis. |
-| Structure déjà présente, registre absent/incomplet | Auditer chaque migration ; préparer une baseline et une reprise du registre. |
-| Fonctions manquantes, empreintes différentes ou structure divergente | Arrêter le déploiement automatique et préparer un plan mainteneur spécifique. |
+| Registre présent et cohérent | Examiner puis exécuter les migrations en attente, y compris les nouveaux prérequis intercalés. |
+| Schéma déjà chargé, registre absent | Contrôler la baseline, reconnaître seulement `0000_baseline`, puis appliquer les autres fichiers. |
+| Registre partiel mais migrations terminées et cohérentes | Vérifier le schéma et les empreintes avant de poursuivre les migrations en attente. |
+| Migration en échec, empreinte différente ou écart inexpliqué | Arrêter et faire examiner l’écart ; ne pas réécrire le registre pour le masquer. |
 
 `migrate status` peut retourner un code non nul pour des migrations en attente
 ou un historique divergent ; il ne prouve pas l'équivalence du schéma réel.
 
 ## 3. Prérequis propres à ce dépôt
 
-Points à vérifier avant tout déploiement :
+Le fichier de migration [`0000_baseline`](../../packages/prisma-client/prisma/migrations/0000_baseline/migration.sql)
+décrit les tables modélisées et leurs indexes initiaux, pas l’ensemble d’un dump
+BAN. Conserver l’historisation, les tables supplémentaires et les contraintes
+restaurées ; documenter les écarts, notamment les colonnes plus strictes `NOT NULL`,
+avant de reconnaître cet état de départ. Ne pas assouplir le dump pour le faire coïncider.
 
-- La [migration `0000_baseline`](../../packages/prisma-client/prisma/migrations/0000_baseline/migration.sql)
-  crée des tables et indexes ; elle ne reproduit pas toute
-  l'historisation, les extensions et les exclusions nécessaires aux dumps BAN.
-  Son schéma SQL doit être relu avec le `search_path` et la structure restaurée.
-- Les migrations [`0006_normalize_export_filter_arguments`](../../packages/prisma-client/prisma/migrations/0006_normalize_export_filter_arguments/migration.sql)
-  et [`0009_optimize_snapshot_generation`](../../packages/prisma-client/prisma/migrations/0009_optimize_snapshot_generation/migration.sql)
-  appellent `ban.export_line_meta`,
-  `ban.merge_export_line_meta` et `ban.snapshot_district_cog`, dont les définitions
-  de création ne sont pas versionnées dans la chaîne des migrations actuelle.
-- Les fonctions intermédiaires des migrations [`0003_add_diff_functions_ndjson`](../../packages/prisma-client/prisma/migrations/0003_add_diff_functions_ndjson/migration.sql)
-  et [`0005_add_snapshot_functions_ndjson`](../../packages/prisma-client/prisma/migrations/0005_add_snapshot_functions_ndjson/migration.sql)
-  ne couvrent pas toutes les variantes de métadonnées des bases historiques.
-- La migration préfixée `0006` change des signatures et recrée des fonctions : vérifier
-  dépendances, propriétaires et GRANT, pas seulement les résultats métier.
+Les dix fichiers historiques restent inchangés. Trois migrations additives
+complètent l’installation des exports :
 
-Si les fonctions auxiliaires requises manquent, **ne pas lancer deploy**. Obtenir
-leurs définitions relues, versionner l'installation et tester sur copie isolée.
-Le bootstrap de `packages/prisma-client/tests/support/` est réservé aux tests,
-pas à la réparation d'une base métier.
+- [`0000a_export_index_prerequisites`](../../packages/prisma-client/prisma/migrations/0000a_export_index_prerequisites/migration.sql) :
+  extension `btree_gist` et index temporel manquant, avant les indexes de `0001`.
+- [`0005a_export_metadata_helpers`](../../packages/prisma-client/prisma/migrations/0005a_export_metadata_helpers/migration.sql) :
+  auxiliaires de métadonnées et de code INSEE, avant leur utilisation dans `0006`.
+- [`0010_complete_export_metadata`](../../packages/prisma-client/prisma/migrations/0010_complete_export_metadata/migration.sql) :
+  métadonnées complémentaires, en conservant les fonctions optimisées.
 
-La migration préfixée `0001` construit des indexes potentiellement coûteux.
-Les migrations préfixées `0002` à `0006` installent/ajustent les fonctions d'export ;
-celles préfixées `0007` à `0009` optimisent leurs requêtes. Voir le
-[guide des tests de performance](../../packages/prisma-client/tests/README-performance.md)
-pour les prérequis et retours arrière des optimisations.
+Prisma trie les noms complets des dossiers. Sur une base ayant déjà appliqué
+les dix anciens fichiers, il exécute aussi les nouveaux fichiers intercalés,
+sans rejouer ni modifier les anciennes lignes du registre. Les trois parcours
+(base vide, schéma restauré, ancien historique) sont décrits et testés dans le
+[guide Prisma](../../packages/prisma-client/migration.md).
+
+Les créations d’indexes peuvent consommer beaucoup de disque, produire des WAL
+et bloquer des écritures. Réévaluer les ressources avant deploy : les estimations
+du script de restauration ne couvrent pas les migrations ultérieures. La migration
+`0006` recrée des fonctions ; contrôler également leurs propriétaires et GRANT.
+Le support SQL de `tests/support/` reste réservé aux tests, pas à une réparation.
 
 ## 4. Appliquer uniquement le plan validé
 
@@ -95,9 +98,14 @@ const url = new URL(process.env.PG_URL);
 assert.ok(/^[a-z_][a-z0-9_]{0,62}$/.test(expected));
 assert.ok(/^[a-z_][a-z0-9_]{0,62}$/.test(current));
 assert.ok(!['ban', current, 'postgres', 'template0', 'template1'].includes(expected));
+assert.ok(['postgres:', 'postgresql:'].includes(url.protocol));
 assert.ok(['localhost', '127.0.0.1', '[::1]'].includes(url.hostname));
 assert.equal(decodeURIComponent(url.pathname.slice(1)), expected);
-const client = new pg.Client({connectionString: process.env.PG_URL});
+assert.equal(url.searchParams.get('schema'), 'ban');
+assert.ok([...url.searchParams.keys()].every(key => key === 'schema')
+  && url.searchParams.getAll('schema').length === 1 && !url.hash);
+const client = new pg.Client({connectionString: process.env.PG_URL,
+  connectionTimeoutMillis: 10000, options: '-c default_transaction_read_only=on -c statement_timeout=10000'});
 await client.connect();
 try {
   await client.query('BEGIN READ ONLY');
@@ -120,10 +128,12 @@ PG_URL="$TARGET_PG_URL" pnpm --filter @ban/prisma-client exec prisma migrate sta
 ```
 
 `resolve --applied` **enregistre sans exécuter le SQL** : l'utiliser uniquement
-après preuve d'application ou d'équivalence de la baseline, jamais pour masquer un échec.
+pour reconnaître une baseline contrôlée lorsque le registre est absent.
+Si elle est déjà enregistrée, passer directement au déploiement après audit.
+Ne pas marquer les autres migrations comme appliquées à la place de les exécuter.
 
 ```sh
-# Seulement si l'équivalence de la migration 0000_baseline a été démontrée et approuvée.
+# Registre absent, structure initiale et écarts documentés/approuvés uniquement.
 assert_candidate_url && \
 PG_URL="$TARGET_PG_URL" pnpm --filter @ban/prisma-client exec prisma migrate resolve \
   --config prisma.config.ts --applied 0000_baseline
@@ -145,6 +155,8 @@ Comparer avant/après tables et volumes, colonnes, contraintes, indexes et trigg
 Vérifier signatures/corps des fonctions, propriétaires/ACL, registre et empreintes
 Prisma. Tester une connexion avec le rôle applicatif puis un FULL, un DIFF et
 une sélection vide avec le code correspondant, sur le périmètre autorisé.
+Avant de démarrer des services susceptibles d’écrire ou d’émettre des messages,
+maîtriser les abonnements et notifications provenant du dump de production.
 
 Les [tests synthétiques](../../packages/prisma-client/tests/README.md) complètent
 cette validation sans couvrir toute la candidate ; mesurer les gros volumes séparément.
