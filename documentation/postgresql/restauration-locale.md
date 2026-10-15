@@ -2,41 +2,54 @@
 
 ## Objectif et prérequis
 
-Installer une sauvegarde de confiance dans une **nouvelle base**, sans remplacer
-la base utilisée par l'application. La source est conservée. Pour restaurer les
-droits de production, suivre plutôt le [guide de reprise](sauvegarde-et-reprise-production.md).
+Restaurer une archive custom de confiance dans une **nouvelle base**, en conservant
+la base applicative. Pour les droits de production, suivre le
+[guide de reprise](sauvegarde-et-reprise-production.md).
 
-Prévoir l'espace pour les données, indexes, fichiers temporaires et WAL, pas
-seulement la taille compressée du dump. Vérifier les versions du serveur et des
-clients, ainsi que la disponibilité des versions d'extensions requises par
-l'archive (`postgis`, `btree_gist`). Le rôle doit pouvoir créer cette base et
-les objets/extensions nécessaires ; faire préparer ces derniers par un
-administrateur si ses permissions sont insuffisantes.
+Vérifier versions clients/serveur, extensions (`postgis`, `btree_gist`), espace
+données/index/temporaires/WAL et droits de création du rôle. Faire préparer les
+extensions par un administrateur si nécessaire. Un dump SQL plain text demande
+une procédure `psql` distincte ; ne pas utiliser le bootstrap applicatif ici.
 
-Une archive custom se restaure avec `pg_restore`. Un dump SQL plain text relève
-de `psql` et nécessite sa propre analyse : ne pas appliquer ces commandes à un
-fichier SQL. Ne pas mélanger le bootstrap applicatif avec une restauration.
+## Variante avec les scripts
+
+Les [outils locaux](../../scripts/postgresql/README.md) affichent cibles,
+ressources et espace requis estimé, puis demandent confirmation par défaut.
+`--dry-run` n'écrit rien ; `-y` accepte la confirmation sans lever les protections.
+
+```sh
+CURRENT_DATABASE="ban" # Nom réellement utilisé par les services, à vérifier dans leur configuration.
+TARGET_DATABASE="ban_restore" # Exemple ; préférer un suffixe daté pour distinguer les générations.
+bash scripts/postgresql/restore.sh --current "$CURRENT_DATABASE" \
+  --target "$TARGET_DATABASE" --archive /backups/backup.dump --dry-run
+# Après lecture du bilan : même commande sans --dry-run pour demander la confirmation.
+```
+
+Choisir **les scripts ou les commandes manuelles**, jamais les deux sur une même
+cible. Voir le [cycle local](cycle-local.md) pour l'impact machine et la bascule.
 
 ## 1. Configurer et inspecter
 
-Les chemins d'archive sont **dans le conteneur** ; les journaux sont sur l'hôte.
-Le nombre de jobs est configurable. Les exemples de noms SQL sont limités à
-des identifiants ASCII simples pour sécuriser leur interpolation.
+Archive **dans le conteneur**, journaux sur l'hôte ; noms SQL ASCII simples.
+`RESTORE_JOBS=2` est un choix d'exemple, modifiable selon les ressources.
 
 ```sh
 set -euo pipefail
 TARGET_CONTAINER="<conteneur-postgresql-local>"
 RESTORE_USERNAME="<role-de-restauration>"
-TARGET_DATABASE="ban_restore_new"
+CURRENT_DATABASE="ban"
+TARGET_DATABASE="ban_restore"
 ARCHIVE_PATH="<chemin-dans-le-conteneur/backup.dump>"
 HOST_LOG_DIRECTORY="<repertoire-local-existant>"
 RESTORE_JOBS=2
 
 require_isolated_target() {
   case "$TARGET_DATABASE" in
-    ban|ban_restore_validation|postgres|template0|template1|"")
+    ban|postgres|template0|template1|"")
       echo "Cible protégée : arrêt" >&2; return 1 ;;
   esac
+  [[ "$CURRENT_DATABASE" =~ ^[a-z_][a-z0-9_]{0,62}$ ]] || return 1
+  [[ "$TARGET_DATABASE" != "$CURRENT_DATABASE" ]] || { echo "Base applicative protégée" >&2; return 1; }
   [[ "$TARGET_DATABASE" =~ ^[a-z_][a-z0-9_]{0,62}$ ]] || return 1
   [[ "$RESTORE_USERNAME" =~ ^[a-z_][a-z0-9_]{0,62}$ ]]
 }
@@ -49,16 +62,13 @@ docker exec "$TARGET_CONTAINER" psql --username="$RESTORE_USERNAME" \
   --command="SELECT current_database(), current_user, version(); SELECT datname FROM pg_database ORDER BY datname; SELECT name, default_version FROM pg_available_extensions WHERE name IN ('postgis', 'btree_gist');"
 ```
 
-Comparer l'empreinte SHA-256 à celle reçue par un canal de confiance. Contrôler
-les versions et schémas dans l'inventaire, le montage Docker et l'espace libre
-du volume de données (`docker exec ... df -h <chemin-du-volume-de-donnees>`).
-Pour inspecter le SQL d'une archive suspecte, utiliser `pg_restore --file` hors
-de toute connexion cible ; l'inventaire seul ne révèle pas tout le SQL exécuté.
+Comparer le SHA-256 reçu par un canal de confiance, contrôler l'inventaire et
+l'espace (`docker exec ... df -h <volume-de-donnees>`). Pour examiner le SQL,
+utiliser `pg_restore --file` hors connexion cible : l'inventaire ne montre pas tout.
 
 ## 2. Créer une base neuve
 
-Vérifier d'abord que la base est absente. Si elle existe, **arrêter** : examiner
-son état et choisir un autre nom, sans la supprimer ni relancer le bootstrap.
+Si la cible existe, **arrêter** et choisir un autre nom, sans suppression.
 
 ```sh
 require_isolated_target
@@ -74,9 +84,8 @@ docker exec "$TARGET_CONTAINER" psql --username="$RESTORE_USERNAME" \
 
 ## 3. Restaurer
 
-La restauration locale attribue les objets au rôle de restauration et ignore
-les ACL d'origine. Cela facilite l'installation sans recréer les comptes de
-production ; cela ne constitue pas une reprise de leurs droits.
+Ce profil attribue les objets au rôle de restauration et ignore les ACL d'origine.
+Il facilite l'installation locale, sans reprendre les droits de production.
 
 ```sh
 require_isolated_target
@@ -91,20 +100,14 @@ docker exec "$TARGET_CONTAINER" pg_restore \
   "$ARCHIVE_PATH" > "$HOST_LOG_DIRECTORY/$TARGET_DATABASE-restore.log" 2>&1
 ```
 
-`--exit-on-error` arrête la restauration à la première erreur ; il faut aussi
-vérifier le code de sortie et le journal. Un échec peut laisser une base
-partiellement chargée : la conserver pour diagnostic puis décider explicitement
-de la suite. Il n'y a ni `--clean` ni `--create` : la base cible est celle créée
-à l'étape précédente, pas le nom d'origine enregistré dans l'archive.
+`--exit-on-error` arrête à la première erreur. Vérifier sortie et journal ; garder
+toute cible partielle pour diagnostic. Sans `--clean`/`--create`, la restauration
+vise la base créée ci-dessus, pas le nom enregistré dans l'archive.
 
 ### Adapter les ressources
 
-Les contraintes d'exclusion GiST des tables historiques peuvent dominer la
-durée. Leur coût reste élevé même avec plusieurs jobs. Commencer prudemment
-puis adapter CPU, mémoire et I/O aux limites réelles du conteneur.
-
-Sur une nouvelle tentative explicitement préparée, des options de session
-peuvent être passées à la commande, par exemple :
+Les exclusions GiST historiques peuvent dominer la durée malgré les jobs.
+Sur une nouvelle tentative préparée, adapter les sessions aux ressources Docker :
 
 ```sh
 # Variante de la commande précédente, pas une seconde exécution sur la même base.
@@ -113,9 +116,8 @@ RESTORE_PGOPTIONS="-c maintenance_work_mem=256MB -c work_mem=16MB"
 # docker exec --env "PGOPTIONS=$RESTORE_PGOPTIONS" "$TARGET_CONTAINER" pg_restore ...
 ```
 
-La mémoire se cumule entre opérations et connexions ; ne pas multiplier les
-jobs et augmenter simultanément la mémoire sans budget global. Aucun réglage
-global du serveur ni désactivation de contrainte/trigger n'est requis ici.
+La mémoire se cumule entre opérations et connexions : évaluer la consommation
+totale avant d'augmenter jobs et mémoire. Garder contraintes et triggers actifs.
 
 ## 4. Contrôler avant utilisation
 
@@ -131,13 +133,9 @@ Sur la seule cible vérifiée, relever et comparer à la sauvegarde :
 - Plages `tstzrange`, indexes GiST et contraintes d'exclusion des historiques.
 - Fonctions, propriétaires/droits locaux et registre des migrations Prisma.
 
-Un trigger désactivé ou une contrainte non validée doit être expliqué par
-comparaison avec la source, pas corrigé automatiquement. Les séquences doivent
-être cohérentes avec les identifiants chargés ; ne pas les réinitialiser à l'aveugle.
-
-Exemple d'inventaire en lecture seule. Les comptes exacts concernent les tables
-BAN principales présentes ; adapter la sélection à l'inventaire source. Les
-résultats et journaux sont à garder dans le stockage de travail, hors Git.
+Comparer les anomalies à la source avant toute correction ; vérifier les séquences
+sans réinitialisation aveugle. Exemple d'inventaire en lecture seule, avec comptes
+exacts des tables BAN présentes : conserver résultats et journaux hors Git.
 
 ```sh
 require_isolated_target
@@ -177,8 +175,7 @@ COMMIT;
 SQL
 ```
 
-Après réussite du restore, l'actualisation des statistiques est une écriture
-de maintenance réservée à la cible vérifiée :
+Après réussite, actualiser les statistiques sur la cible vérifiée :
 
 ```sh
 require_isolated_target
@@ -187,9 +184,7 @@ docker exec "$TARGET_CONTAINER" psql --username="$RESTORE_USERNAME" \
   --dbname="$TARGET_DATABASE" --no-psqlrc --set=ON_ERROR_STOP=1 --command='ANALYZE;'
 ```
 
-Passer ensuite à la [mise à niveau et validation applicative](mise-a-niveau-apres-restauration.md).
-Tester le rôle réellement utilisé par l'application : un accès administrateur
-réussi ne prouve pas les permissions du rôle applicatif. Conserver l'ancienne
-configuration et la base précédente jusqu'à décision de bascule et retour arrière.
+Poursuivre avec la [mise à niveau et les tests applicatifs](mise-a-niveau-apres-restauration.md),
+avec le vrai rôle applicatif. Garder base et configuration précédentes pour le retour arrière.
 
 Référence : [PostgreSQL 17 — pg_restore](https://www.postgresql.org/docs/17/app-pgrestore.html).

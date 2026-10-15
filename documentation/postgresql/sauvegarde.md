@@ -2,36 +2,33 @@
 
 ## Objectif et prérequis
 
-Une archive custom contient la structure et les données d'une base : schémas,
-extensions déclarées, tables, historiques, fonctions, contraintes, indexes,
-triggers et séquences. Elle se restaure avec `pg_restore` et peut être inspectée
-ou restaurée sélectivement. Les rôles et binaires d'extensions sont à préparer
-séparément ; suivre le [guide production](sauvegarde-et-reprise-production.md)
-pour conserver les propriétaires et droits de l'environnement d'origine.
+Une archive custom contient structure et données : tables/historiques, fonctions,
+contraintes, indexes, triggers et séquences. Rôles et binaires d'extensions se
+préparent séparément ; pour les propriétaires et droits, voir le
+[guide production](sauvegarde-et-reprise-production.md).
 
-Vérifier les accès de lecture, les clients PostgreSQL, le montage des backups et
-l'espace libre. Utiliser un `pg_dump` compatible avec le serveur source et un
-`pg_restore` capable de lire l'archive. Préférer la même version majeure pour
-une procédure reproductible ; tester toute montée de version. Une restauration
-vers une version majeure antérieure n'est pas garantie.
+Vérifier accès, espace, montage et compatibilité des clients/serveurs PostgreSQL.
+Préférer la même version majeure et tester les montées de version ; restaurer
+vers une version antérieure n'est pas garanti.
 
-`SOURCE_DATABASE` est la base à sauvegarder : production autorisée, base locale
-ou intermédiaire. Éviter les migrations concurrentes pendant la collecte.
-Conserver la version du code, les versions PostgreSQL/extensions et l'état du
-registre Prisma avec la sauvegarde. L'authentification utilise le mécanisme
-autorisé de l'infrastructure ; aucun mot de passe n'est à ajouter aux commandes.
+`SOURCE_DATABASE` désigne la base à sauvegarder : `ban` par défaut à l'installation,
+puis la base courante après bascule. Éviter les migrations concurrentes et conserver
+versions du code/PostgreSQL/extensions et état Prisma avec l'archive. Utiliser
+l'authentification de l'infrastructure, sans mot de passe dans les commandes.
+
+Alternative aux commandes ci-dessous : [backup.sh](../../scripts/postgresql/README.md),
+avec estimation d'espace, confirmation et `--dry-run`.
 
 ## Sauvegarde vers un fichier
 
-`BACKUP_DIRECTORY` est un chemin dans le conteneur, correspondant à un volume
-ou bind mount durable côté hôte. Vérifier un montage temporaire après chaque
-recréation du conteneur ; ne pas supposer que `/backups` existe encore.
+`BACKUP_DIRECTORY` est dans le conteneur ; `HOST_BACKUP_DIRECTORY` est le chemin
+correspondant sur l'hôte. Vérifier le montage après toute recréation du conteneur.
 
 ```sh
 set -euo pipefail
 POSTGRES_CONTAINER="<conteneur-source>"
 PG_USERNAME="<login-postgresql>"
-SOURCE_DATABASE="<base-a-sauvegarder>"
+SOURCE_DATABASE="ban" # Adapter au nom de la base courante après une bascule.
 BACKUP_DIRECTORY="<repertoire-dans-le-conteneur>"
 HOST_BACKUP_DIRECTORY="<repertoire-correspondant-sur-l-hote>"
 BACKUP_FILENAME="ban-$(date -u +%Y-%m-%dT%H%M%SZ).dump"
@@ -57,36 +54,31 @@ shasum -a 256 "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME" \
   > "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.sha256"
 ```
 
-`--format=custom` choisit l'archive ; `--no-acl` omet les GRANT/REVOKE pour le
-workflow local portable ; `--verbose` alimente le journal. `--no-owner` se passe
-à **pg_restore** : il est ignoré par pg_dump pour une archive custom. Les exemples
-ne demandent aucun nettoyage préalable (`--clean`). Le format custom permet une
-restauration parallèle ; un export `pg_dump --jobs` utilise le format directory.
+`--format=custom` permet la restauration parallèle ; `--no-acl` omet les droits
+pour l'usage local ; `--verbose` journalise. Passer `--no-owner` à **pg_restore** :
+pg_dump l'ignore pour une archive custom. Aucun `--clean` n'est nécessaire.
+`pg_dump --jobs` exige le format directory.
 
-La vérification d'existence évite un écrasement accidentel en utilisation
-séquentielle ; coordonner les sauvegardes concurrentes avec des noms distincts.
-Relire les avertissements du journal. `pg_restore --list` contrôle la lisibilité
-et l'inventaire, pas la restauration complète : réaliser la
-[restauration isolée](restauration-locale.md) avant de déclarer l'archive validée.
+Utiliser des noms distincts pour les sauvegardes concurrentes : le test d'existence
+ci-dessus n'est pas atomique. Relire le journal et tester une
+[restauration isolée](restauration-locale.md) ; `--list` vérifie seulement la lisibilité.
 
 ## Sauvegarde vers S3
 
-Utiliser AWS CLI v2 et un profil ou rôle IAM autorisé sur le préfixe retenu.
-Les identifiants restent dans le gestionnaire de secrets ou le mécanisme IAM.
-Préparer les droits, le chiffrement, le versionnement et la rétention du bucket.
+Utiliser AWS CLI v2 et un profil/rôle IAM autorisé. Préparer droits, chiffrement,
+versionnement et rétention ; garder les identifiants dans le mécanisme de secrets.
 
 ### Créer un fichier puis l'envoyer
 
-Le bloc rappelle toutes les variables et commandes de cette variante. `S3_KEY`
-doit être nouveau : `aws s3 cp` peut remplacer un objet existant. Pour un service
-compatible S3, renseigner son endpoint ; pour AWS, laisser cette variable vide.
-Vérifier versions, espace et identité de la source comme dans la rubrique fichier.
+`S3_KEY` doit être nouveau : l'envoi peut écraser un objet. Renseigner l'endpoint
+pour un service compatible S3 ; pour AWS, le laisser vide. Vérifier versions,
+espace et identité source comme ci-dessus. Voici toutes les commandes de cette variante.
 
 ```sh
 set -euo pipefail
 POSTGRES_CONTAINER="<conteneur-source>"
 PG_USERNAME="<login-postgresql>"
-SOURCE_DATABASE="<base-a-sauvegarder>"
+SOURCE_DATABASE="ban" # Adapter au nom de la base courante après une bascule.
 BACKUP_DIRECTORY="<repertoire-dans-le-conteneur>"
 HOST_BACKUP_DIRECTORY="<repertoire-correspondant-sur-l-hote>"
 BACKUP_FILENAME="ban-$(date -u +%Y-%m-%dT%H%M%SZ).dump"
@@ -115,21 +107,19 @@ aws s3 cp "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.sha256" "s3://$S3_BUCKET/$S3_
 aws s3api head-object --bucket "$S3_BUCKET" --key "$S3_KEY" "${S3_OPTIONS[@]}"
 ```
 
-Contrôler taille et empreinte après téléchargement ; un ETag multipart n'est pas
-nécessairement le MD5 du fichier. Conserver journaux, inventaire et copie locale
-tant que l'envoi et la restauration de validation ne sont pas confirmés.
+Contrôler taille et SHA-256 après téléchargement : un ETag multipart n'est pas
+forcément un MD5. Garder copie locale et journaux jusqu'à validation de l'envoi et du restore.
 
 ### Stream direct vers S3
 
-Le streaming évite le fichier d'archive temporaire **à l'export**. La sortie
-standard de pg_dump alimente AWS CLI ; le journal reste sur stderr. Il faut
-ensuite télécharger une copie pour l'inspecter et la restaurer en parallèle.
+Le streaming évite le fichier local **à l'export**. Télécharger ensuite une copie
+pour l'inspecter et la restaurer en parallèle.
 
 ```sh
 set -euo pipefail
 POSTGRES_CONTAINER="<conteneur-source>"
 PG_USERNAME="<login-postgresql>"
-SOURCE_DATABASE="<base-a-sauvegarder>"
+SOURCE_DATABASE="ban" # Adapter au nom de la base courante après une bascule.
 HOST_LOG_DIRECTORY="<repertoire-local-existant>"
 BACKUP_FILENAME="ban-$(date -u +%Y-%m-%dT%H%M%SZ).dump"
 AWS_PROFILE="" # Renseigner un profil nommé ou laisser vide pour le mécanisme IAM courant.
@@ -149,15 +139,11 @@ docker exec "$POSTGRES_CONTAINER" pg_dump \
 aws s3api head-object --bucket "$S3_BUCKET" --key "$S3_KEY" "${S3_OPTIONS[@]}"
 ```
 
-`pipefail` propage un échec de l'un des deux programmes. Un upload terminé peut
-néanmoins contenir un dump tronqué si pg_dump a échoué : conserver le journal et
-contrôler tout objet laissé après un échec avant de le déclarer valide.
-Pour un flux supérieur à 50 Go, ajouter `--expected-size "<octets-attendus>"`
-à `aws s3 cp` selon la taille attendue et les limites multipart du service.
-
-Après téléchargement vers un fichier nouveau : `pg_restore --list`, empreinte
-SHA-256 et répétition de restauration. Une lecture S3 sur stdin ne convient pas
-à une restauration `pg_restore --jobs` parallèle.
+`pipefail` signale l'échec de l'un des programmes ; un objet S3 peut malgré tout
+rester tronqué si pg_dump échoue. Garder le journal et vérifier cet objet.
+Au-delà de 50 Go, ajouter `--expected-size "<octets-attendus>"` à `aws s3 cp`.
+Après téléchargement dans un nouveau fichier : `--list`, SHA-256 et restauration
+de validation. `pg_restore --jobs` ne fonctionne pas sur stdin.
 
 ## Références
 
