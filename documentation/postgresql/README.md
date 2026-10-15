@@ -41,12 +41,18 @@ sans renommage PostgreSQL.
 - Garder dumps, données et secrets hors Git, dans un stockage privé à rétention définie.
 - Exécuter les exemples en **Bash**, depuis la racine du dépôt, après avoir
   renseigné les paramètres `<...>` et lu les conditions de chaque étape.
+  Sous Windows, utiliser WSL (environnement Linux) avec Node.js et Docker CLI
+  disponibles dans ce même environnement ; sous Linux/macOS, utiliser un terminal Bash.
 
 ## Configuration des outils et de l'application
 
 - [`.env.example`](../../.env.example) : modèle pour les services sur la machine hôte.
 - [`.env.docker`](../../.env.docker) : modèle partagé pour le réseau des conteneurs.
 - `.env` : fichier personnel ignoré par Git, à conserver localement.
+
+Les identifiants des modèles sont publics et réservés au développement local :
+ne pas les réutiliser en production. Ne joindre aux PR ni `.env` personnel,
+ni sauvegarde, ni rapport contenant des données ou secrets réels.
 
 Modifier `PG_DB` ne réécrit pas `PG_URI` et `PG_URL` : vérifier leurs base, hôte,
 port et identifiants. `schema=ban` désigne le schéma, pas la base. Depuis l'hôte,
