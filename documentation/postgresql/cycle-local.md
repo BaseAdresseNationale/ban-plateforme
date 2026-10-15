@@ -35,13 +35,15 @@ le script exige prudemment l'espace estimé complet sur chacun. Les objets et
 temporaires sont restaurés dans le stockage par défaut de la candidate
 (`--no-tablespaces`, `temp_tablespaces` vide).
 
-### Particularité Docker Desktop
+### Stockage Docker et système hôte
 
-Le libre dans la VM et celui du Mac **ne s'additionnent pas**. Les scripts
-affichent volumes, montages et espace hôte accessible. Vérifier aussi l'image
-disque dans **Docker Desktop > Settings > Resources** et le disque hôte qui
-l'héberge : le plafond physique des volumes nommés n'est pas déduit automatiquement.
-Un précontrôle réussi ne garantit donc pas la place nécessaire sur le Mac.
+Sur Linux, Docker Engine peut utiliser directement le stockage de l'hôte.
+Docker Desktop utilise un stockage virtualisé, notamment via WSL 2 sous Windows.
+Le libre dans cette VM et sur l'hôte **ne s'additionne pas**. Les scripts affichent
+les volumes, montages et chemins hôte accessibles ; vérifier aussi le disque
+physique et les limites de Docker Desktop/WSL. Selon l'installation, consulter
+**Docker Desktop > Settings > Resources**. Le plafond physique du stockage
+virtualisé n'est pas déduit automatiquement : un précontrôle réussi ne le garantit pas.
 
 ### Mémoire et activité concurrente
 
@@ -92,4 +94,4 @@ sans suppression automatique.
 
 Références : [pg_restore](https://www.postgresql.org/docs/17/app-pgrestore.html),
 [mémoire PostgreSQL](https://www.postgresql.org/docs/17/runtime-config-resource.html),
-[stockage Docker Desktop pour Mac](https://docs.docker.com/desktop/troubleshoot-and-support/faqs/macfaqs/).
+[réglages Docker Desktop](https://docs.docker.com/desktop/settings-and-maintenance/settings/).

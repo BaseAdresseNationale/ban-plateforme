@@ -19,10 +19,16 @@ Garder les URL contenant des secrets hors des sorties et de Git.
 
 ## 2. Examiner les migrations et leur registre
 
-Le dépôt versionne les migrations dans
-[`packages/prisma-client/prisma/migrations`](../../packages/prisma-client/prisma/migrations).
-Comparer noms et SHA-256 au registre restauré. Analyser les empreintes différentes
-et migrations inachevées/annulées avant toute action ; ne pas masquer une divergence.
+Une **migration** est un fichier SQL qui fait évoluer la structure ou les fonctions
+de la base. Chaque dossier numéroté de
+[`prisma/migrations`](../../packages/prisma-client/prisma/migrations) contient un
+fichier `migration.sql`. Par exemple, « migration `0000_baseline` » désigne
+`0000_baseline/migration.sql`.
+
+Prisma suit leur application dans la table `_prisma_migrations` (le registre).
+Une **baseline** représente l'état de départ reconnu par Prisma. Comparer noms
+et empreintes SHA-256 des fichiers au registre restauré ; analyser toute différence
+ou migration inachevée/annulée avant d'agir.
 
 | Situation | Suite |
 | --- | --- |
@@ -37,15 +43,19 @@ ou un historique divergent ; il ne prouve pas l'équivalence du schéma réel.
 
 Points à vérifier avant tout déploiement :
 
-- `0000_baseline` crée des tables et indexes ; elle ne reproduit pas toute
+- La [migration `0000_baseline`](../../packages/prisma-client/prisma/migrations/0000_baseline/migration.sql)
+  crée des tables et indexes ; elle ne reproduit pas toute
   l'historisation, les extensions et les exclusions nécessaires aux dumps BAN.
   Son schéma SQL doit être relu avec le `search_path` et la structure restaurée.
-- `0006` et `0009` appellent `ban.export_line_meta`,
+- Les migrations [`0006_normalize_export_filter_arguments`](../../packages/prisma-client/prisma/migrations/0006_normalize_export_filter_arguments/migration.sql)
+  et [`0009_optimize_snapshot_generation`](../../packages/prisma-client/prisma/migrations/0009_optimize_snapshot_generation/migration.sql)
+  appellent `ban.export_line_meta`,
   `ban.merge_export_line_meta` et `ban.snapshot_district_cog`, dont les définitions
   de création ne sont pas versionnées dans la chaîne des migrations actuelle.
-- Les wrappers de `0003` et `0005` ne décrivent pas à eux seuls toutes les
-  variantes de métadonnées rencontrées dans les bases utilisées par l'application.
-- `0006` remplace certaines signatures et supprime/recrée des fonctions : vérifier
+- Les fonctions intermédiaires des migrations [`0003_add_diff_functions_ndjson`](../../packages/prisma-client/prisma/migrations/0003_add_diff_functions_ndjson/migration.sql)
+  et [`0005_add_snapshot_functions_ndjson`](../../packages/prisma-client/prisma/migrations/0005_add_snapshot_functions_ndjson/migration.sql)
+  ne couvrent pas toutes les variantes de métadonnées des bases historiques.
+- La migration préfixée `0006` change des signatures et recrée des fonctions : vérifier
   dépendances, propriétaires et GRANT, pas seulement les résultats métier.
 
 Si les fonctions auxiliaires requises manquent, **ne pas lancer deploy**. Obtenir
@@ -53,9 +63,10 @@ leurs définitions relues, versionner l'installation et tester sur copie isolée
 Le bootstrap de `packages/prisma-client/tests/support/` est réservé aux tests,
 pas à la réparation d'une base métier.
 
-Les migrations `0001` peuvent construire des indexes coûteux ; `0002` à `0006`
-installent/ajustent les fonctions d'export ; `0007` à `0009` optimisent leurs
-requêtes. Consulter le [guide des tests de performance](../../packages/prisma-client/tests/README-performance.md)
+La migration préfixée `0001` construit des indexes potentiellement coûteux.
+Les migrations préfixées `0002` à `0006` installent/ajustent les fonctions d'export ;
+celles préfixées `0007` à `0009` optimisent leurs requêtes. Voir le
+[guide des tests de performance](../../packages/prisma-client/tests/README-performance.md)
 pour les prérequis et retours arrière des optimisations.
 
 ## 4. Appliquer uniquement le plan validé
@@ -112,7 +123,7 @@ PG_URL="$TARGET_PG_URL" pnpm --filter @ban/prisma-client exec prisma migrate sta
 après preuve d'application ou d'équivalence de la baseline, jamais pour masquer un échec.
 
 ```sh
-# Exemple : seulement si l'équivalence de 0000 a été démontrée et approuvée.
+# Seulement si l'équivalence de la migration 0000_baseline a été démontrée et approuvée.
 assert_candidate_url && \
 PG_URL="$TARGET_PG_URL" pnpm --filter @ban/prisma-client exec prisma migrate resolve \
   --config prisma.config.ts --applied 0000_baseline

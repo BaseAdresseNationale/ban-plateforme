@@ -260,7 +260,7 @@ export async function run(options, dependencies = {}) {
     print(`Restauration : ${options.jobs} sessions ; maintenance_work_mem=${options.maintenanceMb}MB ; work_mem=${options.workMb}MB`);
     print(`Repère mémoire jobs × (maintenance + work) : ${formatBytes(configured)} ; ce calcul n’est PAS un plafond (opérations multiples, workers, caches et application en supplément).`);
   }
-  warn('Docker Desktop : le libre dans la VM ne garantit pas la place physique du fichier disque sur le Mac. Vérifier dans Settings > Resources l’emplacement et la capacité de l’image disque, ainsi que le libre sur son disque hôte ; ces capacités ne se cumulent pas.');
+  warn('Docker Desktop / WSL : si le stockage est virtualisé, vérifier aussi les limites de la VM et le libre sur son disque hôte (réglages Resources selon l’installation). Le libre VM/hôte ne se cumule pas ; sous Docker Engine natif, contrôler le disque physique des volumes.');
   let fingerprint;
   if (options.command !== 'check') {
     assert.ok(source || options.estimatedDatabaseGb !== undefined, 'Source absente : fournir une estimation explicite --estimated-database-gb');
