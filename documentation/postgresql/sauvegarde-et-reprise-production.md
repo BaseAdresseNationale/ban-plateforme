@@ -2,22 +2,18 @@
 
 ## Objectif et responsabilités
 
-L'équipe disposant des accès production prépare et répète une reprise sur une
-**nouvelle instance isolée**. Ce guide complète le plan d'exploitation : il
-ne déclenche ni bascule des applications ni modification de l'instance en service.
+L'équipe autorisée prépare et répète la reprise sur une **nouvelle instance
+isolée**, selon son plan d'exploitation. La bascule est une décision séparée.
 
-Le kit comporte un export des objets globaux du cluster et une archive custom
-de la base. **La structure est déjà dans cette archive** : il n'y a pas deux
-restaurations successives de la structure. Les fichiers de configuration du
-serveur, règles réseau, secrets, binaires d'extensions et données des autres
-services sont provisionnés/sauvegardés séparément. La sauvegarde logique ne
-remplace pas une stratégie physique/WAL pour une reprise à un instant précis.
+Le kit contient les objets globaux du cluster et une archive custom **structure
+et données** : pas de double restauration de structure. Sauvegarder/provisionner
+séparément configuration serveur, réseau, secrets, binaires d'extensions et autres
+services. Une reprise à un instant précis nécessite une stratégie physique/WAL.
 
 ## 1. Produire le kit avec rôles, propriétaires et droits
 
-Utiliser un compte autorisé à lire tous les objets/rôles, adapter les rôles
-système aux restrictions d'un fournisseur managé et vérifier versions/volumes.
-Les répertoires doivent être accessibles et les fichiers nouveaux.
+Vérifier accès à tous les objets/rôles, restrictions du fournisseur, versions et
+volumes. Les répertoires doivent être accessibles et les fichiers nouveaux.
 
 ```sh
 set -euo pipefail
@@ -50,37 +46,29 @@ shasum -a 256 "$HOST_BACKUP_DIRECTORY/$GLOBALS_FILENAME" "$HOST_BACKUP_DIRECTORY
   > "$HOST_BACKUP_DIRECTORY/kit-$STAMP.sha256"
 ```
 
-`--globals-only` inclut rôles, appartenances et tablespaces. Adapter les chemins
-de tablespaces sur la cible ; si seuls les rôles sont requis, examiner l'option
-`--roles-only` et documenter les autres objets globaux séparément.
-`--no-role-passwords` impose de rétablir les secrets via le mécanisme approuvé.
-Les attributs des comptes restent sensibles : conserver le kit hors Git, chiffré
-et à accès restreint. Les deux exports ne partagent pas un snapshot commun de
-cluster : coordonner les changements de droits, rôles et schéma pendant la collecte.
+`--globals-only` inclut rôles, appartenances et tablespaces : adapter leurs chemins
+sur la cible. `--roles-only` convient si les autres objets sont traités séparément.
+`--no-role-passwords` exige de rétablir les secrets par le mécanisme approuvé.
+Garder le kit chiffré, privé et hors Git. Les deux exports n'ont pas de snapshot
+commun : coordonner les changements de droits/rôles/schéma pendant la collecte.
 
-Le dump de base conserve les propriétaires et ACL/default ACL : **ne pas passer
-`--no-acl`**. À la restauration, conserver aussi les propriétaires en n'utilisant
-pas `--no-owner`. Une archive produite sans ACL ne permet pas de reconstituer
-les droits absents : obtenir une nouvelle sauvegarde ou une référence de droits.
+Préserver propriétaires et ACL/droits par défaut : **aucun `--no-acl` au dump
+ou au restore, aucun `--no-owner` au restore**. Des droits omis exigent une
+nouvelle sauvegarde ou une référence de droits pour les reconstituer.
 
-Transmettre les deux fichiers, empreintes, journaux et inventaires sous le même
-identifiant de kit. Pour S3, suivre les principes du [guide sauvegarde](sauvegarde.md#sauvegarde-vers-s3),
-en utilisant les commandes de dump de cette page qui conservent les ACL.
-Le streaming nécessite également une copie téléchargée pour validation et
-restauration parallèle. Tester la reprise avant de considérer le kit utilisable.
+Transmettre fichiers, empreintes, journaux et inventaires sous le même identifiant.
+Pour [S3](sauvegarde.md#sauvegarde-vers-s3), utiliser les dumps de **cette page**,
+avec ACL. Après streaming, télécharger une copie pour validation/restauration
+parallèle. Tester la reprise avant de déclarer le kit utilisable.
 
 ## 2. Préparer une nouvelle instance de reprise
 
-Préparer une instance dont les volumes ne sont partagés ni avec la production
-en service ni avec le cluster de développement. Vérifier extensions, versions,
-capacité disque, réseau et politique des secrets. Relire le SQL global : les rôles
-de bootstrap déjà présents peuvent entrer en conflit avec ses CREATE ROLE.
-Préparer une copie adaptée, en examinant aussi les attributs des comptes et les
-tablespaces ; ne pas ignorer globalement les erreurs.
+Les volumes ne doivent être partagés avec aucun cluster existant. Vérifier
+extensions, versions, disque, réseau et secrets. Relire/adapter le SQL global :
+rôles de bootstrap déjà présents, attributs et tablespaces. Ne pas ignorer les erreurs.
 
-Cette variante utilise `pg_restore --create`, qui restaure le **nom de base
-enregistré dans l'archive**, ainsi que ses ACL et paramètres. C'est pourquoi
-elle exige une nouvelle instance dédiée, pas `ban_postgres` ni un cluster partagé.
+`--create` restaure le **nom enregistré dans l'archive**, ses ACL et paramètres :
+utiliser une instance dédiée, pas `ban_postgres` ni un cluster partagé.
 
 ```sh
 TARGET_CONTAINER="<nouveau-conteneur-isole>"
@@ -88,7 +76,7 @@ TARGET_ADMIN="<role-administrateur-cible>"
 TARGET_BACKUP_DIRECTORY="<repertoire-du-kit-dans-le-conteneur-cible>"
 GLOBALS_REVIEWED_FILENAME="<copie-relue-et-adaptee-des-globaux.sql>"
 BACKUP_FILENAME="<nom-exact-de-l-archive-recue.dump>"
-RESTORE_JOBS=2
+RESTORE_JOBS=2 # Choix d'exemple, à adapter aux ressources.
 
 [[ "$TARGET_CONTAINER" != "$SOURCE_CONTAINER" && "$TARGET_CONTAINER" != "ban_postgres" ]]
 docker exec "$TARGET_CONTAINER" psql --username="$TARGET_ADMIN" \
@@ -97,10 +85,9 @@ docker exec "$TARGET_CONTAINER" psql --username="$TARGET_ADMIN" \
 docker exec "$TARGET_CONTAINER" pg_restore --list "$TARGET_BACKUP_DIRECTORY/$BACKUP_FILENAME"
 ```
 
-Comparer empreintes et inventaire au kit reçu. Confirmer l'absence de la base
-source sur cette instance, inspecter les volumes et faire approuver l'identité
-du serveur et le rôle cible. Un nom de conteneur différent ne prouve pas, à lui
-seul, l'isolation du stockage. Ne pas poursuivre si ces conditions sont incertaines.
+Comparer empreintes/inventaire, confirmer l'absence de la base source et faire
+approuver serveur, rôle et volumes. Un nom de conteneur différent ne prouve pas
+l'isolation du stockage ; arrêter en cas de doute.
 
 ## 3. Restaurer les globaux puis la base
 
@@ -118,15 +105,12 @@ docker exec "$TARGET_CONTAINER" pg_restore \
 ```
 
 `postgres` sert à la connexion initiale ; l'archive détermine la base créée.
-Les propriétaires et ACL sont appliqués avec leurs rôles préalablement préparés.
-Journaliser les deux étapes dans le stockage sécurisé de l'exploitation.
-Un échec peut laisser un état partiel : conserver les journaux et analyser avant
-toute reprise. Aucune suppression/option `--clean` n'est prévue.
+Les rôles préparés permettent d'appliquer propriétaires et ACL. Journaliser les
+étapes et garder tout état partiel pour diagnostic ; aucune suppression ni `--clean`.
 
-Pour une restauration locale sous un nom différent, choisir le
-[workflow local](restauration-locale.md), avec une politique de droits locale.
-Les ACL et paramètres propres à la base d'origine nécessitent alors un traitement
-explicite ; les options `--no-owner --no-acl` ne sont pas une reprise des droits.
+Pour un nom cible différent, suivre le [workflow local](restauration-locale.md),
+avec traitement explicite des ACL/paramètres de base : `--no-owner --no-acl`
+ne reprend pas les droits de production.
 
 ## 4. Valider puis décider de la remise en service
 
@@ -140,9 +124,8 @@ explicite ; les options `--no-owner --no-acl` ne sont pas une reprise des droits
 - Prévoir ANALYZE et des tests fonctionnels/performance adaptés ; les historiques
   et exclusions GiST peuvent rendre la restauration longue.
 
-La bascule des applications, jobs et DNS relève du plan de reprise validé par
-l'équipe. Garder l'ancienne instance et le kit jusqu'à la fin de la fenêtre de
-retour arrière. Aucun test administrateur ne remplace un test du rôle applicatif.
+Basculer applications, jobs et DNS selon le plan approuvé. Garder ancienne instance
+et kit pendant la fenêtre de retour arrière ; tester avec les vrais rôles applicatifs.
 
 ## Références
 
