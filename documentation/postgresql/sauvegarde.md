@@ -19,6 +19,13 @@ l'authentification de l'infrastructure, sans mot de passe dans les commandes.
 Alternative aux commandes ci-dessous : [backup.sh](../../scripts/postgresql/README.md),
 avec estimation d'espace, confirmation et `--dry-run`.
 
+**Choisir une méthode :**
+
+- [Sauvegarder dans un fichier](#sauvegarde-vers-un-fichier)
+- [Sauvegarder vers S3](#sauvegarde-vers-s3)
+  - [Créer un fichier puis l'envoyer](#créer-un-fichier-puis-lenvoyer)
+  - [Envoyer directement le flux vers S3](#stream-direct-vers-s3)
+
 ## Sauvegarde vers un fichier
 
 `BACKUP_DIRECTORY` est dans le conteneur ; `HOST_BACKUP_DIRECTORY` est le chemin
@@ -50,7 +57,7 @@ docker exec "$POSTGRES_CONTAINER" pg_dump \
 docker exec "$POSTGRES_CONTAINER" pg_restore \
   --list "$BACKUP_DIRECTORY/$BACKUP_FILENAME" \
   > "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.list"
-shasum -a 256 "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME" \
+docker exec "$POSTGRES_CONTAINER" sha256sum "$BACKUP_DIRECTORY/$BACKUP_FILENAME" \
   > "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.sha256"
 ```
 
@@ -100,7 +107,7 @@ docker exec "$POSTGRES_CONTAINER" pg_dump \
 docker exec "$POSTGRES_CONTAINER" pg_restore \
   --list "$BACKUP_DIRECTORY/$BACKUP_FILENAME" \
   > "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.list"
-shasum -a 256 "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME" \
+docker exec "$POSTGRES_CONTAINER" sha256sum "$BACKUP_DIRECTORY/$BACKUP_FILENAME" \
   > "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.sha256"
 aws s3 cp "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME" "s3://$S3_BUCKET/$S3_KEY" "${S3_OPTIONS[@]}"
 aws s3 cp "$HOST_BACKUP_DIRECTORY/$BACKUP_FILENAME.sha256" "s3://$S3_BUCKET/$S3_KEY.sha256" "${S3_OPTIONS[@]}"

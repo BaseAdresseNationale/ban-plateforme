@@ -155,7 +155,7 @@ Ce script :
 3. Vérifie si `ban.district` existe,
 4. Si nécessaire → importe `ban_schema.sql`,
 5. Lance le bootstrap Prisma (`pnpm db:bootstrap`) qui :
-   - marque `0000_baseline` comme appliquée,
+   - marque la migration `0000_baseline` comme appliquée,
    - applique les migrations Prisma restantes,
    - régénère le client Prisma.
 
