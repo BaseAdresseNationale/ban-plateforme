@@ -25,7 +25,7 @@ ban-core-api
         ▼
 ban-core-exporter
   consomme ban.exporter
-  genere tmp/exports/<nom-descriptif>--<token>.ban-standard.ndjson
+  genere tmp/exports/<nom-descriptif>--<token>.ndjson
   stocke le fichier localement ou sur S3
   met a jour ban.job_status
   publie export.completed ou export.failed -> ban.events
@@ -61,15 +61,15 @@ Ce dossier est ignore par Git.
 Les exports d'un département, sans filtre UUID, sont nommés ainsi :
 
 ```text
-full--dep-<code-departement>--<date>--<token>.ban-standard.ndjson
-diff--dep-<code-departement>--<date-début>_<date-fin>--<token>.ban-standard.ndjson
+full--dep-<code-departement>--<date>--<token>.ndjson
+diff--dep-<code-departement>--<date-début>_<date-fin>--<token>.ndjson
 ```
 
 Par exemple, un FULL au 1er juin et un DIFF hebdomadaire du 4 au 11 mai :
 
 ```text
-full--dep-31--2026-06-01--<token>.ban-standard.ndjson
-diff--dep-31--2026-05-04_2026-05-11--<token>.ban-standard.ndjson
+full--dep-31--2026-06-01--<token>.ndjson
+diff--dep-31--2026-05-04_2026-05-11--<token>.ndjson
 ```
 
 Les dates sont celles de la **demande**, converties en `Europe/Paris`, et non
@@ -113,13 +113,15 @@ Les objets sont regroupés par mois de référence dans le bucket :
 
 ```text
 <EXPORT_S3_PREFIX>/<AAAA-MM>/<nom-du-fichier>
-exports/2026-05/diff--dep-31--2026-05-04_2026-05-11--<token>.ban-standard.ndjson
-exports/2026-06/full--dep-31--2026-06-01--<token>.ban-standard.ndjson
+<EXPORT_S3_PREFIX>/<AAAA-MM>/diff_<date-fin-exclue>/<nom-du-fichier-DIFF>
+exports/2026-05/diff_2026-05-11/diff--dep-31--2026-05-04_2026-05-11--<token>.ndjson
+exports/2026-06/full--dep-31--2026-06-01--<token>.ndjson
 ```
 
 Le mois est celui de `at` pour FULL et de **`to` pour DIFF**, toujours en heure
 de Paris, même si cette borne est exclusive. Un DIFF du 25 mai au 1er juin
-est donc rangé sous `2026-06`. FULL et DIFF partagent le même dossier mensuel.
+est donc rangé sous `2026-06/diff_2026-06-01/`. Les FULL restent directement dans
+le dossier mensuel ; les sous-dossiers DIFF portent le préfixe `diff_` suivi de la date de fin exclue.
 Le token figure également dans les métadonnées S3.
 Le préfixe est configurable (`exports` par défaut).
 

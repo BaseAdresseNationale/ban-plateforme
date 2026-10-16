@@ -280,7 +280,7 @@ Lorsque le stockage S3 est configure, le rapport contient les informations de so
       "output": {
         "storage": "s3",
         "bucket": "ban-exports",
-        "key": "exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ban-standard.ndjson"
+        "key": "exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ndjson"
       }
     }
   }
