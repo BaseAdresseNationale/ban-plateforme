@@ -6,7 +6,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 import { BAN_EXPORT_FORMAT, logger } from '@ban/tools';
 
-import { getExportReferenceMonth } from './file-naming.js';
+import { getExportReferenceDate, getExportReferenceMonth } from './file-naming.js';
 import { getExportOutputDir } from './output-directory.js';
 import type {
   DataExportParams,
@@ -90,7 +90,8 @@ const getExportObjectKey = ({
   filePath: string;
 }) => {
   const fileName = path.basename(filePath);
-  const basePath = [prefix, getExportReferenceMonth(exportType, params)]
+  const basePath = [prefix, getExportReferenceMonth(exportType, params),
+    ...(exportType === 'diff' ? [`diff_${getExportReferenceDate(exportType, params)}`] : [])]
     .map(trimSlashes)
     .filter(Boolean)
     .join('/');
