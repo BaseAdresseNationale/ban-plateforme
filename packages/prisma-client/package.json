@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "test": "node --test tests/migrations.test.mjs tests/diff-metadata.test.mjs",
+    "test": "node --test tests/migrations.test.mjs tests/diff-metadata.test.mjs tests/runtime.test.mjs",
     "test:migrations:postgres": "node --test tests/migrations.postgres.test.mjs",
     "prisma:generate": "prisma generate --config prisma.config.ts",
     "prisma:migrate:diff:baseline": "prisma migrate diff --config prisma.config.ts --from-empty --to-schema=prisma/schema.prisma --script --output=prisma/migrations/0000_baseline/migration.sql",
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
     "@types/node": "^24.1.0",
     "pg": "^8.16.3",
     "prisma": "^7.0.0"
