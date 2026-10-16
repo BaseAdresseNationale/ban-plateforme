@@ -136,7 +136,7 @@ describe('generateLocalExportFile', () => {
     const params = { dataTypes: ['district'], departements: ['96'], at: '2026-01-01T00:00:00Z',
       address_ids: null, common_toponym_ids: null, district_ids: null };
     await expect(generateLocalExportFile('bad-label','full',params)).rejects.toThrow('No populated label');
-    const failed = await readFile(path.join(getExportOutputDir(),'full--dep-96--2026-01-01T01-00-00+0100--bad-label.ban-standard.ndjson'),'utf8');
+    const failed = await readFile(path.join(getExportOutputDir(),'full--dep-96--2026-01-01T01-00-00+0100--bad-label.ndjson'),'utf8');
     expect(failed).not.toContain('stream-end');
     mocks.labelError = false;
     const next = await generateLocalExportFile('good-label','full',params);
@@ -158,7 +158,7 @@ describe('generateLocalExportFile', () => {
       }
     );
 
-    expect(path.basename(result.filePath)).toBe('full--dep-33--2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson');
+    expect(path.basename(result.filePath)).toBe('full--dep-33--2026-01-31T01-00-00+0100--export-token.ndjson');
     expect(result.filePath).toContain(path.join('tmp', 'exports'));
     expect(result.stats).toMatchObject({
       output: {
