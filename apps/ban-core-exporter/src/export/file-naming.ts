@@ -1,5 +1,3 @@
-import { BAN_EXPORT_FORMAT } from '@ban/tools';
-
 import type { DataExportParams, DataExportType } from './types.js';
 
 // Explicit timezone: neither the worker's timezone nor the generation date
@@ -52,9 +50,12 @@ export const getExportFileName = (token: string, exportType: DataExportType, par
   const dates = exportType === 'full'
     ? getDateLabel(params.at)
     : `${getDateLabel(params.from)}_${getDateLabel(params.to)}`;
-  return `${exportType}--${getScopeLabel(params)}--${dates}--${token}.${BAN_EXPORT_FORMAT}.ndjson`;
+  return `${exportType}--${getScopeLabel(params)}--${dates}--${token}.ndjson`;
 };
 
 /** DIFF uses its upper bound, not its creation date or lower bound. */
+export const getExportReferenceDate = (exportType: DataExportType, params: DataExportParams) =>
+  getParisParts(exportType === 'full' ? params.at : params.to).date;
+
 export const getExportReferenceMonth = (exportType: DataExportType, params: DataExportParams) =>
-  getParisParts(exportType === 'full' ? params.at : params.to).date.slice(0, 7);
+  getExportReferenceDate(exportType, params).slice(0, 7);
