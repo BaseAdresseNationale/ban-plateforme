@@ -16,11 +16,11 @@ test('the ten historical migrations retain their original SHA-256 checksums', ()
 test('preparation migrations sort before the first consumers without renaming history', () => {
   const names = fs.readdirSync(new URL('../prisma/migrations/', import.meta.url), { withFileTypes: true })
     .filter(e => e.isDirectory()).map(e => e.name).sort();
-  assert.equal(names.length, 13);
+  assert.equal(names.length, 14);
   assert.equal(names.indexOf('0000a_export_index_prerequisites'), names.indexOf('0000_baseline') + 1);
   assert.equal(names.indexOf('0005a_export_metadata_helpers'), names.indexOf('0005_add_snapshot_functions_ndjson') + 1);
   assert.ok(names.indexOf('0005a_export_metadata_helpers') < names.indexOf('0006_normalize_export_filter_arguments'));
-  assert.equal(names.at(-1), '0010_complete_export_metadata');
+  assert.equal(names.at(-1), '0011_cache_diff_district_metadata');
 });
 
 test('new index prerequisites provide UUID GiST support and the restored baseline index', () => {
