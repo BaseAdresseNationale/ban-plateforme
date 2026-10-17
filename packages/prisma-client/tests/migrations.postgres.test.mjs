@@ -16,7 +16,7 @@ const reference = JSON.parse(fs.readFileSync(new URL('./support/migration-export
 const migrations = fs.readdirSync(migrationRoot, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => e.name).sort();
 const suffix = process.env.BAN_MIGRATION_TEST_SUFFIX ?? '';
 assert.match(suffix, /^(?:[a-z0-9]{1,12})?$/, 'Suffixe de test invalide');
-const targets = ['ban_migrations_additive_empty_tmp', 'ban_migrations_additive_restore_tmp', 'ban_migrations_additive_legacy_tmp']
+const targets = ['ban_migrations_additive_empty_tmp', 'ban_migrations_additive_restore_tmp', 'ban_migrations_additive_legacy_tmp', 'ban_migrations_additive_current_tmp']
   .map(name => name + (suffix ? `_${suffix}` : ''));
 const enabled = process.env.RUN_BAN_MIGRATION_TESTS === '1';
 const marker = 'BAN isolated migration test';
@@ -32,7 +32,7 @@ function urlFor(database) {
   assert.equal(decodeURIComponent(url.username), 'ban_user', 'Rôle de test attendu : ban_user');
   assert.ok([...url.searchParams.keys()].every(k => k === 'schema') && url.searchParams.getAll('schema').length <= 1 && !url.hash,
     'Paramètres de connexion supplémentaires refusés');
-  assert.ok(targets.includes(decodeURIComponent(url.pathname.slice(1))), 'PG_URL doit déjà désigner une des trois bases de test');
+  assert.ok(targets.includes(decodeURIComponent(url.pathname.slice(1))), 'PG_URL doit déjà désigner une des bases de test autorisées');
   url.pathname = `/${database}`;
   url.search = '?schema=ban';
   return url.toString();
@@ -80,7 +80,7 @@ before(async () => {
   { encoding: 'utf8', timeout: 15000 });
   assert.ok(!local.error && local.status === 0, 'Serveur Docker local indisponible');
   cluster = local.stdout.trim(); assert.match(cluster, /^\d+$/);
-  // Les trois cibles doivent être neuves avant toute écriture sur l’une d’elles.
+  // Toutes les cibles doivent être neuves avant toute écriture sur l’une d’elles.
   for (const database of targets) await withClient(database, async client => {
     const { rows: [state] } = await client.query(`SELECT count(*)::int AS objects FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
       WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname<>'information_schema'`);
@@ -219,9 +219,10 @@ async function installHistoricalChain(database) {
 }
 
 const scenarios = [
-  'Prisma deploy from empty: thirteen migrations, canonical exports and indexes',
+  'Prisma deploy from empty: fourteen migrations, canonical exports and indexes',
   'Prisma baseline + deploy on existing schema: preserve data and custom objects',
   'Prisma deploy after ten historical migrations: apply interleaved additions without changing old registry rows or optimized functions',
+  'Prisma deploy after thirteen installed migrations: add only the DIFF cache and preserve the existing registry and data',
 ];
 for (const [index, database] of targets.entries()) test(scenarios[index], { skip: !enabled }, async () => {
   const startedAt = new Date().toISOString();
@@ -241,10 +242,25 @@ for (const [index, database] of targets.entries()) test(scenarios[index], { skip
     prisma(database, 'resolve', '0000_baseline');
   }
   if (index === 2) historical = await installHistoricalChain(database);
+  if (index === 3) {
+    const directory = path.join(reportDirectory, 'before-diff-cache');
+    fs.mkdirSync(path.join(directory, 'migrations'), {recursive: true});
+    const configuration = path.join(directory, 'prisma.config.ts');
+    fs.writeFileSync(configuration, `import {defineConfig,env} from 'prisma/config';\nexport default defineConfig({schema:${JSON.stringify(path.join(root, 'packages/prisma-client/prisma/schema.prisma'))},migrations:{path:'./migrations'},datasource:{url:env('PG_URL')}});\n`, {mode: 0o600});
+    for (const name of migrations.slice(0, -1)) {
+      fs.mkdirSync(path.join(directory, 'migrations', name));
+      fs.copyFileSync(path.join(migrationRoot, name, 'migration.sql'), path.join(directory, 'migrations', name, 'migration.sql'));
+    }
+    prisma(database, 'deploy', undefined, configuration);
+    historical = await withClient(database, async client => {
+      await seedFixture(client);return legacyState(client);
+    });
+    assert.equal(historical.registry.length, 13);
+  }
   prisma(database, 'deploy');
   const evidence = await withClient(database, async client => {
     const installed = await verifyInstallation(client);
-    await qualifyExports(client, index === 2);
+    await qualifyExports(client, index >= 2);
     if (index === 1) {
       assert.equal((await client.query('SELECT id FROM public.migration_test_sentinel')).rows[0].id, 42);
       assert.equal((await client.query("SELECT tgenabled FROM pg_trigger WHERE tgname='migration_test_guard'")).rows[0].tgenabled, 'O');
@@ -252,9 +268,10 @@ for (const [index, database] of targets.entries()) test(scenarios[index], { skip
     }
     if (historical) {
       const after = await legacyState(client);
-      assert.deepEqual(after.registry.filter(r => reference.historicalMigrations.some(m => m.name === r.migration_name)), historical.registry);
+      assert.deepEqual(after.registry.filter(r => historical.registry.some(m => m.migration_name === r.migration_name)), historical.registry);
       assert.deepEqual(after.data, historical.data);
-      const changedWrappers = ['snapshot_district_ndjson', 'diff_district_ndjson', 'diff_common_toponym_ndjson'];
+      const changedWrappers = index === 3 ? ['diff_common_toponym_ndjson', 'diff_address_ndjson']
+        : ['snapshot_district_ndjson', 'diff_district_ndjson', 'diff_common_toponym_ndjson', 'diff_address_ndjson'];
       assert.deepEqual(after.functions.filter(f => !changedWrappers.includes(f.name)), historical.functions.filter(f => !changedWrappers.includes(f.name)));
     }
     return installed;

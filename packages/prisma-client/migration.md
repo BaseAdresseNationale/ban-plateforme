@@ -40,7 +40,7 @@ le réserver à un schéma initial déjà contrôlé, pas à la réparation d’
 ## Installation des exports
 
 Les dix fichiers historiques `0000_baseline` à `0009` gardent leurs noms et leurs
-empreintes. Trois fichiers supplémentaires complètent la chaîne :
+empreintes. Les migrations supplémentaires complètent la chaîne :
 
 - `0000a_export_index_prerequisites`, après la baseline et avant `0001` : extension
   `btree_gist` et index `address_h_range_validity_idx` s’il manque dans le dump.
@@ -48,11 +48,14 @@ empreintes. Trois fichiers supplémentaires complètent la chaîne :
   de métadonnées et de résolution du code INSEE, utilisés par les fonctions suivantes.
 - `0010_complete_export_metadata`, après `0009` : métadonnées dans les trois
   enveloppes communes/toponymes restantes, sans remplacer les fonctions optimisées.
+- `0011_cache_diff_district_metadata` : résolution des codes commune aux deux
+  bornes des DIFF d'adresses/toponymes. Les sélections par UUID restent ciblées.
+  Signatures et droits conservés, sans nouvel index ni réécriture des données.
 
 Prisma trie les **noms complets des dossiers**. Les suffixes `a` permettent de
 placer les prérequis avant leur première utilisation, sans renommer l’historique.
 Sur une base ayant déjà appliqué les dix fichiers historiques, `deploy` applique
-les trois ajouts, y compris ceux intercalés ; les anciennes lignes du registre
+les ajouts en attente, y compris ceux intercalés ; les anciennes lignes du registre
 restent intactes. Le parcours est couvert par un test PostgreSQL réel.
 
 La migration historique `0001` construit les autres indexes et actualise les
@@ -67,7 +70,7 @@ restent aussi des décisions séparées.
 
 ## Ajouter ou corriger une migration
 
-1. Créer le prochain dossier numéroté, par exemple `0011_description`, avec un
+1. Créer le prochain dossier numéroté, par exemple `0012_description`, avec un
    fichier `migration.sql`. Versionner tout le SQL nécessaire : fonctions,
    dépendances et indexes, même s’ils ne sont pas représentables dans le modèle Prisma.
 2. Vérifier l’ordre des dépendances et prévoir une transaction pour les changements
@@ -78,7 +81,7 @@ restent aussi des décisions séparées.
    des migrations plus récentes, sans dégrader leurs optimisations.
 
 **Ne pas modifier les anciens registres pour masquer un écart d’empreinte**, ni
-réinitialiser une base contenant des données. Les trois ajouts sont exécutés par
+réinitialiser une base contenant des données. Les ajouts sont exécutés par
 Prisma ; ils ne doivent pas être simplement marqués comme appliqués.
 
 ## Tests
