@@ -1,5 +1,5 @@
 {
-  "description": "Définitions de référence de la candidate qualifiée avant correction des migrations ; empreintes SHA-256 des corps SQL, espaces externes retirés.",
+  "description": "Définitions finales attendues après migrations ; empreintes SHA-256 des corps SQL, espaces externes retirés.",
   "historicalMigrations": [
     {
       "name": "0000_baseline",
@@ -51,7 +51,7 @@
     {
       "name": "diff_address_ndjson",
       "signature": "ban.diff_address_ndjson(timestamp with time zone,timestamp with time zone,uuid[],uuid[],uuid[],text[])",
-      "bodySha256": "9b2a0439d76cf2c454c39ee6e3853067fc2f159fd8d526010fbca410f87f3e85"
+      "bodySha256": "6d6a8cb9de739a3c49105e5060e351728ca1963b22e9992604f1564087a652d4"
     },
     {
       "name": "diff_address",
@@ -61,7 +61,7 @@
     {
       "name": "diff_common_toponym_ndjson",
       "signature": "ban.diff_common_toponym_ndjson(timestamp with time zone,timestamp with time zone,uuid[],uuid[],text[])",
-      "bodySha256": "ca0d7620719dec7cbef37036d8bb520f7bb4889adf1a9296c69862750af3319a"
+      "bodySha256": "2235294308ca6c54679234414ea4f319b130113f83e7e07bff4407d51aefacf6"
     },
     {
       "name": "diff_common_toponym",
