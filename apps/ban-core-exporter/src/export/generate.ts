@@ -1,7 +1,4 @@
-import { createWriteStream } from 'node:fs';
-import { mkdir } from 'node:fs/promises';
-import path from 'node:path';
-import { finished } from 'node:stream/promises';
+import type { Writable } from 'node:stream';
 
 import Cursor from 'pg-cursor';
 
@@ -10,8 +7,8 @@ import { logger, normalizeExportSelection } from '@ban/tools';
 
 import { fullRequestConfigs } from './full/full-config.js';
 import { diffRequestConfigs } from './diff/diff-config.js';
-import { getExportFileName } from './file-naming.js';
-import { getExportOutputDir } from './output-directory.js';
+import { getExportStorageConfig, streamExport } from './storage.js';
+import { writeChunk } from './helpers/write-chunk.js';
 import {
   DiffOrderBuffer,
   closeCursor,
@@ -47,12 +44,6 @@ const exportConfigByType = {
   formatter: BanFormatter;
 }>;
 
-const getExportFilePath = (
-  token: string,
-  exportType: DataExportType,
-  params: DataExportParams
-) => path.join(getExportOutputDir(), getExportFileName(token, exportType, params));
-
 const getRequestedDataTypes = (
   requestedDataTypes: string[],
   requestConfigs: ExportRequestConfigs
@@ -69,10 +60,12 @@ const writeExportFile = async ({
   output,
   exportType,
   params,
+  signal,
 }: {
-  output: NodeJS.WritableStream;
+  output: Writable;
   exportType: DataExportType;
   params: DataExportParams;
+  signal: AbortSignal;
 }) => {
   const { requestConfigs, formatter } = exportConfigByType[exportType];
   const dataTypes = getRequestedDataTypes(params.dataTypes, requestConfigs);
@@ -80,11 +73,17 @@ const writeExportFile = async ({
   const diffBuffer = exportType === 'diff' ? new DiffOrderBuffer() : null;
   const client = await pgPool.connect();
   let activeCursor: Cursor | null = null;
+  let released = false;
+  // Discard this dedicated connection to interrupt an in-flight SQL read on failure.
+  const abort = () => { released = true; client.release(true); };
+  signal.addEventListener('abort', abort, { once: true });
 
   try {
-    output.write(getBanStandardStartLine(exportType, params, dataTypes));
+    if (signal.aborted) { abort(); signal.throwIfAborted(); }
+    await writeChunk(output, getBanStandardStartLine(exportType, params, dataTypes), signal);
 
     for (const dataType of dataTypes) {
+      signal.throwIfAborted();
       const { request, params: queryParamNames, dataName } = requestConfigs[dataType];
 
       logger.info(`[ban-core-exporter] Prepared request for ${exportType}/${dataType}`, { queryParamNames });
@@ -97,6 +96,7 @@ const writeExportFile = async ({
         dataName,
         output: diffBuffer ?? output,
         banFormatter: formatter,
+        signal,
       });
 
       statsByDataType[dataType] = exportType === 'diff'
@@ -109,14 +109,17 @@ const writeExportFile = async ({
       logger.info(`[ban-core-exporter] Completed export for ${exportType}/${dataType}`, stats);
     }
 
-    if (diffBuffer) await diffBuffer.flush(output);
+    if (diffBuffer) await diffBuffer.flush(output, signal);
 
-    output.write(getBanStandardEndLine(statsByDataType));
+    await writeChunk(output, getBanStandardEndLine(statsByDataType), signal);
 
     return statsByDataType;
   } finally {
-    await closeCursor(activeCursor);
-    client.release();
+    signal.removeEventListener('abort', abort);
+    if (!released) {
+      await closeCursor(activeCursor);
+      client.release();
+    }
   }
 };
 
@@ -127,46 +130,23 @@ const getTotalCount = (statsByDataType: Record<string, Record<string, number>>) 
   );
 };
 
-export const generateLocalExportFile = async (
+export const generateExport = async (
   token: string,
   exportType: DataExportType,
-  params: DataExportParams
-): Promise<ExportFileResult> => {
+  params: DataExportParams,
+  config = getExportStorageConfig()
+) => {
   params = normalizeExportSelection(exportType, params);
-  await mkdir(getExportOutputDir(), { recursive: true });
+  const { value: stats, output } = await streamExport({ token, exportType, params },
+    (output, signal) => writeExportFile({ output, signal, exportType, params }), config);
+  return { output, stats: { params, stats, count: getTotalCount(stats) } };
+};
 
-  const filePath = getExportFilePath(token, exportType, params);
-  const output = createWriteStream(filePath, { encoding: 'utf8' });
-  // Observe file errors from the first write, including pending writes destroyed
-  // after a formatter/SQL error. Defer propagation until the normal await below.
-  const completion = finished(output);
-  void completion.catch(() => undefined);
-
-  try {
-    const stats = await writeExportFile({
-      output,
-      exportType,
-      params,
-    });
-
-    output.end();
-    await completion;
-
-    return {
-      filePath,
-      stats: {
-        output: {
-          storage: 'local',
-          path: filePath,
-        },
-        params,
-        stats,
-        count: getTotalCount(stats),
-      },
-    };
-  } catch (error) {
-    output.destroy();
-    await completion.catch(() => undefined);
-    throw error;
-  }
+/** Explicit local destination for fixture tools and development checks. */
+export const generateLocalExportFile = async (
+  token: string, exportType: DataExportType, params: DataExportParams
+): Promise<ExportFileResult> => {
+  const { output, stats } = await generateExport(token, exportType, params, { storage: 'local' });
+  if (output.storage !== 'local') throw new Error('Expected a local export');
+  return { filePath: output.path, stats: { ...stats, output } };
 };
