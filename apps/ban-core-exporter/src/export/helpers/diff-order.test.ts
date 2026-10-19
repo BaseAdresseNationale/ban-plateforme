@@ -17,7 +17,6 @@ describe('DiffOrderBuffer', () => {
 
     await buffer.flush({
       write: chunk => { written.push(chunk); return true; },
-      once: () => {},
     });
 
     expect(written.map(line => {
