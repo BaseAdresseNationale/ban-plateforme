@@ -1,224 +1,59 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import type { DataExportRequestMessage } from './export/types.js';
 
-// Mocks
-// -----
-// Ce fichier teste l'orchestration du handler RabbitMQ.
-// Les dépendances lourdes sont mockées pour isoler l'ordre des actions :
-// génération du fichier, stockage, mise à jour du statut, publication RabbitMQ.
 const mocks = vi.hoisted(() => ({
-  generateLocalExportFile: vi.fn(),
-  storeExportFile: vi.fn(),
-  removeLocalExportFile: vi.fn(),
-  markExportError: vi.fn(),
-  markExportProcessing: vi.fn(),
-  markExportSuccess: vi.fn(),
-  loggerError: vi.fn(),
-  loggerInfo: vi.fn(),
-  loggerWarn: vi.fn(),
+  generateExport: vi.fn(), markExportError: vi.fn(), markExportProcessing: vi.fn(), markExportSuccess: vi.fn(),
 }));
-
-// Le logger est neutralisé pour garder les tests lisibles.
-vi.mock('@ban/tools', () => ({
-  logger: {
-    error: mocks.loggerError,
-    info: mocks.loggerInfo,
-    warn: mocks.loggerWarn,
-  },
-}));
-
-// La génération NDJSON est testée dans export/generate.test.ts.
-// Ici, elle renvoie seulement un résultat connu pour vérifier le chaînage.
-vi.mock('./export/generate.js', () => ({
-  generateLocalExportFile: mocks.generateLocalExportFile,
-}));
-
-// Le stockage local/S3 est testé dans export/storage.test.ts.
-// Ici, on vérifie seulement que le handler transmet les bons paramètres
-// et utilise le résultat de stockage dans le rapport final.
-vi.mock('./export/storage.js', () => ({
-  storeExportFile: mocks.storeExportFile,
-  removeLocalExportFile: mocks.removeLocalExportFile,
-}));
-
-// Les écritures en base sur ban.job_status sont mockées : ce test ne vérifie
-// pas PostgreSQL, seulement que le handler appelle la bonne transition.
+vi.mock('@ban/tools', () => ({ logger: { info: vi.fn(), error: vi.fn() } }));
+vi.mock('./export/generate.js', () => ({ generateExport: mocks.generateExport }));
 vi.mock('./export/status.js', () => ({
-  markExportError: mocks.markExportError,
-  markExportProcessing: mocks.markExportProcessing,
-  markExportSuccess: mocks.markExportSuccess,
+  markExportError: mocks.markExportError, markExportProcessing: mocks.markExportProcessing, markExportSuccess: mocks.markExportSuccess,
 }));
-
 const { handleExportRequest } = await import('./handleExportRequest.js');
+const message = { token: 'job', exportType: 'diff', params: {
+  dataTypes: ['address'], departements: ['31'], address_ids: null, common_toponym_ids: null, district_ids: null,
+  from: '2026-06-01T00:00:00+02:00', to: '2026-06-08T00:00:00+02:00',
+} } satisfies DataExportRequestMessage;
 
-// Fixture
-// -------
-// Message RabbitMQ représentatif d'une demande d'export différentiel.
-const message = {
-  token: 'export-token',
-  exportType: 'diff',
-  params: {
-    dataTypes: ['address'],
-    departements: ['33'],
-    address_ids: null,
-    common_toponym_ids: null,
-    district_ids: null,
-    from: '2026-01-01T00:00:00.000Z',
-    to: '2026-01-31T00:00:00.000Z',
-  },
-} satisfies DataExportRequestMessage;
-
-// Tests
-// -----
 describe('handleExportRequest', () => {
-  // Préparation commune
-  // -------------------
-  // Chaque test démarre avec des mocks remis à zéro et un scénario nominal :
-  // un fichier local généré, puis stocké sur S3.
-  beforeEach(() => {
-    process.env.NODE_ENV = 'production';
-    Object.values(mocks).forEach(mock => mock.mockReset());
-    mocks.generateLocalExportFile.mockResolvedValue({
-      filePath: '/tmp/export.ndjson',
-      stats: {
-        count: 2,
-        output: {
-          storage: 'local',
-          path: '/tmp/export.ndjson',
-        },
-      },
-    });
-    mocks.storeExportFile.mockResolvedValue({
-      storage: 's3',
-      bucket: 'ban-exports',
-      key: 'exports/2026-01/diff_2026-01-31/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.ndjson',
-      endpoint: 'https://s3.gra.io.cloud.ovh.net',
-      size: 123,
-    });
-  });
+  beforeEach(() => { Object.values(mocks).forEach(mock => mock.mockReset()); });
 
-  // Succès : le handler doit marquer le job en processing, générer le fichier,
-  // le stocker, enregistrer le succès puis publier export.completed.
-  it('marks the export as successful and publishes a completed event', async () => {
-    const broker = {
-      publish: vi.fn().mockResolvedValue(undefined),
-    } as any;
-
+  it.each(['local', 's3', 'both'])('publishes success only after the %s destinations finish', async storage => {
+    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
+    const result = { stats: { count: 2, params: message.params }, output: { storage, size: 123, sha256: 'hash' } };
+    mocks.generateExport.mockResolvedValue(result);
     await handleExportRequest(broker, message);
-
-    expect(mocks.markExportProcessing).toHaveBeenCalledWith('export-token');
-    expect(mocks.generateLocalExportFile).toHaveBeenCalledWith(
-      'export-token',
-      'diff',
-      message.params
-    );
-    expect(mocks.storeExportFile).toHaveBeenCalledWith({
-      token: 'export-token',
-      exportType: 'diff',
-      params: message.params,
-      filePath: '/tmp/export.ndjson',
-    });
-    expect(mocks.markExportSuccess).toHaveBeenCalledWith(
-      'export-token',
-      {
-        count: 2,
-        output: {
-          storage: 's3',
-          bucket: 'ban-exports',
-          key: 'exports/2026-01/diff_2026-01-31/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.ndjson',
-          endpoint: 'https://s3.gra.io.cloud.ovh.net',
-          size: 123,
-        },
-      },
-      2
-    );
+    expect(mocks.markExportProcessing).toHaveBeenCalledWith('job');
+    expect(mocks.generateExport).toHaveBeenCalledWith('job', 'diff', message.params);
+    expect(mocks.markExportSuccess).toHaveBeenCalledWith('job', { ...result.stats, output: result.output }, 2);
     expect(broker.publish).toHaveBeenCalledWith('export.completed', {
-      token: 'export-token',
-      exportType: 'diff',
-      status: 'success',
-      report: {
-        count: 2,
-        output: {
-          storage: 's3',
-          bucket: 'ban-exports',
-          key: 'exports/2026-01/diff_2026-01-31/diff--dep-33--2026-01-01T01-00-00+0100_2026-01-31T01-00-00+0100--export-token.ndjson',
-          endpoint: 'https://s3.gra.io.cloud.ovh.net',
-          size: 123,
-        },
-      },
+      token: 'job', exportType: 'diff', status: 'success', report: { ...result.stats, output: result.output },
     });
-    expect(mocks.removeLocalExportFile).toHaveBeenCalledWith('/tmp/export.ndjson');
+    expect(mocks.markExportError).not.toHaveBeenCalled();
   });
 
-  it('keeps the file when local storage is selected', async () => {
-    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
-    mocks.storeExportFile.mockResolvedValue({ storage: 'local', path: '/tmp/export.ndjson' });
-
-    await handleExportRequest(broker, message);
-
-    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
-  });
-
-  it('keeps the file outside production even when S3 is selected', async () => {
-    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
-    process.env.NODE_ENV = 'development';
-
-    await handleExportRequest(broker, message);
-
-    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
-  });
-
-  it('keeps the export successful when temporary-file cleanup fails', async () => {
-    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
-    mocks.removeLocalExportFile.mockRejectedValue(new Error('permission denied'));
-
-    await handleExportRequest(broker, message);
-
+  it('does not mark success while storage is still pending', async () => {
+    let complete!: (value: unknown) => void;
+    mocks.generateExport.mockReturnValue(new Promise(resolve => { complete = resolve; }));
+    const broker = { publish: vi.fn() } as any;
+    const processing = handleExportRequest(broker, message);
+    await vi.waitFor(() => expect(mocks.generateExport).toHaveBeenCalledOnce());
+    expect(mocks.markExportSuccess).not.toHaveBeenCalled();
+    expect(broker.publish).not.toHaveBeenCalled();
+    complete({ stats: { count: 0 }, output: { storage: 's3' } });
+    await processing;
     expect(mocks.markExportSuccess).toHaveBeenCalledOnce();
-    expect(broker.publish).toHaveBeenCalledWith('export.completed', expect.any(Object));
-    expect(mocks.loggerWarn).toHaveBeenCalledWith(
-      '[ban-core-exporter] Impossible de supprimer le fichier temporaire',
-      expect.objectContaining({ filePath: '/tmp/export.ndjson' })
-    );
   });
 
-  it('keeps the file when S3 upload fails', async () => {
-    const error = new Error('S3 unavailable');
-    const broker = { publish: vi.fn().mockResolvedValue(undefined) } as any;
-    mocks.storeExportFile.mockRejectedValue(error);
-
+  it('reports a generation or destination failure without publishing success', async () => {
+    const error = new Error('destination failed');
+    mocks.generateExport.mockRejectedValue(error);
+    const broker = { publish: vi.fn() } as any;
     await expect(handleExportRequest(broker, message)).rejects.toThrow(error);
-
-    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
-  });
-
-  // Échec : si une étape lève une erreur, le handler doit enregistrer l'échec,
-  // publier export.failed, puis relancer l'erreur pour laisser Rascal appliquer
-  // la stratégie de retry/recovery du consumer.
-  it('marks the export as failed and publishes a failed event', async () => {
-    const error = new Error('export failed');
-    const broker = {
-      publish: vi.fn().mockResolvedValue(undefined),
-    } as any;
-    mocks.generateLocalExportFile.mockRejectedValue(error);
-
-    await expect(handleExportRequest(broker, message)).rejects.toThrow(error);
-
-    expect(mocks.markExportError).toHaveBeenCalledWith(
-      'export-token',
-      error,
-      {
-        exportType: 'diff',
-        params: message.params,
-      }
-    );
-    expect(broker.publish).toHaveBeenCalledWith('export.failed', {
-      token: 'export-token',
-      exportType: 'diff',
-      status: 'error',
-      error: 'export failed',
+    expect(mocks.markExportSuccess).not.toHaveBeenCalled();
+    expect(mocks.markExportError).toHaveBeenCalledWith('job', error, { exportType: 'diff', params: message.params });
+    expect(broker.publish).toHaveBeenCalledExactlyOnceWith('export.failed', {
+      token: 'job', exportType: 'diff', status: 'error', error: 'destination failed',
     });
-    expect(mocks.removeLocalExportFile).not.toHaveBeenCalled();
   });
 });
