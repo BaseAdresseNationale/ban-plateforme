@@ -10,6 +10,8 @@
     }
   },
   "scripts": {
+    "test": "node --test tests/migrations.test.mjs tests/diff-metadata.test.mjs",
+    "test:migrations:postgres": "node --test tests/migrations.postgres.test.mjs",
     "prisma:generate": "prisma generate --config prisma.config.ts",
     "prisma:migrate:diff:baseline": "prisma migrate diff --config prisma.config.ts --from-empty --to-schema=prisma/schema.prisma --script --output=prisma/migrations/0000_baseline/migration.sql",
     "prisma:migrate:bootstrap": "./scripts/bootstrap.sh",

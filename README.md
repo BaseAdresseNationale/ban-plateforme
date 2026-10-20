@@ -318,69 +318,26 @@ ban-platform/
 
 ## 🧬 Prisma, baseline & migrations
 
-### Pourquoi Prisma ne gère pas l’initialisation BAN ?
+### Schéma initial et migrations
 
-Prisma ne peut **pas** initialiser la base BAN car le schéma utilise des éléments PostgreSQL avancés :
+Prisma exécute les fichiers SQL de migration : ils peuvent inclure fonctions,
+triggers, extensions et autres mécanismes PostgreSQL avancés. Le modèle
+`schema.prisma` n’en décrit toutefois pas tous les éléments.
 
-- types `tstzrange`,
-- triggers d’historisation,
-- fonction `historisation()`,
-- contraintes `EXCLUDE USING gist`,
-- extensions `postgis`, `btree_gist`,
-- tables d’historique `*_h`.
+Dans le parcours applicatif actuel, `scripts/dev-db-init.sh` charge
+`ban_schema.sql` si nécessaire, puis lance le bootstrap Prisma. Après restauration
+d’un dump, conserver ses objets d’historisation et vérifier la structure avant de
+reconnaître la migration initiale `0000_baseline` comme déjà appliquée.
 
-Ces mécanismes ne peuvent **pas** être créés via Prisma.
+Les migrations suivantes installent et font évoluer les fonctions SQL d’export
+FULL/DIFF ainsi que leurs indexes. **Ne pas régénérer la baseline ni modifier un
+registre existant pour masquer une différence d’empreinte.** La baseline seule
+ne reproduit pas tous les objets d’un dump de production.
 
-👉 L’initialisation de la base passe donc **obligatoirement** par le fichier SQL complet : `ban_schema.sql`
-
-Ce fichier contient l’intégralité du schéma PostgreSQL BAN (tables, clés, triggers, extensions…).
-
-L’initialisation réelle est assurée automatiquement par :
-
-```shell
-./scripts/dev-db-init.sh
-```
-
-Ce script :
-
-- vérifie si la base doit être initialisée,
-- applique `ban_schema.sql` si nécessaire,
-- regénère le client Prisma.
-
-👉 Prisma prend ensuite le relais **uniquement pour les évolutions futures du schéma**.
-
----
-
-### Migration 0 Prisma
-
-> ℹ️ Cette opération est réalisée **une seule fois par les mainteneurs** pour définir l’état initial du schéma côté Prisma. Les autres développeurs n’ont **pas** à relancer ces commandes manuellement.
-
-Pour créer la migration de base (`0000_baseline`) à partir du schéma actuel :
-
-
-```shell
-pnpm db:migrate:diff:baseline
-```
-
-Puis enregistrer cette migration comme "déjà appliquée" auprès de Prisma :
-
-```shell
-pnpm db:migrate:resolve -- 0000_baseline
-```
-
-Dans les environnements de développement, l’alignement Prisma ⇔ base est ensuite géré automatiquement par :
-
-```
-./scripts/dev-db-init.sh
-```
-
-Ce script :
-
-- initialise le schéma BAN via `ban_schema.sql` si nécessaire,
-- génère le client Prisma,
-- et peut marquer la migration `0000_baseline` comme appliquée dans la base locale.
-
----
+Voir le [guide Prisma](packages/prisma-client/migration.md) pour choisir entre une
+base vide, une base restaurée et une base déjà suivie par Prisma, puis lancer les
+commandes adaptées. Vérifier la base réellement désignée par `PG_URL` avant toute
+commande ; un changement de `PG_DB` ne met pas cette URL à jour.
 
 ## 🧪 Tests automatiques du monorepo
 
