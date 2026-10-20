@@ -32,7 +32,7 @@ declare global {
     [dataType: string]: {
       formater?: Formatter;
       typeName?: string;
-      exclutedKeysForComparison?: string[];
+      excludedKeysOfCompare?: string[];
     }
   }
 
