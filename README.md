@@ -45,10 +45,10 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ### Deploiement local sans Docker
 
 #### Pré-requis
-- Node.js 16 ou supérieur
+- Node.js 24.22.1
 - MongoDB 4 ou supérieur
 - Redis
-- yarn ou npm
+- Yarn 1.22.22
 
 #### Commandes
 Pour installer les dépendances, lancer la commande suivate : 
