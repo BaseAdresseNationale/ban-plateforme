@@ -23,9 +23,22 @@ jobs:
           path: wiki
       
       - name: Fetch errors and generate board
+        id: errors_board
         run: |
+          echo "generated=false" >> "$GITHUB_OUTPUT"
+
           # Récupérer les données
-          curl -s "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary?limit=500" > errors.json
+          if ! curl --fail --silent --show-error --connect-timeout 10 --max-time 30 \
+            "https://plateforme.adresse.data.gouv.fr/api/alerts/errors-summary?limit=500" \
+            --output errors.json; then
+            echo "::warning::Erreur lors de la récupération des données de la plateforme. Mise à jour du wiki ignorée."
+            exit 0
+          fi
+
+          if ! jq -e '.response.communes | type == "array"' errors.json > /dev/null; then
+            echo "::warning::Réponse de la plateforme invalide. Mise à jour du wiki ignorée."
+            exit 0
+          fi
           
           # Date de mise à jour
           TIMESTAMP=$(date -u +"%d/%m/%Y à %H:%M:%S UTC")
@@ -49,7 +62,7 @@ jobs:
           echo "|---------|-----|------|------------------|" >> wiki/Errors-Board.md
           
           # Fonction de parsing en jq (similaire au code React)
-          jq -r '.response.communes[] | 
+          if ! jq -r '.response.communes[] | 
           . as $item |
           ($item.message | ascii_downcase) as $lower |
           
@@ -83,11 +96,16 @@ jobs:
           end) as $parsed |
           
           "| \($item.districtName) | `\($item.cog)` | \($item.createdAt[0:10]) | \($parsed) |"
-          ' errors.json >> wiki/Errors-Board.md
+          ' errors.json >> wiki/Errors-Board.md; then
+            echo "::warning::Erreur lors du traitement des données de la plateforme. Mise à jour du wiki ignorée."
+            exit 0
+          fi
+
+          echo "generated=true" >> "$GITHUB_OUTPUT"
       
       # Ne commit que sur master (pas sur les PR)
       - name: Commit and push
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' && steps.errors_board.outputs.generated == 'true'
         working-directory: wiki
         run: |
           git config user.name "github-actions[bot]"
@@ -100,7 +118,7 @@ jobs:
       
       # Affiche juste un aperçu sur les PR
       - name: Preview on PR
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.errors_board.outputs.generated == 'true'
         run: |
           echo "✅ Le board a été généré avec succès !"
           echo "Aperçu des 5 premières lignes :"
