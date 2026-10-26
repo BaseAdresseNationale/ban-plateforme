@@ -24,5 +24,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - run: yarn
+    - name: Check JavaScript syntax with the target Node.js version
+      run: git ls-files -z '*.js' '*.cjs' '*.mjs' | xargs -0 -n 1 node --check
     - run: yarn lint
     - run: yarn test
