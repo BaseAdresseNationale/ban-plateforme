@@ -142,12 +142,15 @@ describe('BAN Standard v0.4 specification artifacts', () => {
     const visit = (value: any) => {
       if (!value || typeof value !== 'object') return;
       for (const [key, property] of Object.entries(value.properties ?? {}) as [string, any][]) {
-        expect(property.description, key).toContain('Équivalent conseillé pour un Standard-FR-CNIG :');
-        expect(property.description, key).toContain('Correspondance conceptuelle CNIG :');
+        expect(property.description, key).toContain('Recommended French equivalent for a CNIG-inspired standard:');
+        expect(property.description, key).toContain('Conceptual CNIG mapping:');
+        const french = property['x-i18n']?.fr?.description;
+        expect(french, key).toContain('Équivalent conseillé pour un Standard-FR-CNIG :');
+        expect(french, key).toContain('Correspondance conceptuelle CNIG :');
         if (['type', 'note', 'format', 'count', 'created', 'updated', 'disabled', 'positions', 'source', 'insee', 'interop', 'nodeKey'].includes(key)) {
-          expect(property.description, key).toContain('Équivalent conseillé pour un Standard-FR-CNIG : ' + key + '.');
+          expect(french, key).toContain('Équivalent conseillé pour un Standard-FR-CNIG : ' + key + '.');
         }
-        if (key === 'coordinates') expect(property.description).toContain('Équivalent conseillé pour un Standard-FR-CNIG : coordonnees.');
+        if (key === 'coordinates') expect(french).toContain('Équivalent conseillé pour un Standard-FR-CNIG : coordonnees.');
         count++;
       }
       for (const child of Object.values(value)) if (typeof child === 'object') visit(child);

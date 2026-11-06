@@ -1,0 +1,22 @@
+[
+  {
+    "source": "content/fr/index.md",
+    "sha256": "9293e455ff03ae03b3b862a9c59ce0b86613f194b9a9d04d780786b7a4915c5f",
+    "translation": "content/en/index.md"
+  },
+  {
+    "source": "evaluation.md",
+    "sha256": "f6f0351a29786ed2e7fa89ff87355dab97a608ac5a99ade5c531bdbe3bc7c60d",
+    "translation": "content/en/evaluation.md"
+  },
+  {
+    "source": "../../specifications/ban-diff/v0.4/specifications/SPECIFICATION_BAN_DIFF_V0.4.md",
+    "sha256": "078cf47cb9aae0e2980940d18f65b6177802cf44baf74fce0609293c5215c0e1",
+    "translation": "content/en/specification.md"
+  },
+  {
+    "source": "../../specifications/ban-diff/v0.4/analyse/CORRESPONDANCES_STANDARD_ADRESSE.md",
+    "sha256": "df62d68ec6f542446aba554f8b1cbfcfb75eb2b3c861ab3b9cea19e1094e7bdc",
+    "translation": "content/en/correspondances.md"
+  }
+]
