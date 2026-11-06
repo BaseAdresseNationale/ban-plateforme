@@ -7,10 +7,22 @@ Les fichiers livrables sont :
 
 `ban-standard-definitions-v0.4.schema.json` contient les types partagés référencés par les deux schémas publics.
 
+Les annotations standard `title` et `description` sont en anglais. Leur version
+française figure dans `x-i18n.fr.title` et `x-i18n.fr.description`. `x-i18n` est
+une convention documentaire du projet, pas un mot-clé standard JSON Schema.
+Les clés et valeurs techniques du contrat ne sont pas traduites.
+
 Chaque propriété, même lorsqu'elle utilise un `$ref`, porte une description
-avec un « Équivalent conseillé pour un Standard-FR-CNIG » et une correspondance
-conceptuelle avec le CNIG ou son caractère d'extension BAN.
+avec un équivalent français conseillé pour un profil inspiré du CNIG et une
+correspondance conceptuelle avec le CNIG ou son caractère d'extension BAN.
+La traduction française utilise les formulations « Équivalent conseillé pour
+un Standard-FR-CNIG » et « Correspondance conceptuelle CNIG ».
 Voir [la table documentaire](../analyse/CORRESPONDANCES_STANDARD_ADRESSE.md).
+
+Le POC documentaire produit `/fr/` et `/en/` à partir de ces annotations. Une
+traduction manquante bloque la génération. Un validateur AJV configuré en mode
+strict doit déclarer `x-i18n` comme annotation autorisée ; les règles de validation
+des données ne dépendent pas de cette annotation.
 
 JSON Schema valide chaque ligne. Les contraintes portant sur plusieurs lignes sont contrôlées par `scripts/validate-ban-ndjson.mjs` : position des bornes, période DIFF, cardinalité des états, unicité par objet et exactitude des statistiques.
 

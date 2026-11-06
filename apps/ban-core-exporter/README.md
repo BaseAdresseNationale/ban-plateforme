@@ -235,14 +235,32 @@ l'ordre des dépendances : créations et mises à jour commune → odonyme → a
 puis désactivations adresse → odonyme → commune. Les compteurs de fin de flux
 correspondent aux lignes effectivement écrites.
 
-Les descriptions des JSON Schema proposent un « Équivalent conseillé pour un
-Standard-FR-CNIG » pour chaque propriété. Les correspondances conceptuelles avec
+Les descriptions des JSON Schema sont en anglais ; leur traduction française
+figure dans `x-i18n.fr.description`. Elles proposent un équivalent français
+inspiré du CNIG pour chaque propriété. Les correspondances conceptuelles avec
 le Standard Adresse sont détaillées dans
 [le guide du modèle](./specifications/ban-diff/v0.4/analyse/CORRESPONDANCES_STANDARD_ADRESSE.md).
 
 `integratedAt` porte la date d'intégration explicitement fournie, sinon `null`.
 
-### Validation
+### POC de documentation des schémas
+
+Un aperçu bilingue français/anglais présente les contrats FULL/DIFF, les
+définitions partagées et les exemples, avec les styles DSFR.
+Le [guide du POC](./scripts/schema-docs/README.md)
+détaille les limites constatées et compare le rendu natif au modèle adapté.
+
+Depuis la racine du dépôt :
+
+```sh
+pnpm --filter @ban/ban-core-exporter run docs:preview
+```
+
+Ouvrir http://127.0.0.1:4178/fr/ ou http://127.0.0.1:4178/en/.
+Le sélecteur conserve la définition consultée.
+Aucun service externe ni variable `.env` n’est requis.
+
+### Validation du contrat
 
 Les tests du service chargent les trois schémas (définitions, FULL et DIFF), valident les fixtures et
 exécutent le validateur de flux sur les cas valides comme invalides :
