@@ -7,7 +7,9 @@ automatiquement. Les tests JavaScript ordinaires restent utilisables sans Docker
 
 ## Tester la chaîne de migrations Prisma
 
-`pnpm --filter @ban/prisma-client test` vérifie les dépendances sans base.
+`pnpm --filter @ban/prisma-client test` vérifie les migrations, génère le client
+depuis son schéma, le construit puis le charge dans Node en mode ESM, sans connexion à une base. Ce test vérifie
+aussi la création du client Prisma à partir du code compilé.
 Les tests réels passent exclusivement par Prisma (`resolve`/`deploy`) et couvrent :
 
 - une base vide, avec les quatorze fichiers de migration ;

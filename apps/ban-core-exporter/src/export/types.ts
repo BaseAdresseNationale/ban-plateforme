@@ -66,16 +66,16 @@ export type ExportFileResult = {
   stats: Record<string, unknown>;
 };
 
-export type ExportStorageOutput =
-  | {
-    storage: 'local';
-    path: string;
-  }
-  | {
-    storage: 's3';
-    bucket: string;
-    key: string;
-    endpoint: string;
-    url?: string;
-    size: number;
-  };
+type S3ExportLocation = {
+  bucket: string;
+  key: string;
+  endpoint: string;
+  url?: string;
+  etag?: string;
+};
+
+export type ExportStorageOutput = { size: number; sha256: string } & (
+  | { storage: 'local'; path: string }
+  | ({ storage: 's3' } & S3ExportLocation)
+  | ({ storage: 'both'; path: string } & S3ExportLocation)
+);

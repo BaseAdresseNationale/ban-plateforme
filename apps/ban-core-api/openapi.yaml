@@ -137,7 +137,7 @@ paths:
                         output:
                           storage: s3
                           bucket: ban-exports
-                          key: exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ban-standard.ndjson
+                          key: exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ndjson
                           endpoint: http://localhost:9000
                           size: 12345
                       createdAt: '2026-07-30T12:00:00.000Z'

@@ -1,4 +1,4 @@
-type WritableTarget = { write: (chunk: string) => boolean; once: (event: 'drain', listener: () => void) => void };
+import { writeChunk, type WritableTarget } from './write-chunk.js';
 const dependencyTypes = [
   ['district'],
   ['toponym'],
@@ -20,22 +20,22 @@ export class DiffOrderBuffer {
 
   once(_event: 'drain', _listener: () => void) {}
 
-  async flush(output: WritableTarget) {
+  async flush(output: WritableTarget, signal?: AbortSignal) {
     for (const event of ['created', 'updated']) {
-      await this.writeEventInDependencyOrder(output, event, dependencyTypes);
+      await this.writeEventInDependencyOrder(output, event, dependencyTypes, signal);
     }
-    await this.writeEventInDependencyOrder(output, 'disabled', [...dependencyTypes].reverse());
+    await this.writeEventInDependencyOrder(output, 'disabled', [...dependencyTypes].reverse(), signal);
   }
 
-  private async writeEventInDependencyOrder(output: WritableTarget, event: string, types: string[][]) {
+  private async writeEventInDependencyOrder(output: WritableTarget, event: string, types: string[][], signal?: AbortSignal) {
     for (const names of types) {
-      for (const type of names) await this.writeLines(output, this.lines.get(`${event}:${type}`) ?? []);
+      for (const type of names) await this.writeLines(output, this.lines.get(`${event}:${type}`) ?? [], signal);
     }
   }
 
-  private async writeLines(output: WritableTarget, lines: string[]) {
+  private async writeLines(output: WritableTarget, lines: string[], signal?: AbortSignal) {
     for (const line of lines) {
-      if (!output.write(line)) await new Promise<void>(resolve => output.once('drain', resolve));
+      await writeChunk(output, line, signal);
     }
   }
 }

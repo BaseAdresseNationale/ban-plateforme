@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { normalizeExportSelection } from '@ban/tools';
 
-import { getExportFileName, getExportReferenceMonth } from './file-naming.js';
+import { getExportFileName, getExportReferenceDate, getExportReferenceMonth } from './file-naming.js';
 import type { DataExportParams } from './types.js';
 
 const params: DataExportParams = {
@@ -16,12 +16,12 @@ const diffParams: DataExportParams = {
 
 describe('export filenames and reference month', () => {
   it('names a snapshot at midnight Paris on the following UTC calendar day', () => {
-    expect(getExportFileName('job_1-Ab', 'full', params)).toBe('full--dep-31--2026-06-01--job_1-Ab.ban-standard.ndjson');
+    expect(getExportFileName('job_1-Ab', 'full', params)).toBe('full--dep-31--2026-06-01--job_1-Ab.ndjson');
     expect(getExportReferenceMonth('full', params)).toBe('2026-06');
   });
 
   it('names a successive weekly DIFF from both Paris bounds', () => {
-    expect(getExportFileName('job', 'diff', diffParams)).toBe('diff--dep-31--2026-05-04_2026-05-11--job.ban-standard.ndjson');
+    expect(getExportFileName('job', 'diff', diffParams)).toBe('diff--dep-31--2026-05-04_2026-05-11--job.ndjson');
     expect(getExportReferenceMonth('diff', diffParams)).toBe('2026-05');
   });
 
@@ -29,8 +29,16 @@ describe('export filenames and reference month', () => {
     expect(getExportReferenceMonth('diff', { ...diffParams, from: '2026-05-25T00:00:00+02:00', to: '2026-06-01T00:00:00+02:00' })).toBe('2026-06');
   });
 
+  it.each([
+    ['2026-05-31T22:00:00Z', '2026-06-01'],
+    ['2025-12-31T23:00:00Z', '2026-01-01'],
+    ['2026-10-25T01:30:00Z', '2026-10-25'],
+  ])('uses the Paris calendar date of the exclusive DIFF bound %s', (to, date) => {
+    expect(getExportReferenceDate('diff', { ...diffParams, to })).toBe(date);
+  });
+
   it.each(['2A', '2B', '971', '96'])('retains department code %s', code => {
-    expect(getExportFileName('job', 'full', { ...params, departements: [code] })).toBe(`full--dep-${code}--2026-06-01--job.ban-standard.ndjson`);
+    expect(getExportFileName('job', 'full', { ...params, departements: [code] })).toBe(`full--dep-${code}--2026-06-01--job.ndjson`);
   });
 
   it('treats duplicate departments as one scope', () => {
@@ -53,23 +61,23 @@ describe('export filenames and reference month', () => {
 
   it('retains time, offset and PostgreSQL microseconds away from midnight', () => {
     const precise = normalizeExportSelection('full', { ...params, at: '2026-06-01T00:00:00.000001+02:00' });
-    expect(getExportFileName('job', 'full', precise)).toBe('full--dep-31--2026-06-01T00-00-00-000001+0200--job.ban-standard.ndjson');
+    expect(getExportFileName('job', 'full', precise)).toBe('full--dep-31--2026-06-01T00-00-00-000001+0200--job.ndjson');
     expect(getExportFileName('job', 'full', { ...params, at: '2026-06-01T12:34:56.123456Z' }))
-      .toBe('full--dep-31--2026-06-01T14-34-56-123456+0200--job.ban-standard.ndjson');
+      .toBe('full--dep-31--2026-06-01T14-34-56-123456+0200--job.ndjson');
   });
 
   it('distinguishes the repeated hour at the end of daylight saving time', () => {
     expect(getExportFileName('job', 'full', { ...params, at: '2026-10-25T00:30:00Z' }))
-      .toBe('full--dep-31--2026-10-25T02-30-00+0200--job.ban-standard.ndjson');
+      .toBe('full--dep-31--2026-10-25T02-30-00+0200--job.ndjson');
     expect(getExportFileName('job', 'full', { ...params, at: '2026-10-25T01:30:00Z' }))
-      .toBe('full--dep-31--2026-10-25T02-30-00+0100--job.ban-standard.ndjson');
+      .toBe('full--dep-31--2026-10-25T02-30-00+0100--job.ndjson');
   });
 
   it('handles winter midnight and the spring time change', () => {
     expect(getExportFileName('job', 'full', { ...params, at: '2025-12-31T23:00:00Z' }))
-      .toBe('full--dep-31--2026-01-01--job.ban-standard.ndjson');
+      .toBe('full--dep-31--2026-01-01--job.ndjson');
     expect(getExportFileName('job', 'full', { ...params, at: '2026-03-29T01:30:00Z' }))
-      .toBe('full--dep-31--2026-03-29T03-30-00+0200--job.ban-standard.ndjson');
+      .toBe('full--dep-31--2026-03-29T03-30-00+0200--job.ndjson');
   });
 
   it.each(['../outside', 'a/b', 'a\\b', '.', '', 'x'.repeat(129)])('rejects unsafe token %s', token => {

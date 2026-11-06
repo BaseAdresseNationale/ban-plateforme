@@ -84,6 +84,10 @@ EXPORT_S3_PREFIX=exports
 EXPORT_S3_FORCE_PATH_STYLE=true
 ```
 
+Pour les exports, `EXPORT_STORAGE=s3` écrit directement vers S3 ; `local`
+conserve un fichier dans `tmp/exports`, et `both` utilise les deux destinations.
+Voir [les modes de stockage de l'exporteur](apps/ban-core-exporter/README.md#choisir-les-destinations).
+
 > Ces variables alimentent `docker-compose.dev.ban.yml` ainsi que les scripts de développement.
 > Pensez à maintenir votre `.env` local aligné avec `.env.example` lorsque de nouvelles variables sont ajoutées.
 
@@ -197,8 +201,8 @@ ban-core-api
         │
         ▼
 ban-core-exporter
-  genere le fichier NDJSON
-  stocke le fichier localement ou sur S3
+  génère un flux NDJSON
+  écrit localement, vers S3, ou les deux
   met a jour ban.job_status
   publie export.completed ou export.failed -> ban.events
         │
@@ -280,7 +284,7 @@ Lorsque le stockage S3 est configure, le rapport contient les informations de so
       "output": {
         "storage": "s3",
         "bucket": "ban-exports",
-        "key": "exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ban-standard.ndjson"
+        "key": "exports/2026-06/full--dep-33--2026-06-01--V1StGXR8_Z5jdHi6B-myT.ndjson"
       }
     }
   }
