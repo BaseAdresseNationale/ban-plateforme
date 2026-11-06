@@ -1,0 +1,22 @@
+{{#*inline "banNode"}}
+{{#if schema.description}}<p>{{banText schema "description"}}</p>{{/if}}
+{{#if schema.$ref}}<p>{{banT "reference"}} : <a href="{{banRef schema.$ref}}"><code>{{schema.$ref}}</code></a></p>{{/if}}
+{{#if (banFacts schema)}}
+<div class="table-scroll"><table class="constraints"><caption>{{banT "constraints"}}</caption><thead><tr><th scope="col">{{banT "keyword"}}</th><th scope="col">{{banT "value"}}</th></tr></thead><tbody>
+{{#each (banFacts schema)}}<tr><th scope="row"><code>{{key}}</code></th><td><code>{{value}}</code></td></tr>{{/each}}
+</tbody></table></div>
+{{/if}}
+{{#each (banChildren schema pointer)}}
+<details class="schema-node" id="{{banAnchor pointer}}" data-schema-node>
+<summary><code>{{label}}</code> <span class="node-type">{{banType schema}}</span>{{#if property}} <span class="requirement">{{#if required}}{{banT "required"}}{{else}}{{banT "optional"}}{{/if}}</span>{{/if}}</summary>
+<div class="node-content">
+{{> banNode schema=schema pointer=pointer}}
+</div></details>
+{{/each}}
+{{/inline}}
+
+# {{banText unresolvedSchema "title"}}
+
+<div class="schema-root" id="{{banAnchor ""}}">
+{{> banNode schema=unresolvedSchema pointer=""}}
+</div>

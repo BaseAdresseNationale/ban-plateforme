@@ -7,7 +7,8 @@ concepts du standard et précise les choix de représentation propres au flux.
 ## Équivalents français conseillés
 
 Chaque propriété définie dans les schémas, y compris les répétitions et les
-propriétés utilisant `$ref`, porte son équivalent conseillé dans `description`.
+propriétés utilisant `$ref`, porte son équivalent conseillé dans `description`
+(texte anglais) et `x-i18n.fr.description` (texte français).
 Cette proposition de nommage constitue un profil français inspiré du CNIG ;
 les correspondances conceptuelles ci-dessous détaillent les adaptations BAN.
 
