@@ -13,9 +13,15 @@ Depuis la racine du monorepo, avec Node.js 24 et pnpm 10 :
 
 ```sh
 pnpm install --frozen-lockfile --ignore-scripts
+pnpm --filter @ban/ban-core-api docs:dev
 pnpm --filter @ban/ban-core-api docs:check
 pnpm --filter @ban/ban-core-api docs:build
 ```
+
+`docs:dev` affiche une URL locale sur un port libre (`--port 8123` facultatif).
+Ouvrir cette URL dans le navigateur ; arrêt avec `Ctrl+C`. Les YAML sont
+actualisés automatiquement et les appels API sont désactivés. Aucun `.env`
+ou service métier n’est nécessaire à cet aperçu.
 
 `docs:check` valide le contrat et ses références locales. `docs:build` produit
 `dist/docs/openapi.json`, généré et ignoré par Git.
