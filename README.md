@@ -21,6 +21,9 @@ La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
 
 Les exports asynchrones FULL et DIFF sont documentés dans la section [Exports asynchrones](#-exports-asynchrones).
 
+Les procédures d'équipe pour les [sauvegardes, restaurations et mises à niveau
+PostgreSQL](documentation/postgresql/README.md) sont regroupées dans `documentation/`.
+
 Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
 ---
@@ -137,6 +140,10 @@ BAN utilise un schéma PostgreSQL complexe :
 
 Initialisez la base avec :
 
+> Cette initialisation est distincte de la restauration d'un dump. Pour une base
+> déjà restaurée, suivre d'abord l'[audit et la mise à niveau après restauration](documentation/postgresql/mise-a-niveau-apres-restauration.md),
+> notamment avant de marquer une baseline ou de déployer des migrations.
+
 ```shell
 pnpm run dev:infra:init
 ```
@@ -148,14 +155,15 @@ Ce script :
 3. Vérifie si `ban.district` existe,
 4. Si nécessaire → importe `ban_schema.sql`,
 5. Lance le bootstrap Prisma (`pnpm db:bootstrap`) qui :
-   - marque `0000_baseline` comme appliquée,
+   - marque la migration `0000_baseline` comme appliquée,
    - applique les migrations Prisma restantes,
    - régénère le client Prisma.
 
 `pnpm db:bootstrap` s’occupe de tout le cycle Prisma après l’import du schéma BAN.
 
 
-Après ça, votre base BAN locale est entièrement fonctionnelle.
+Validez ensuite les fonctions, droits et migrations nécessaires à votre version
+du code avant d'utiliser la base, selon le [guide de compatibilité PostgreSQL](documentation/postgresql/mise-a-niveau-apres-restauration.md).
 
 ## 6. 🔧 Outils disponibles
 
