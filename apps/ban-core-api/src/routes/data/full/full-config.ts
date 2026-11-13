@@ -1,7 +1,5 @@
-import type { ExportRequestConfigs } from '../types.js';
-
-export const banRequestConfigs = {
-  district: {
+export const fullRequestConfigs = {
+  district : {
     dataName: 'snapshot_district_ndjson',
     request: `
       SELECT
@@ -12,7 +10,7 @@ export const banRequestConfigs = {
         $3::text[]          -- departements
       )
     `,
-    params: ['at', 'district_ids', 'departements'],
+    params: ["at", "district_ids", "departements"],
   },
   toponym: {
     dataName: 'snapshot_common_toponym_ndjson',
@@ -26,7 +24,7 @@ export const banRequestConfigs = {
         $4::text[]          -- departements
       )
     `,
-    params: ['at', 'common_toponym_ids', 'district_ids', 'departements'],
+    params: ["at", "common_toponym_ids", "district_ids", "departements"],
   },
   address: {
     dataName: 'snapshot_address_ndjson',
@@ -41,6 +39,7 @@ export const banRequestConfigs = {
         $5::text[]          -- departements
       )
     `,
-    params: ['at', 'address_ids', 'common_toponym_ids', 'district_ids', 'departements'],
+    params: ["at", "address_ids", "common_toponym_ids", "district_ids", "departements"],
   },
-} satisfies ExportRequestConfigs;
+};
+

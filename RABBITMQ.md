@@ -102,7 +102,7 @@ Le pipeline BAL actuel utilise les routing keys suivantes :
 | `bal.enriched.old-district` | Résultat d’enrichissement des anciennes communes |
 | `bal.enriched.*` | Binding du merger pour tous les résultats d’enrichissement |
 | `bal.ready` | La BAL fusionnée est prête à être écrite |
-| `export.requested` | Une demande d’export BAN ou différentiel doit être traitée |
+| `export.requested` | Une demande d’export FULL ou DIFF doit être traitée |
 | `export.completed` | Une demande d’export s’est terminée avec succès |
 | `export.failed` | Une demande d’export a échoué |
 
@@ -157,7 +157,7 @@ ban-core-writer
 
 ## Flux des exports asynchrones
 
-Les exports BAN et différentiels utilisent un flux de commande séparé du pipeline BAL.
+Les exports FULL et DIFF utilisent un flux de commande séparé du pipeline BAL.
 
 ```text
 ban-core-api
@@ -180,8 +180,8 @@ ban-core-api
 Le message `export.requested` contient :
 
 - `token` : identifiant de suivi de la demande ;
-- `exportType` : `ban` ou `diff` ;
-- `params` : format, departements, types de donnees et fenetre temporelle.
+- `exportType` : `full` ou `diff` ;
+- `params` : départements, types de données, éventuels filtres UUID internes et dates de sélection (`at` pour FULL ; `from` et `to` pour DIFF).
 
 Le service `ban-core-exporter` publie ensuite :
 

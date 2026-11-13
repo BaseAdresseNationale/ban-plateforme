@@ -1,14 +1,14 @@
 import { nanoid } from 'nanoid';
+import { normalizeExportSelection } from '@ban/tools';
 
 import { pgPool } from '@ban/api';
 
 import { publications } from '../../../rabbitmq.config.js';
 import { publishRabbitMqMessage } from '../../../rabbitmq.broker.js';
 
-export type DataExportType = 'ban' | 'diff';
+export type DataExportType = 'full' | 'diff';
 
 export type DataExportRequestParams = {
-  format: string;
   dataTypes: string[];
   departements: string[];
   address_ids: string[] | null;
@@ -78,7 +78,7 @@ export const enqueueDataExportRequest = async (
   const message = {
     token: nanoid(),
     exportType,
-    params,
+    params: normalizeExportSelection(exportType, params),
   } satisfies DataExportRequestMessage;
 
   await insertPendingExportStatus(message);

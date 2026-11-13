@@ -25,7 +25,7 @@ type DataExportStatusRow = {
 };
 
 const toDataExportType = (jobType: string | null): DataExportType | null => {
-  if (jobType === 'ban' || jobType === 'diff') {
+  if (jobType === 'full' || jobType === 'diff') {
     return jobType;
   }
 

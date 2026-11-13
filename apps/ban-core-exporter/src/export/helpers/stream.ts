@@ -1,6 +1,6 @@
 import Cursor from 'pg-cursor';
 
-import type { BanFormatter, DataLine, FormatConfigs, Formatters } from '../types.js';
+import type { BanFormatter } from '../types.js';
 
 function readCursor(cursor: Cursor, size: number) {
   return new Promise<Record<string, unknown>[]>((resolve, reject) => {
@@ -38,18 +38,14 @@ export async function streamCursorData({
   cursor,
   fetchSize,
   dataName,
-  format,
   output,
-  banFormatter = (objLine: DataLine, _converters?: FormatConfigs) => objLine,
-  converters = {},
+  banFormatter,
 }: {
   cursor: Cursor;
   fetchSize: number;
   dataName: string;
-  format: string;
   output: WritableTarget;
   banFormatter: BanFormatter;
-  converters?: Formatters;
 }) {
   const stats: Record<string, number> = {
     count: 0,
@@ -69,15 +65,7 @@ export async function streamCursorData({
       }
 
       const objLineRaw = typeof line === 'string' ? JSON.parse(line) : {};
-      let objLine = null;
-
-      if (format === 'ban') {
-        objLine = banFormatter(objLineRaw);
-      } else if (format in converters) {
-        objLine = banFormatter(objLineRaw, converters[format]);
-      } else {
-        objLine = objLineRaw;
-      }
+      const objLine = banFormatter(objLineRaw);
 
       if (!objLine) {
         continue;
@@ -89,8 +77,11 @@ export async function streamCursorData({
 
       stats.count += 1;
 
-      if (typeof objLine === 'object' && 'event' in objLine && typeof objLine.event === 'string') {
-        stats[objLine.event] = (stats[objLine.event] || 0) + 1;
+      if (typeof objLine === 'object') {
+        const event = 'event' in objLine ? objLine.event : undefined;
+        if (typeof event === 'string') {
+          stats[event] = (stats[event] || 0) + 1;
+        }
       }
     }
   }

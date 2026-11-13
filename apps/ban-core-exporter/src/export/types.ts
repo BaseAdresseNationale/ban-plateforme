@@ -1,4 +1,4 @@
-export type DataExportType = 'ban' | 'diff';
+export type DataExportType = 'full' | 'diff';
 export type DataType = 'district' | 'toponym' | 'address';
 export type EventType = 'created' | 'disabled' | 'updated';
 export type RawEntity = Record<string, any>;
@@ -6,7 +6,6 @@ export type RawDistrict = RawEntity;
 export type RawCommonToponym = RawEntity;
 
 export type DataExportParams = {
-  format: string;
   dataTypes: string[];
   departements: string[];
   address_ids: string[] | null;
@@ -26,11 +25,14 @@ export type DataExportRequestMessage = {
 export interface NdjsonHeader {
   event?: EventType;
   type: DataType;
-  nodekey: string;
+  nodeKey?: string;
+  nodekey?: string;
+  meta?: RawEntity;
 }
 
 export interface DiffLine extends NdjsonHeader {
-  datas: Record<string, unknown>[];
+  datas?: (Record<string, unknown> | null)[];
+  data?: Record<string, unknown>[];
 }
 
 export interface SnapshotLine extends NdjsonHeader {
@@ -43,14 +45,10 @@ export type Formatter = (ndjsonHeader: NdjsonHeader, raw: RawEntity) => Record<s
 
 export interface FormatConfigs {
   [dataType: string]: {
+    converter?: (ndjsonHeader: NdjsonHeader, raw: RawEntity) => RawEntity;
     formater?: Formatter;
-    typeName?: string;
     excludedKeysOfCompare?: string[];
   };
-}
-
-export interface Formatters {
-  [formatName: string]: FormatConfigs;
 }
 
 export type BanFormatter = (objLine: DataLine, converters?: FormatConfigs) => unknown;
