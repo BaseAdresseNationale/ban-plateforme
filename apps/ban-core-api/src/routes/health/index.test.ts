@@ -40,8 +40,10 @@ describe('health router', () => {
   });
 
   it('does not accept mutation methods or unknown paths', async () => {
-    for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
-      expect((await request('/ping', method)).status).toBe(404);
+    for (const url of ['/ping', '/health']) {
+      for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
+        expect((await request(url, method)).status).toBe(404);
+      }
     }
     expect((await request('/missing')).status).toBe(404);
   });
@@ -58,5 +60,29 @@ describe('health router', () => {
     expect(index).toContain("import healthRoutes from './routes/health/index.js'");
     expect(index).toContain("app.use('/', healthRoutes)");
     expect(index).not.toContain("app.get('/ping'");
+  });
+
+  it('preserves the existing JSON health response without checking services', async () => {
+    expect(await request('/health')).toEqual({
+      status: 200, body: '{"status":"ok"}', type: 'application/json; charset=utf-8',
+    });
+    expect(await request('/health', 'HEAD')).toEqual({
+      status: 200, body: '', type: 'application/json; charset=utf-8',
+    });
+  });
+
+  it('documents the exact health response and removes the old duplicate handler', async () => {
+    const document = await SwaggerParser.dereference(await bundleOpenApi(), { resolve: { http: false } });
+    const operation = document.paths?.['/health']?.get;
+    expect(operation?.security).toEqual([]);
+    expect(operation?.tags).toEqual(['Santé']);
+    expect(operation?.responses?.['200']).toMatchObject({
+      content: { 'application/json': {
+        schema: { type: 'object', additionalProperties: false, required: ['status'], properties: { status: { type: 'string', const: 'ok' } } },
+        example: JSON.parse((await request('/health')).body),
+      } },
+    });
+    const index = await readFile(new URL('../../index.ts', import.meta.url), 'utf8');
+    expect(index).not.toContain("app.get('/health'");
   });
 });
