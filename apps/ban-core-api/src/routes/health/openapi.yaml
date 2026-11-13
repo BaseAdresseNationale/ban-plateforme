@@ -1,0 +1,20 @@
+paths:
+  /ping:
+    get:
+      summary: Vérifier que le serveur HTTP répond
+      description: |
+        Retourne le texte `pong`. Cette route de vivacité ne vérifie pas
+        PostgreSQL, MongoDB, RabbitMQ, Redis ou les workers.
+        Le type text/html est celui de la réponse texte Express historique.
+      tags:
+        - Santé
+      security: []
+      responses:
+        '200':
+          description: Le serveur HTTP répond.
+          content:
+            text/html:
+              schema:
+                type: string
+                const: pong
+              example: pong

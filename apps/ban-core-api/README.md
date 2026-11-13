@@ -28,10 +28,10 @@ ou service métier n’est nécessaire à cet aperçu.
 
 ## Tests et démarrage
 
-Tests documentaires sans service ni configuration métier :
+Tests documentaires et Santé sans service ni configuration métier :
 
 ```sh
-pnpm --filter @ban/ban-core-api exec vitest run src/documentation src/routes/openapi-export-contract.test.ts
+pnpm --filter @ban/ban-core-api exec vitest run src/routes/health src/documentation src/routes/openapi-export-contract.test.ts
 ```
 
 Le démarrage de l’API complète nécessite les packages internes construits et
