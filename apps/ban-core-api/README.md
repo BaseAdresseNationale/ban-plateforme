@@ -1,75 +1,36 @@
 # @ban/ban-core-api
 
-Service API minimaliste pour envoyer des fichiers BAL dans RabbitMQ.
+Service HTTP de BAN Platform : santé, exports FULL/DIFF et acheminement des BAL.
+Les entrées BAL de démonstration restent internes.
 
-## Endpoints
+## Documentation des API
 
-- `POST /upload-bal`  
-  Route interne de test : parse un fichier BAL (`multipart/form-data`) puis publie `{ id, rows }` sur RabbitMQ (`bal.parsed`).
+Les contrats HTTP (paramètres, réponses et exemples) sont décrits dans
+[openapi.yaml](openapi.yaml), avec un YAML par famille près du code des routes.
+Le README décrit uniquement l’utilisation du service et de ses outils.
 
-- `POST /send-bal`  
-  Route interne de test : parse un corps texte CSV puis publie `{ id, rows }` sur RabbitMQ (`bal.parsed`).
+Depuis la racine du monorepo, avec Node.js 24 et pnpm 10 :
 
-- `POST /bal/file`  
-  Envoie un fichier BAL (`multipart/form-data`) brut au parser via `{ id, payload, filename }` sur RabbitMQ (`bal.uploaded`).
-
-- `POST /bal/text`  
-  Envoie un corps texte CSV brut au parser via `{ id, payload, filename }` sur RabbitMQ (`bal.uploaded`).
-
-- `GET {API_BASE_URL}/api/data/full/{dep}`  
-  Cree une demande d'export FULL asynchrone et renvoie un token de suivi.
-
-- `GET {API_BASE_URL}/api/data/diff/{dep}`  
-  Cree une demande d'export differentiel asynchrone et renvoie un token de suivi.
-
-- `GET {API_BASE_URL}/api/reports/exports/{token}`  
-  Retourne le rapport courant d'une demande d'export asynchrone.
-
-La documentation OpenAPI des routes d'export est disponible dans [openapi.yaml](./openapi.yaml).
-
-## Exports asynchrones
-
-- **FULL — export complet** : photographie des objets actifs à l'instant `at`, pour le périmètre sélectionné.
-- **DIFF — export différentiel** : changements consolidés entre `from` inclus et `to` exclu : créations, mises à jour et désactivations. Il permet d'actualiser un état de départ compatible.
-
-Les routes d'export repondent en `202 Accepted`. Elles ne renvoient pas le fichier exporte directement.
-
-Les paramètres de requête sont validés selon le type d'export : `at` pour un
-FULL, `from` et `to` pour un DIFF, et `dataTypes` pour les deux. Le département
-est fourni dans le chemin. Un paramètre inconnu entraîne une réponse `400` avec
-le message `Unsupported query parameter: <nom reçu>`.
-
-Le fonctionnement est le suivant :
-
-1. `ban-core-api` valide la demande.
-2. `ban-core-api` cree une ligne `ban.job_status` en `pending`.
-3. `ban-core-api` publie `export.requested` dans RabbitMQ.
-4. `ban-core-exporter` genere et stocke le fichier.
-5. Le client suit la demande via `GET {API_BASE_URL}/api/reports/exports/{token}`.
-
-Exemple :
-
-```bash
-API_BASE_URL=http://localhost:3000
-TOKEN=<token>
-
-curl "${API_BASE_URL}/api/data/full/33"
-curl "${API_BASE_URL}/api/reports/exports/${TOKEN}"
+```sh
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm --filter @ban/ban-core-api docs:check
+pnpm --filter @ban/ban-core-api docs:build
 ```
 
-## Démarrage
+`docs:check` valide le contrat et ses références locales. `docs:build` produit
+`dist/docs/openapi.json`, généré et ignoré par Git.
 
-```bash
-pnpm install
-pnpm --filter @ban/ban-core-api run dev
+## Tests et démarrage
+
+Tests documentaires sans service ni configuration métier :
+
+```sh
+pnpm --filter @ban/ban-core-api exec vitest run src/documentation src/routes/openapi-export-contract.test.ts
 ```
 
-## Variables d'environnement
+Le démarrage de l’API complète nécessite les packages internes construits et
+la configuration des services du projet (voir [le modèle d’environnement](../../.env.example)) :
 
-Le service utilise `@ban/config` pour charger la config RabbitMQ via `.env` :
-```env
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-RABBITMQ_USER=guest
-RABBITMQ_PASSWORD=guest
+```sh
+pnpm --filter @ban/ban-core-api dev
 ```
