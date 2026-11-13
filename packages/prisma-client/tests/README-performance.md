@@ -5,6 +5,34 @@ Le support commun et la préparation explicite des bases sont décrits dans
 sur une base applicative. Les mesures datées sont conservées comme références
 historiques, pas comme résultats de la réorganisation de la stack.
 
+## Cache des métadonnées DIFF (migration 0011)
+
+`0011_cache_diff_district_metadata` remplace les deux enveloppes NDJSON des
+adresses et toponymes. Pour les sélections sans UUID, deux dictionnaires internes
+à la requête résolvent les codes commune : borne de début pour `disabled`, borne
+de fin pour les autres événements. Les communes sont résolues sans filtre
+départemental pour conserver les références croisées et la priorité des états.
+Avec des UUID explicites, la recherche ciblée existante est conservée.
+
+La migration ne change ni les fonctions de consolidation métier, ni les FULL,
+ni les données ni les index. Elle conserve signatures et droits. Les treize fichiers
+déjà partagés restent inchangés. Les tests Prisma couvrent aussi une base ayant
+déjà appliqué ces treize migrations, puis un second deploy sans effet.
+
+Sur les petites bases synthétiques préparées selon [README.md](README.md) :
+
+```sh
+RUN_BAN_POSTGRES_TESTS=1 node --test packages/prisma-client/tests/diff-metadata.postgres.test.mjs
+```
+
+Les comparaisons ancien/nouveau portent sur cinq périodes, les filtres NULL,
+UUID/communes/toponymes/départements, les tableaux vides, les bornes temporelles,
+les trois événements, les codes historiques, DROM et valeurs de repli. Chaque
+essai se termine par `ROLLBACK`, y compris les contrôles des droits et du schéma.
+Les mesures de performance sur données réelles restent distinctes : caches,
+concurrence et transport S3 doivent être précisés ; ce cache ne résout pas à lui
+seul tous les coûts d'accès aux historiques denses.
+
 ## Une optimisation durable, des outils de vérification séparés
 
 La migration `0007_optimize_address_diff_filters` est un changement applicatif,

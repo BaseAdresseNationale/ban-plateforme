@@ -5,6 +5,62 @@ exports FULL/DIFF sur des bases dédiées. Il ne restaure aucun dump de producti
 ne nécessite pas le kit du département fictif 96 et ne prépare aucune base
 automatiquement. Les tests JavaScript ordinaires restent utilisables sans Docker.
 
+## Tester la chaîne de migrations Prisma
+
+`pnpm --filter @ban/prisma-client test` vérifie les dépendances sans base.
+Les tests réels passent exclusivement par Prisma (`resolve`/`deploy`) et couvrent :
+
+- une base vide, avec les quatorze fichiers de migration ;
+- une structure déjà présente avec des données synthétiques et un index manquant,
+  puis reconnaissance de la baseline et application des treize autres migrations ;
+- une base ayant réellement appliqué les dix fichiers historiques via Prisma,
+  avec les auxiliaires anciennement installés à part, puis application des trois
+  ajouts et du cache DIFF : anciennes lignes du registre et données intactes ;
+- une base ayant déjà appliqué les treize migrations : seul le cache DIFF est
+  installé, sans modifier les treize entrées existantes ni les données ;
+- les 17 fonctions et les indexes de référence, le registre et ses empreintes,
+  les enveloppes FULL/DIFF, les sélections vides et la conservation des objets existants ;
+- une deuxième commande `deploy` sans changement de l’état installé.
+
+Ces tests utilisent uniquement `ban_migrations_additive_empty_tmp`,
+`ban_migrations_additive_restore_tmp`, `ban_migrations_additive_legacy_tmp` et
+`ban_migrations_additive_current_tmp`.
+Ils exigent quatre bases **neuves**, marquées comme
+bases de test, et refusent de nettoyer/réinitialiser une cible existante.
+Le scénario représente un schéma préexistant ; il n’importe aucune donnée de production
+et ne remplace pas les contrôles sur la vraie candidate restaurée.
+
+Après vérification que ces quatre noms sont libres, créer explicitement les bases :
+
+```sh
+docker exec ban_postgres psql --host=/var/run/postgresql --username=ban_user --dbname=postgres --no-psqlrc --set=ON_ERROR_STOP=1 \
+  --command='CREATE DATABASE ban_migrations_additive_empty_tmp OWNER ban_user TEMPLATE template0;' \
+  --command="COMMENT ON DATABASE ban_migrations_additive_empty_tmp IS 'BAN isolated migration test';" \
+  --command='CREATE DATABASE ban_migrations_additive_restore_tmp OWNER ban_user TEMPLATE template0;' \
+  --command="COMMENT ON DATABASE ban_migrations_additive_restore_tmp IS 'BAN isolated migration test';" \
+  --command='CREATE DATABASE ban_migrations_additive_legacy_tmp OWNER ban_user TEMPLATE template0;' \
+  --command="COMMENT ON DATABASE ban_migrations_additive_legacy_tmp IS 'BAN isolated migration test';" \
+  --command='CREATE DATABASE ban_migrations_additive_current_tmp OWNER ban_user TEMPLATE template0;' \
+  --command="COMMENT ON DATABASE ban_migrations_additive_current_tmp IS 'BAN isolated migration test';"
+```
+
+Fournir `PG_URL` **en mémoire** vers `ban_migrations_additive_empty_tmp` sur localhost, rôle
+`ban_user`, `?schema=ban`, via votre mécanisme de secrets. Ne pas changer les `.env`
+partagés. Le test contrôle l’identité de l’instance Docker par socket et TCP.
+
+```sh
+RUN_BAN_MIGRATION_TESTS=1 pnpm --filter @ban/prisma-client test:migrations:postgres
+```
+
+Les bases sont conservées pour inspection. Les journaux et empreintes vont dans
+`working/prisma-migration-tests/`, hors Git. Une nouvelle exécution exige à nouveau
+quatre bases neuves ; décider explicitement du nettoyage des anciennes avant de les
+recréer. Aucun `reset`, aucune suppression ni correction du registre n’est automatique.
+Pour conserver un ancien essai, un suffixe de 1 à 12 caractères alphanumériques
+minuscules peut être fourni dans `BAN_MIGRATION_TEST_SUFFIX` : par exemple `r2`
+demande quatre noms terminant par `_r2`. Créer ces bases explicitement et adapter
+`PG_URL` ; les autres protections restent identiques.
+
 ## Structure et protections
 
 `support/export-schema.sql` reproduit les six tables temporelles, clés étrangères,
