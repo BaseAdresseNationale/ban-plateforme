@@ -2,7 +2,7 @@
 
 Microservice charge de traiter les demandes d'export de donnees BAN.
 
-Il consomme les commandes `export.requested`, genere un fichier NDJSON, stocke le fichier localement ou sur S3, puis met a jour le statut de la demande dans `ban.job_status`.
+Il consomme les commandes `export.requested`, génère un flux NDJSON vers les destinations choisies, puis met à jour le statut de la demande dans `ban.job_status`.
 
 Les exports FULL et DIFF sont publiés au format `ban-standard`. La sélection
 effective est regroupée dans `meta.request` (dates, départements,
@@ -25,8 +25,8 @@ ban-core-api
         ▼
 ban-core-exporter
   consomme ban.exporter
-  genere tmp/exports/<nom-descriptif>--<token>.ban-standard.ndjson
-  stocke le fichier localement ou sur S3
+  génère le flux NDJSON une seule fois
+  écrit dans tmp/exports, vers S3, ou les deux
   met a jour ban.job_status
   publie export.completed ou export.failed -> ban.events
 ```
@@ -61,15 +61,15 @@ Ce dossier est ignore par Git.
 Les exports d'un département, sans filtre UUID, sont nommés ainsi :
 
 ```text
-full--dep-<code-departement>--<date>--<token>.ban-standard.ndjson
-diff--dep-<code-departement>--<date-début>_<date-fin>--<token>.ban-standard.ndjson
+full--dep-<code-departement>--<date>--<token>.ndjson
+diff--dep-<code-departement>--<date-début>_<date-fin>--<token>.ndjson
 ```
 
 Par exemple, un FULL au 1er juin et un DIFF hebdomadaire du 4 au 11 mai :
 
 ```text
-full--dep-31--2026-06-01--<token>.ban-standard.ndjson
-diff--dep-31--2026-05-04_2026-05-11--<token>.ban-standard.ndjson
+full--dep-31--2026-06-01--<token>.ndjson
+diff--dep-31--2026-05-04_2026-05-11--<token>.ndjson
 ```
 
 Les dates sont celles de la **demande**, converties en `Europe/Paris`, et non
@@ -92,6 +92,21 @@ trompeur. Ces libellés n'ajoutent pas de nouveaux filtres aux routes HTTP.
 Les types d'objets sélectionnés ne sont pas détaillés dans le nom : la sélection
 exacte reste dans le rapport du job et les métadonnées d'ouverture du fichier.
 
+### Choisir les destinations
+
+`EXPORT_STORAGE` choisit les sorties, indépendamment de `NODE_ENV` :
+
+| Valeur | Destination |
+|---|---|
+| `local` | Fichier dans `tmp/exports` (ou `EXPORT_OUTPUT_DIR`) |
+| `s3` | Streaming direct vers S3 |
+| `both` | Même flux vers S3 et le fichier local |
+
+Les copies locales sont conservées dans les modes `local` et `both`, en développement
+comme en production. Pendant l'écriture, elles portent le suffixe `.partial` ; le nom
+final est publié après réussite de toutes les destinations. Un échec conserve le
+`.partial` pour diagnostic. Le nettoyage de ces fichiers est manuel.
+
 ### Stockage S3
 
 Pour envoyer les fichiers vers S3 ou RustFS :
@@ -105,21 +120,21 @@ EXPORT_S3_ACCESS_KEY_ID=rustfsadmin
 EXPORT_S3_SECRET_ACCESS_KEY=rustfsadmin
 EXPORT_S3_PREFIX=exports
 EXPORT_S3_FORCE_PATH_STYLE=true
-# Facultatif : durée de conservation des fichiers temporaires en mode S3 (24 h par défaut)
-EXPORT_TEMP_FILE_MAX_AGE_HOURS=24
 ```
 
 Les objets sont regroupés par mois de référence dans le bucket :
 
 ```text
 <EXPORT_S3_PREFIX>/<AAAA-MM>/<nom-du-fichier>
-exports/2026-05/diff--dep-31--2026-05-04_2026-05-11--<token>.ban-standard.ndjson
-exports/2026-06/full--dep-31--2026-06-01--<token>.ban-standard.ndjson
+<EXPORT_S3_PREFIX>/<AAAA-MM>/diff_<date-fin-exclue>/<nom-du-fichier-DIFF>
+exports/2026-05/diff_2026-05-11/diff--dep-31--2026-05-04_2026-05-11--<token>.ndjson
+exports/2026-06/full--dep-31--2026-06-01--<token>.ndjson
 ```
 
 Le mois est celui de `at` pour FULL et de **`to` pour DIFF**, toujours en heure
 de Paris, même si cette borne est exclusive. Un DIFF du 25 mai au 1er juin
-est donc rangé sous `2026-06`. FULL et DIFF partagent le même dossier mensuel.
+est donc rangé sous `2026-06/diff_2026-06-01/`. Les FULL restent directement dans
+le dossier mensuel ; les sous-dossiers DIFF portent le préfixe `diff_` suivi de la date de fin exclue.
 Le token figure également dans les métadonnées S3.
 Le préfixe est configurable (`exports` par défaut).
 
@@ -127,12 +142,17 @@ La destination enregistrée dans `report.output` est la référence pour retrouv
 un export. Les consommateurs doivent l'utiliser, et non reconstruire une clé S3
 à partir du token.
 
-En production, après un envoi S3 confirmé, le fichier temporaire local est
-supprimé. Le service nettoie aussi au démarrage les fichiers NDJSON temporaires
-de plus de 24 heures ; cette durée peut être modifiée avec
-`EXPORT_TEMP_FILE_MAX_AGE_HOURS`. Hors production, les fichiers temporaires sont
-conservés, y compris après un envoi S3. Une erreur de nettoyage ne met pas
-l'export en échec, puisque l'objet est déjà conservé dans S3.
+Le SDK envoie des parties de 8 388 608 octets (8,39 Mo), avec au plus deux envois simultanés par
+export. La sortie la plus lente ralentit la lecture PostgreSQL. Le tampon
+d'ordonnancement des événements DIFF reste en mémoire.
+
+Chaque requête S3 utilise un checksum SHA-256. Après l'upload, le service vérifie
+la taille, l'ETag et les métadonnées de l'objet. `output.sha256` est l'empreinte du
+flux complet, utilisable pour vérifier un téléchargement ; l'ETag multipart
+n'est pas cette empreinte. En cas d'échec, la connexion SQL dédiée est interrompue
+et les parties S3 incomplètes sont abandonnées. Un avertissement signale un
+échec de ce nettoyage. Un objet déjà finalisé peut rester présent si un contrôle
+ultérieur ou la publication locale échoue ; le job reste en erreur.
 
 En developpement local, `docker-compose.dev.ban.yml` démarre RustFS :
 
@@ -148,7 +168,9 @@ Pour conserver uniquement les fichiers locaux :
 EXPORT_STORAGE=local
 ```
 
-Sans configuration S3 complete, le traitement d'export echoue en production. Hors production, le service conserve le fichier localement et journalise un warning.
+Les modes explicites `s3` et `both` exigent une configuration S3 complète.
+Sans mode explicite, une configuration S3 complète sélectionne `s3` ; sinon,
+le développement utilise `local` avec un avertissement et la production échoue.
 
 ## Statuts
 
@@ -163,13 +185,35 @@ Le rapport final contient notamment :
 - `params` : parametres de la demande ;
 - `stats` : compteurs par type de donnees ;
 - `count` : nombre total de lignes exportees ;
-- `output` : destination du fichier local ou S3.
+- `output` : mode (`local`, `s3`, `both`), taille en octets et SHA-256 du flux ;
+  `path` pour la copie locale, `bucket`/`key`/`endpoint` et éventuellement `url`
+  pour S3. Le mode `both` fournit les deux emplacements.
 
 Le rapport est consultable via :
 
 ```text
 GET {API_BASE_URL}/api/reports/exports/{token}
 ```
+
+## Tester les sorties
+
+`pnpm --filter @ban/ban-core-exporter test` couvre les destinations, le
+ralentissement des écritures et les erreurs SQL/disque/S3, sans réseau ni base.
+
+Avec RustFS démarré et les variables S3 locales configurées :
+
+```shell
+pnpm --filter @ban/ban-core-exporter run test:storage:s3
+```
+
+Les tests unitaires et les tests S3 sont regroupés dans `src/export/storage.test.ts`.
+La commande ordinaire exécute les tests unitaires ; `test:storage:s3` sélectionne
+uniquement le groupe d’intégration S3, avec le vrai client AWS à la place du transport simulé.
+
+Ces tests réels refusent les endpoints distants. Ils utilisent un préfixe unique
+`exports/_checks/`, vérifient les téléchargements et l'abandon multipart, puis
+suppriment uniquement leurs propres objets et fichiers. Ils ne touchent pas à
+PostgreSQL ni à RabbitMQ. Ils sont désactivés dans la commande de test ordinaire.
 
 ## Contrat FULL/DIFF v0.4
 

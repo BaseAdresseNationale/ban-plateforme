@@ -2,6 +2,8 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import * as storage from './storage.js';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -10,6 +12,10 @@ const mocks = vi.hoisted(() => ({
   empty: false,
   schemaError: false,
   labelError: false,
+  cursorRead: vi.fn(),
+  cursorClose: vi.fn(),
+  blockReads: false,
+  pendingRead: undefined as ((error: Error | null, rows: Record<string, unknown>[]) => void) | undefined,
 }));
 
 vi.mock('@ban/prisma-client', () => ({
@@ -53,18 +59,21 @@ vi.mock('pg-cursor', () => ({
     }
 
     read(_size: number, callback: (error: Error | null, rows: Record<string, unknown>[]) => void) {
+      mocks.cursorRead();
+      if (mocks.blockReads) { mocks.pendingRead = callback; return; }
       const rows = this.rows;
       this.rows = [];
       callback(null, rows);
     }
 
     close(callback: () => void) {
+      mocks.cursorClose();
       callback();
     }
   },
 }));
 
-const { generateLocalExportFile } = await import('./generate.js');
+const { generateExport, generateLocalExportFile } = await import('./generate.js');
 const { getExportOutputDir } = await import('./output-directory.js');
 
 describe('generateLocalExportFile', () => {
@@ -82,6 +91,10 @@ describe('generateLocalExportFile', () => {
     mocks.empty = false;
     mocks.schemaError = false;
     mocks.labelError = false;
+    mocks.blockReads = false;
+    mocks.pendingRead = undefined;
+    mocks.cursorRead.mockReset();
+    mocks.cursorClose.mockReset();
     mocks.connect.mockResolvedValue({
       query: vi.fn(cursor => cursor),
       release,
@@ -89,6 +102,7 @@ describe('generateLocalExportFile', () => {
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     process.chdir(previousCwd);
     await rm(tmpDir, { recursive: true, force: true });
   });
@@ -136,7 +150,7 @@ describe('generateLocalExportFile', () => {
     const params = { dataTypes: ['district'], departements: ['96'], at: '2026-01-01T00:00:00Z',
       address_ids: null, common_toponym_ids: null, district_ids: null };
     await expect(generateLocalExportFile('bad-label','full',params)).rejects.toThrow('No populated label');
-    const failed = await readFile(path.join(getExportOutputDir(),'full--dep-96--2026-01-01T01-00-00+0100--bad-label.ban-standard.ndjson'),'utf8');
+    const failed = await readFile(path.join(getExportOutputDir(),'full--dep-96--2026-01-01T01-00-00+0100--bad-label.ndjson.partial'),'utf8');
     expect(failed).not.toContain('stream-end');
     mocks.labelError = false;
     const next = await generateLocalExportFile('good-label','full',params);
@@ -158,7 +172,7 @@ describe('generateLocalExportFile', () => {
       }
     );
 
-    expect(path.basename(result.filePath)).toBe('full--dep-33--2026-01-31T01-00-00+0100--export-token.ban-standard.ndjson');
+    expect(path.basename(result.filePath)).toBe('full--dep-33--2026-01-31T01-00-00+0100--export-token.ndjson');
     expect(result.filePath).toContain(path.join('tmp', 'exports'));
     expect(result.stats).toMatchObject({
       output: {
@@ -227,4 +241,39 @@ describe('generateLocalExportFile', () => {
     expect(lines[1].data[0]).toMatchObject({ id: '11111111-1111-4111-8111-111111111111' });
     expect(lines[2].meta.stats.district).toEqual({ count: 1, created: 0, updated: 1, disabled: 0 });
   });
+  describe('generation cancellation', () => {
+    const params = { dataTypes: ['district'], departements: ['31'], at: '2026-06-01T00:00:00+02:00',
+      address_ids: null, common_toponym_ids: null, district_ids: null };
+
+    it('discards the dedicated SQL connection once if storage fails during a pending read', async () => {
+      mocks.blockReads = true;
+      release.mockImplementation((discard?: boolean) => {
+        if (discard) mocks.pendingRead?.(new Error('connection discarded'), []);
+      });
+      let failDestination!: () => void;
+      // Keep the real storage error/abort path; fail its destination only once SQL is reading.
+      const streamExport = storage.streamExport;
+      vi.spyOn(storage, 'streamExport').mockImplementationOnce((selection, produce, config) =>
+        streamExport(selection, (output, signal) => {
+          failDestination = () => { output.destroy(new Error('destination failed')); };
+          return produce(output, signal);
+        }, config));
+
+      const generation = generateExport('cancel', 'full', params, { storage: 'local' });
+      const rejected = expect(generation).rejects.toThrow('destination failed');
+      await vi.waitFor(() => expect(mocks.cursorRead).toHaveBeenCalledOnce());
+      failDestination();
+      await rejected;
+      expect(release).toHaveBeenCalledExactlyOnceWith(true);
+      expect(mocks.cursorClose).not.toHaveBeenCalled();
+    });
+
+    it('normally closes its cursor and returns a reusable connection', async () => {
+      mocks.empty = true;
+      await generateExport('complete', 'full', params, { storage: 'local' });
+      expect(mocks.cursorClose).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledExactlyOnceWith();
+    });
+  });
+
 });
