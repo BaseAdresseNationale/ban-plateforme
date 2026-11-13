@@ -21,6 +21,8 @@ La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
 
 Les exports asynchrones FULL et DIFF sont documentés dans la section [Exports asynchrones](#-exports-asynchrones).
 
+La génération des tuiles vectorielles est documentée dans le [service de tuiles](apps/ban-tiles/README.md).
+
 Ce document explique **comment lancer le projet en local** et comment fonctionne l’infrastructure technique pour les développeurs.
 
 ---

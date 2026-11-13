@@ -91,7 +91,7 @@ services:
       - ban-network
 
   postgres:
-    image: postgres:15
+    image: postgis/postgis:15-3.4
     container_name: postgres
     environment:
       POSTGRES_USER: ${PG_USER}
@@ -169,11 +169,15 @@ COMPOSEEOF
     env_file: $ENV_FILE
 COMPOSEEOF
 
-    # Exposer le port seulement pour ban-core-api
     if [[ "$svc_name" == "ban-core-api" ]]; then
       cat <<COMPOSEEOF
     ports:
       - "\${PORT}:\${PORT}"
+COMPOSEEOF
+    elif [[ "$svc_name" == "ban-tiles" ]]; then
+      cat <<COMPOSEEOF
+    ports:
+      - "\${BAN_TILES_PORT:-3002}:\${BAN_TILES_PORT:-3002}"
 COMPOSEEOF
     fi
 
