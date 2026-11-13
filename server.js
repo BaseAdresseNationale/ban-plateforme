@@ -102,9 +102,12 @@ async function main() {
 
   const port = process.env.PORT || 5000
 
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     log(`Serveur prêt sur le port ${port} (démarrage total: +${Date.now() - startupStartedAt}ms)`)
   })
+
+  server.keepAliveTimeout = Number(process.env.HTTP_KEEP_ALIVE_TIMEOUT_MS) || 65_000
+  server.headersTimeout = server.keepAliveTimeout + 1000
 }
 
 main().catch(error => {
