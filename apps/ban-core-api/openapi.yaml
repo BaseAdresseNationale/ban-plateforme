@@ -4,6 +4,8 @@ info:
   version: 0.1.0
   description: API interne BAN Platform.
 paths:
+  /ping:
+    $ref: './src/routes/health/openapi.yaml#/paths/~1ping'
   /api/data/full/{dep}:
     $ref: './src/routes/data/exports/openapi.yaml#/paths/~1api~1data~1full~1{dep}'
   /api/data/diff/{dep}:
