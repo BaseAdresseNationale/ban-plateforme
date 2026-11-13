@@ -1,0 +1,670 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ban.example/schemas/ban-standard-diff-v0.4.schema.json",
+  "title": "BAN Standard DIFF v0.4",
+  "description": "Contrat de publication FULL/DIFF v0.4 ; équivalents français conseillés et correspondances conceptuelles avec le Standard Adresse CNIG.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/start"
+    },
+    {
+      "$ref": "#/$defs/eventLine"
+    },
+    {
+      "$ref": "#/$defs/end"
+    }
+  ],
+  "$defs": {
+    "start": {
+      "type": "object",
+      "description": "First line of a BAN Standard DIFF stream.",
+      "required": [
+        "meta"
+      ],
+      "properties": {
+        "meta": {
+          "type": "object",
+          "required": [
+            "note",
+            "formatVersion",
+            "exportType",
+            "format",
+            "request"
+          ],
+          "properties": {
+            "note": {
+              "const": "stream-start",
+              "description": "Marqueur d’ouverture ou de clôture du flux. Équivalent conseillé pour un Standard-FR-CNIG : note. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "formatVersion": {
+              "const": "0.4",
+              "description": "Version du contrat FULL/DIFF. Équivalent conseillé pour un Standard-FR-CNIG : versionFormat. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "exportType": {
+              "const": "diff",
+              "description": "Type d’export : full pour un FULL, diff pour un DIFF. Équivalent conseillé pour un Standard-FR-CNIG : typeExport. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "format": {
+              "const": "ban-standard",
+              "description": "Format de publication : ban-standard. Équivalent conseillé pour un Standard-FR-CNIG : format. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "request": {
+              "type": "object",
+              "required": [
+                "dataTypes",
+                "departments",
+                "from",
+                "to"
+              ],
+              "properties": {
+                "dataTypes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "district",
+                      "toponym",
+                      "address"
+                    ]
+                  },
+                  "description": "Types d’objets demandés : district, toponym, address. Équivalent conseillé pour un Standard-FR-CNIG : typesDonnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                },
+                "departments": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 200,
+                  "uniqueItems": true,
+                  "description": "Codes des départements demandés. Équivalent conseillé pour un Standard-FR-CNIG : departements. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                },
+                "from": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Borne incluse de la période DIFF. Équivalent conseillé pour un Standard-FR-CNIG : de. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                },
+                "to": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Borne exclue de la période DIFF. Équivalent conseillé pour un Standard-FR-CNIG : a. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                },
+                "addressIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "uniqueItems": true,
+                  "description": "Filtre UUID d’adresses, réservé aux appels internes. Équivalent conseillé pour un Standard-FR-CNIG : idsAdresses. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                },
+                "toponymIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "uniqueItems": true,
+                  "description": "Filtre UUID de toponymes, réservé aux appels internes. Équivalent conseillé pour un Standard-FR-CNIG : idsOdonymes. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                },
+                "districtIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "minItems": 1,
+                  "maxItems": 1000,
+                  "uniqueItems": true,
+                  "description": "Filtre UUID de communes, réservé aux appels internes. Équivalent conseillé pour un Standard-FR-CNIG : idsCommunes. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                }
+              },
+              "additionalProperties": false,
+              "description": "Sélection validée effectivement utilisée pour produire le flux. Équivalent conseillé pour un Standard-FR-CNIG : requete. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Métadonnées du flux ou de l’objet, selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : metadonnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventLine": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/districtEvent"
+        },
+        {
+          "$ref": "#/$defs/toponymEvent"
+        },
+        {
+          "$ref": "#/$defs/addressEvent"
+        }
+      ]
+    },
+    "districtEvent": {
+      "$ref": "#/$defs/eventDistrict"
+    },
+    "toponymEvent": {
+      "$ref": "#/$defs/eventToponym"
+    },
+    "addressEvent": {
+      "$ref": "#/$defs/eventAddress"
+    },
+    "eventDistrict": {
+      "$ref": "#/$defs/eventBaseDistrict"
+    },
+    "eventToponym": {
+      "$ref": "#/$defs/eventBaseToponym"
+    },
+    "eventAddress": {
+      "$ref": "#/$defs/eventBaseAddress"
+    },
+    "eventBaseDistrict": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/districtCreated"
+        },
+        {
+          "$ref": "#/$defs/districtUpdated"
+        },
+        {
+          "$ref": "#/$defs/districtDisabled"
+        }
+      ]
+    },
+    "eventBaseToponym": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/toponymCreated"
+        },
+        {
+          "$ref": "#/$defs/toponymUpdated"
+        },
+        {
+          "$ref": "#/$defs/toponymDisabled"
+        }
+      ]
+    },
+    "eventBaseAddress": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/addressCreated"
+        },
+        {
+          "$ref": "#/$defs/addressUpdated"
+        },
+        {
+          "$ref": "#/$defs/addressDisabled"
+        }
+      ]
+    },
+    "districtCreated": {
+      "$ref": "#/$defs/createdDistrict"
+    },
+    "districtUpdated": {
+      "$ref": "#/$defs/updatedDistrict"
+    },
+    "districtDisabled": {
+      "$ref": "#/$defs/disabledDistrict"
+    },
+    "toponymCreated": {
+      "$ref": "#/$defs/createdToponym"
+    },
+    "toponymUpdated": {
+      "$ref": "#/$defs/updatedToponym"
+    },
+    "toponymDisabled": {
+      "$ref": "#/$defs/disabledToponym"
+    },
+    "addressCreated": {
+      "$ref": "#/$defs/createdAddress"
+    },
+    "addressUpdated": {
+      "$ref": "#/$defs/updatedAddress"
+    },
+    "addressDisabled": {
+      "$ref": "#/$defs/disabledAddress"
+    },
+    "createdDistrict": {
+      "$ref": "#/$defs/mkCreatedDistrict"
+    },
+    "updatedDistrict": {
+      "$ref": "#/$defs/mkUpdatedDistrict"
+    },
+    "disabledDistrict": {
+      "$ref": "#/$defs/mkDisabledDistrict"
+    },
+    "createdToponym": {
+      "$ref": "#/$defs/mkCreatedToponym"
+    },
+    "updatedToponym": {
+      "$ref": "#/$defs/mkUpdatedToponym"
+    },
+    "disabledToponym": {
+      "$ref": "#/$defs/mkDisabledToponym"
+    },
+    "createdAddress": {
+      "$ref": "#/$defs/mkCreatedAddress"
+    },
+    "updatedAddress": {
+      "$ref": "#/$defs/mkUpdatedAddress"
+    },
+    "disabledAddress": {
+      "$ref": "#/$defs/mkDisabledAddress"
+    },
+    "mkCreatedDistrict": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "created",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "district",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/district"
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkUpdatedDistrict": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "updated",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "district",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/district"
+            },
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/district"
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkDisabledDistrict": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "disabled",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "district",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "allOf": [
+                {
+                  "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/district"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "disabled",
+                      "description": "État BAN active ou disabled ; les objets du FULL sont actifs. Équivalent conseillé pour un Standard-FR-CNIG : statut. Correspondance conceptuelle CNIG : TypeStatut pour le cycle de vie (p. 38-39) ; valeurs BAN active/disabled."
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkCreatedToponym": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "created",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "toponym",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/toponym"
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkUpdatedToponym": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "updated",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "toponym",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/toponym"
+            },
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/toponym"
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkDisabledToponym": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "disabled",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "toponym",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "allOf": [
+                {
+                  "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/toponym"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "disabled",
+                      "description": "État BAN active ou disabled ; les objets du FULL sont actifs. Équivalent conseillé pour un Standard-FR-CNIG : statut. Correspondance conceptuelle CNIG : TypeStatut pour le cycle de vie (p. 38-39) ; valeurs BAN active/disabled."
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkCreatedAddress": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "created",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "address",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/address"
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkUpdatedAddress": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "updated",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "address",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/address"
+            },
+            {
+              "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/address"
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "mkDisabledAddress": {
+      "type": "object",
+      "required": [
+        "event",
+        "type",
+        "data"
+      ],
+      "properties": {
+        "event": {
+          "const": "disabled",
+          "description": "Événement consolidé created, updated ou disabled, distinct du statut de l’objet. Équivalent conseillé pour un Standard-FR-CNIG : evenement. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "type": {
+          "const": "address",
+          "description": "Discriminant de la ligne, de la géométrie ou type de position selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : type. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "nodeKey": {
+          "type": "string",
+          "description": "Clé technique facultative de la ligne. Équivalent conseillé pour un Standard-FR-CNIG : nodeKey. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        },
+        "data": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "allOf": [
+                {
+                  "$ref": "ban-standard-definitions-v0.4.schema.json#/$defs/address"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "disabled",
+                      "description": "État BAN active ou disabled ; les objets du FULL sont actifs. Équivalent conseillé pour un Standard-FR-CNIG : statut. Correspondance conceptuelle CNIG : TypeStatut pour le cycle de vie (p. 38-39) ; valeurs BAN active/disabled."
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "items": false,
+          "description": "État métier en FULL ; tableau d’états en DIFF, après puis avant pour updated. Équivalent conseillé pour un Standard-FR-CNIG : donnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    },
+    "end": {
+      "type": "object",
+      "description": "Last line of a BAN Standard DIFF stream.",
+      "required": [
+        "meta"
+      ],
+      "properties": {
+        "meta": {
+          "type": "object",
+          "required": [
+            "note",
+            "generatedAt",
+            "stats"
+          ],
+          "properties": {
+            "note": {
+              "const": "stream-end",
+              "description": "Marqueur d’ouverture ou de clôture du flux. Équivalent conseillé pour un Standard-FR-CNIG : note. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "generatedAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Instant de production du flux. Équivalent conseillé pour un Standard-FR-CNIG : genereLe. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            },
+            "stats": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "count",
+                  "created",
+                  "updated",
+                  "disabled"
+                ],
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Nombre total de lignes métier du type concerné. Équivalent conseillé pour un Standard-FR-CNIG : count. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                  },
+                  "created": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Nombre d’événements created, y compris les créations déjà désactivées. Équivalent conseillé pour un Standard-FR-CNIG : created. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                  },
+                  "updated": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Nombre d’événements updated. Équivalent conseillé pour un Standard-FR-CNIG : updated. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                  },
+                  "disabled": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Nombre d’événements disabled. Équivalent conseillé pour un Standard-FR-CNIG : disabled. Correspondance conceptuelle CNIG : Extension de publication BAN."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "description": "Compteurs des lignes effectivement émises, par type d’objet ; district/commune, toponym/odonyme, address/adresse. Équivalent conseillé pour un Standard-FR-CNIG : statistiques. Correspondance conceptuelle CNIG : Extension de publication BAN."
+            }
+          },
+          "additionalProperties": false,
+          "description": "Métadonnées du flux ou de l’objet, selon le contexte. Équivalent conseillé pour un Standard-FR-CNIG : metadonnees. Correspondance conceptuelle CNIG : Extension de publication BAN."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
