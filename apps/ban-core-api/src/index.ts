@@ -43,10 +43,6 @@ app.use('/api/reports', reportRoutes);
 //-- TEST & INTERNAL ROUTES --
 //-------------------------
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
 app.post('/upload-bal', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).send('No file uploaded');
 

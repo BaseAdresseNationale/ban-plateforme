@@ -6,6 +6,8 @@ info:
 paths:
   /ping:
     $ref: './src/routes/health/openapi.yaml#/paths/~1ping'
+  /health:
+    $ref: './src/routes/health/openapi.yaml#/paths/~1health'
   /api/data/full/{dep}:
     $ref: './src/routes/data/exports/openapi.yaml#/paths/~1api~1data~1full~1{dep}'
   /api/data/diff/{dep}:

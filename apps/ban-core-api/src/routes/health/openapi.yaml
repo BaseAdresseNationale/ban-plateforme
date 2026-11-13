@@ -18,3 +18,29 @@ paths:
                 type: string
                 const: pong
               example: pong
+  /health:
+    get:
+      summary: Consulter la vivacité du serveur HTTP
+      description: |
+        Conserve la réponse de santé existante. Le statut ok indique seulement
+        que le serveur HTTP répond ; il ne garantit pas la disponibilité des
+        bases, du broker, des workers ou la réussite des traitements asynchrones.
+      tags:
+        - Santé
+      security: []
+      responses:
+        '200':
+          description: Le serveur HTTP répond.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    const: ok
+              example:
+                status: ok
