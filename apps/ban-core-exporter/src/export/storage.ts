@@ -1,11 +1,13 @@
 import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
-import { logger } from '@ban/tools';
+import { BAN_EXPORT_FORMAT, logger } from '@ban/tools';
 
+import { getExportReferenceMonth } from './file-naming.js';
+import { getExportOutputDir } from './output-directory.js';
 import type {
   DataExportParams,
   DataExportType,
@@ -78,17 +80,17 @@ const createS3Client = (config: S3StorageConfig) => new S3Client({
 
 const getExportObjectKey = ({
   prefix,
-  token,
   exportType,
+  params,
   filePath,
 }: {
   prefix: string;
-  token: string;
   exportType: DataExportType;
+  params: DataExportParams;
   filePath: string;
 }) => {
   const fileName = path.basename(filePath);
-  const basePath = [prefix, exportType, token]
+  const basePath = [prefix, getExportReferenceMonth(exportType, params)]
     .map(trimSlashes)
     .filter(Boolean)
     .join('/');
@@ -127,8 +129,8 @@ export const storeExportFile = async ({
   const { size } = await stat(filePath);
   const key = getExportObjectKey({
     prefix: config.prefix,
-    token,
     exportType,
+    params,
     filePath,
   });
   const client = createS3Client(config);
@@ -142,7 +144,7 @@ export const storeExportFile = async ({
     Metadata: {
       token,
       'export-type': exportType,
-      format: params.format,
+      format: BAN_EXPORT_FORMAT,
     },
   }));
 
@@ -154,4 +156,54 @@ export const storeExportFile = async ({
     url: getPublicUrl(config.publicBaseUrl, key),
     size,
   };
+};
+
+/** Removes the local temporary file after its S3 upload has been confirmed. */
+export const removeLocalExportFile = async (filePath: string) => {
+  await rm(filePath, { force: true });
+};
+
+const getTemporaryFileMaxAgeMs = () => {
+  const configuredHours = Number(process.env.EXPORT_TEMP_FILE_MAX_AGE_HOURS);
+  const hours = Number.isFinite(configuredHours) && configuredHours > 0 ? configuredHours : 24;
+  return hours * 60 * 60 * 1000;
+};
+
+/** Removes stale NDJSON files left behind after a pod crash, only in S3 mode. */
+export const cleanupStaleS3ExportFiles = async () => {
+  if (process.env.NODE_ENV !== 'production') {
+    return;
+  }
+
+  if (getExportStorageConfig().storage !== 's3') {
+    return;
+  }
+
+  const outputDirectory = getExportOutputDir();
+  const cutoff = Date.now() - getTemporaryFileMaxAgeMs();
+
+  try {
+    const entries = await readdir(outputDirectory, { withFileTypes: true });
+    const staleFiles = await Promise.all(entries
+      .filter(entry => entry.isFile() && entry.name.endsWith('.ndjson'))
+      .map(async entry => {
+        const filePath = path.join(outputDirectory, entry.name);
+        return (await stat(filePath)).mtimeMs < cutoff ? filePath : null;
+      })
+    );
+
+    const filesToRemove = staleFiles.filter((filePath): filePath is string => filePath !== null);
+    await Promise.all(filesToRemove.map(removeLocalExportFile));
+
+    if (filesToRemove.length > 0) {
+      logger.info('[ban-core-exporter] Fichiers temporaires obsoletes supprimes', {
+        count: filesToRemove.length,
+        outputDirectory,
+      });
+    }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      logger.warn('[ban-core-exporter] Impossible de nettoyer les fichiers temporaires', { error });
+    }
+  }
 };

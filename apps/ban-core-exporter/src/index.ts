@@ -3,10 +3,12 @@ import rascal from 'rascal';
 import { logger } from '@ban/tools';
 
 import { handleExportRequestedMessage } from './export-request-message.js';
+import { cleanupStaleS3ExportFiles } from './export/storage.js';
 import { rabbitmqConfig, subscriptions } from './rabbitmq.config.js';
 
 async function main() {
   try {
+    await cleanupStaleS3ExportFiles();
     const broker = await rascal.BrokerAsPromised.create(rabbitmqConfig);
     const subscription = await broker.subscribe(subscriptions.exportRequested);
 

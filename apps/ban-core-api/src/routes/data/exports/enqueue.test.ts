@@ -28,7 +28,7 @@ vi.mock('../../../rabbitmq.broker.js', () => ({
 const { enqueueDataExportRequest } = await import('./enqueue.js');
 
 const params = {
-  format: 'raw',
+
   dataTypes: ['district', 'toponym', 'address'],
   departements: ['33'],
   address_ids: null,
@@ -39,6 +39,12 @@ const params = {
 };
 
 describe('enqueueDataExportRequest', () => {
+  it('rejects oversized internal selections before status insertion or publishing', async () => {
+    mocks.pgQuery.mockClear(); mocks.publishRabbitMqMessage.mockClear();
+    await expect(enqueueDataExportRequest('diff', { ...params, address_ids: Array(1001).fill('11111111-1111-4111-8111-111111111111') })).rejects.toThrow('1000');
+    expect(mocks.pgQuery).not.toHaveBeenCalled();
+    expect(mocks.publishRabbitMqMessage).not.toHaveBeenCalled();
+  });
   beforeEach(() => {
     mocks.pgQuery.mockReset();
     mocks.publishRabbitMqMessage.mockReset();
@@ -46,12 +52,14 @@ describe('enqueueDataExportRequest', () => {
     mocks.publishRabbitMqMessage.mockResolvedValue(undefined);
   });
 
-  it('creates a pending export status and publishes the export request', async () => {
-    const result = await enqueueDataExportRequest('diff', params);
+  it.each(['full', 'diff'] as const)('creates a pending %s status and publishes the export request', async exportType => {
+    const { from, to, ...selection } = params;
+    const requestParams = exportType === 'full' ? { ...selection, at: to } : { ...selection, from, to };
+    const result = await enqueueDataExportRequest(exportType, requestParams);
 
     expect(result).toEqual({
       token: 'export-token',
-      exportType: 'diff',
+      exportType,
       status: 'pending',
     });
 
@@ -62,9 +70,9 @@ describe('enqueueDataExportRequest', () => {
         'export-token',
         'pending',
         'export',
-        'diff',
+        exportType,
         'Export request accepted',
-        JSON.stringify({ params }),
+        JSON.stringify({ params: requestParams }),
         expect.any(Date),
         expect.any(Date),
       ]
@@ -73,8 +81,8 @@ describe('enqueueDataExportRequest', () => {
       'exportRequested',
       {
         token: 'export-token',
-        exportType: 'diff',
-        params,
+        exportType,
+        params: requestParams,
       }
     );
   });
@@ -83,7 +91,7 @@ describe('enqueueDataExportRequest', () => {
     const error = new Error('RabbitMQ unavailable');
     mocks.publishRabbitMqMessage.mockRejectedValue(error);
 
-    await expect(enqueueDataExportRequest('ban', params)).rejects.toThrow(error);
+    await expect(enqueueDataExportRequest('diff', params)).rejects.toThrow(error);
 
     expect(mocks.pgQuery).toHaveBeenCalledTimes(2);
     expect(mocks.pgQuery).toHaveBeenNthCalledWith(
