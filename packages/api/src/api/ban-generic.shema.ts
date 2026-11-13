@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { banDistrictSchema } from './district/schema.js';
 
 // export const pgDateString = z.string().refine((dateStr) => !isNaN(Date.parse(dateStr)), { message: 'Invalid date string' }); // ISO 8601 date string in Postgres format
 export const pgDateString = z.date().refine((dateStr) => !isNaN(dateStr.getTime()), { message: 'Invalid date string' }); // ISO 8601 date string in Postgres format
@@ -112,15 +113,18 @@ export const metaIdfixSchema = z.object({
   hash: z.string(),
 });
 
-// -------------------------
-// Exported types & schemas
-// -------------------------
+export type PgDateString = z.infer<typeof pgDateString>;
+export type BanID = z.infer<typeof banID>;
+export type BanNumber = z.infer<typeof banNumber>;
+export type Label = z.infer<typeof label>;
+type BanDistrict = z.infer<typeof banDistrictSchema>;
 
-export {
-  type BanID,
-  type Label,
-  type BanNumber,
-  type PgDateString,
+export interface BanObjects {
+  districts: Record<string, BanDistrict>;
+  // commonToponyms: Record<string, BanCommonToponym>;
+  commonToponyms: Record<string, any>; // FIXME: to be replaced with actual BanCommonToponym type when available
+  // addresses: Record<string, BanAddress>;
+  addresses: Record<string, any>; // FIXME: to be replaced with actual BanAddress type when available
 }
 
 declare global {
@@ -140,14 +144,6 @@ declare global {
   // Geometry Types
   type BanGeometry = z.infer<typeof banGeometrySchema>;
 
-  // BanObjects type
-  interface BanObjects {
-    districts: Record<string, BanDistrict>;
-    // commonToponyms: Record<string, BanCommonToponym>;
-    commonToponyms: Record<string, any>; // FIXME: to be replaced with actual BanCommonToponym type when available
-    // addresses: Record<string, BanAddress>;
-    addresses: Record<string, any>; // FIXME: to be replaced with actual BanAddress type when available
-  }
 }
 
 

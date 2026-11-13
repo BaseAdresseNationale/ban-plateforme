@@ -1,4 +1,5 @@
 import { getPrismaClient } from '@ban/prisma-client'
+import type { BanObjects } from '../api/ban-generic.shema.js';
 
 import { writeDistrictsInPgDb } from './district.js';
 import { writeCommonToponymsInPgDb } from './commonToponym.js';
