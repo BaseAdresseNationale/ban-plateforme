@@ -13,6 +13,7 @@ import { setRabbitMqBroker } from './rabbitmq.broker.js';
 
 import dataRoutes from './routes/data/index.js';
 import reportRoutes from './routes/reports/index.js';
+import healthRoutes from './routes/health/index.js';
 
 const upload = multer({ dest: 'uploads/' });
 const app = express();
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the BAN Core API');
 });
 
+app.use('/', healthRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/reports', reportRoutes);
 
@@ -40,10 +42,6 @@ app.use('/api/reports', reportRoutes);
 // -------------------------
 //-- TEST & INTERNAL ROUTES --
 //-------------------------
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
 
 app.post('/upload-bal', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).send('No file uploaded');
