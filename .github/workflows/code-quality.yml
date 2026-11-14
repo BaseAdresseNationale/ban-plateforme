@@ -1,0 +1,27 @@
+name: Code quality
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  biome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Verify quality conventions
+        run: pnpm test:quality
+      - name: Check files changed by this pull request
+        env:
+          BIOME_BASE_REF: ${{ github.base_ref }}
+        run: pnpm check:changed --since="origin/$BIOME_BASE_REF" --reporter=github

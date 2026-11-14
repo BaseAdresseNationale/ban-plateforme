@@ -10,7 +10,7 @@
     "dev": "tsx watch src/index.ts || true",
     "build": "tsc --project tsconfig.json",
     "test": "vitest run",
-    "lint": "eslint . --ext .ts"
+    "lint": "biome lint"
   },
   "dependencies": {
     "@ban/api": "workspace:*",
