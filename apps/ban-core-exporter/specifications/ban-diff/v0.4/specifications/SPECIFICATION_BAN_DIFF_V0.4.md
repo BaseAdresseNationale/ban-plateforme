@@ -9,6 +9,12 @@ Cette specification définit les exports FULL et DIFF au format `ban-standard`. 
 
 Les colonnes « Équivalent conseillé pour un Standard-FR-CNIG » proposent des noms de clés pour une représentation française inspirée du Standard Adresse CNIG. Chaque propriété des JSON Schema porte cet équivalent dans sa description, y compris lorsque les noms sont identiques. Les états, événements et valeurs métier suivent les règles BAN.
 
+Les annotations standard `title` et `description` des schémas sont en anglais ;
+leur traduction française est portée par `x-i18n.fr`. Cette annotation propre au
+projet ne change aucune contrainte de validation ni aucune clé ou valeur du flux.
+La présente spécification française reste normative ; sa traduction anglaise
+dans le POC documentaire est informative.
+
 Les [correspondances avec le Standard Adresse CNIG V1 du 28 octobre 2024](../analyse/CORRESPONDANCES_STANDARD_ADRESSE.md) expliquent les rapprochements conceptuels et les choix de représentation BAN : positions regroupées dans un tableau, certification booléenne, statuts, dates métier et extensions de flux.
 
 `uuid` est un UUID canonique minuscule. `datetime` est RFC 3339 UTC. Un champ non applicable est absent ; `null` signifie « applicable mais inconnu » ; un tableau existant n'est jamais `null`.

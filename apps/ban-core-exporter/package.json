@@ -8,7 +8,10 @@
     "build": "tsc --project tsconfig.json",
     "dev": "tsx watch src/index.ts || true",
     "test": "vitest run",
-    "test:storage:s3": "node scripts/test-storage-s3.mjs"
+    "test:storage:s3": "node scripts/test-storage-s3.mjs",
+    "docs:build": "node scripts/schema-docs/build.mjs",
+    "docs:preview": "pnpm run docs:build && node scripts/schema-docs/serve.mjs",
+    "docs:check": "node --test scripts/schema-docs/check.node.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1099.0",
@@ -19,6 +22,10 @@
     "pg-cursor": "^2.17.0"
   },
   "devDependencies": {
-    "ajv": "8.18.0"
+    "@gouvfr/dsfr": "1.15.4",
+    "ajv": "8.18.0",
+    "handlebars": "4.7.9",
+    "json-schema-static-docs": "0.28.1",
+    "marked": "18.1.1"
   }
 }
