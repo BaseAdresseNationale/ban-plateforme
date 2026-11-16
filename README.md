@@ -19,6 +19,9 @@ La BAN-Platform est un environnement **multi-services** permettant :
 
 La topologie RabbitMQ est documentée dans [RABBITMQ.md](./RABBITMQ.md).
 
+Les conventions de code, les commandes Biome et la migration progressive sont
+décrites dans [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 Les exports asynchrones FULL et DIFF sont documentés dans la section [Exports asynchrones](#-exports-asynchrones).
 
 Les procédures d'équipe pour les [sauvegardes, restaurations et mises à niveau
