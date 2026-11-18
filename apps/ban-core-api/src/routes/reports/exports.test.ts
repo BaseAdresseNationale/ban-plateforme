@@ -54,7 +54,7 @@ describe('export report route', () => {
         output: {
           storage: 's3',
           bucket: 'ban-exports',
-          key: 'exports/2026-01/full--dep-33--2026-01-31--export-token.ban-standard.ndjson',
+          key: 'exports/2026-01/full--dep-33--2026-01-31--export-token.ndjson',
         },
       },
       createdAt: new Date('2026-01-31T12:00:00.000Z'),

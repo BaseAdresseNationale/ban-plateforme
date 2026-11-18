@@ -1,6 +1,7 @@
 import Cursor from 'pg-cursor';
 
 import type { BanFormatter } from '../types.js';
+import { writeChunk, type WritableTarget } from './write-chunk.js';
 
 function readCursor(cursor: Cursor, size: number) {
   return new Promise<Record<string, unknown>[]>((resolve, reject) => {
@@ -23,36 +24,29 @@ export function closeCursor(cursor: Cursor | null) {
   });
 }
 
-type WritableTarget = {
-  write: (chunk: string) => boolean;
-  once: (event: 'drain', listener: () => void) => void;
-};
-
-function waitForDrain(stream: WritableTarget) {
-  return new Promise<void>(resolve => {
-    stream.once('drain', resolve);
-  });
-}
-
 export async function streamCursorData({
   cursor,
   fetchSize,
   dataName,
   output,
   banFormatter,
+  signal,
 }: {
   cursor: Cursor;
   fetchSize: number;
   dataName: string;
   output: WritableTarget;
   banFormatter: BanFormatter;
+  signal?: AbortSignal;
 }) {
   const stats: Record<string, number> = {
     count: 0,
   };
 
   while (true) {
+    signal?.throwIfAborted();
     const rows = await readCursor(cursor, fetchSize);
+    signal?.throwIfAborted();
     if (!rows.length) {
       break;
     }
@@ -71,9 +65,7 @@ export async function streamCursorData({
         continue;
       }
 
-      if (!output.write(`${JSON.stringify(objLine)}\n`)) {
-        await waitForDrain(output);
-      }
+      await writeChunk(output, `${JSON.stringify(objLine)}\n`, signal);
 
       stats.count += 1;
 
