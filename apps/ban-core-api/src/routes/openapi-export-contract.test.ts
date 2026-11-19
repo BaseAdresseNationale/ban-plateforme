@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
 import SwaggerParser from '@apidevtools/swagger-parser';
+import { describe, expect, it } from 'vitest';
 
 import { bundleOpenApi } from '../documentation/openapi.js';
 
