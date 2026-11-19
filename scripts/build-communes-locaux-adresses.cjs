@@ -1,12 +1,21 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
+const fs = require('fs');
+const fsPromises = fs.promises;
 const bluebird = require('bluebird')
 const {chain, compact, snakeCase, mapKeys} = require('lodash')
 const Papa = require('papaparse')
 const {getCommuneData} = require('@etalab/majic')
 const {getCommunes} = require('../lib/util/cog.cjs')
-const {replaceResourceFile} = require('../lib/util/datagouv.cjs')
+function getEnv(name) {
+    let val = process.env[name];
+    if ((val === undefined) || (val === null)) {
+        throw Error("missing env var for " + name);
+    }
+    return val;
+}
+const YEAR_MAJIC = getEnv('YEAR_MAJIC')
 
 const ACCEPTED_CATEGORIES_LOCAUX = new Set([
   'maison',
@@ -68,19 +77,16 @@ async function main() {
 
   const communesLocauxCompact = compact(communesLocaux)
 
-  const datasetId = '5fda75d3084b5fa14f89cd2f'
+  // Update manually https://www.data.gouv.fr/fr/datasets/nombre-de-locaux-adressables-par-communes/
+  // with below files
 
-  await replaceResourceFile(
-    datasetId,
-    '9a4a5188-8142-4c9d-b3e6-f54594848509',
-    'communes-locaux-adresses.json',
+  await fsPromises.writeFile(
+    `communes-locaux-adresses-${YEAR_MAJIC}.json`,
     JSON.stringify(communesLocauxCompact)
   )
 
-  await replaceResourceFile(
-    datasetId,
-    '9854b368-abce-479e-80f1-cfdbedaa0232',
-    'communes-locaux-adresses.csv',
+  await fsPromises.writeFile(
+    `communes-locaux-adresses-${YEAR_MAJIC}.csv`,
     Papa.unparse(communesLocauxCompact.map(c => mapKeys(c, (v, k) => snakeCase(k))))
   )
 }
