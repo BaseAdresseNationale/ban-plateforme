@@ -1,9 +1,11 @@
-/** Intégration transversale : migration, requêtes spatiales et résolution ensemble.
+/** Intégration transversale : migration, import/CLI, requêtes spatiales et HTTP réels.
  * Le test crée sa propre base ; aucune URL utilisateur n'est acceptée.
  */
-import { execFileSync, spawn } from 'node:child_process'
+import { execFileSync, spawn, spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import os from 'node:os'
 import path from 'node:path'
 import { Readable } from 'node:stream'
 import { setTimeout as delay } from 'node:timers/promises'
@@ -165,14 +167,15 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
       .rejects.toMatchObject({ status: 409 })
   })
 
-  it('runs the HTTP entry point with the Prisma pool and isolated database', async () => {
+  async function withHttpServer(test: (base: string, token: string) => Promise<void>,
+    user = 'postal_test', password = 'postal-test-only') {
     await verifyDatabase()
     const token = 'f'.repeat(36)
     const child = spawn(process.execPath, ['--import', 'tsx', 'src/index.ts'], {
       cwd: path.resolve(import.meta.dirname, '..'),
       env: {
         PATH: process.env.PATH,
-        PG_URL: `postgresql://postal_test:postal-test-only@127.0.0.1:${testPort}/${database}`,
+        PG_URL: `postgresql://${user}:${password}@127.0.0.1:${testPort}/${database}`,
         POSTAL_CODE_ADMIN_TOKEN: token,
         POSTAL_CODE_PORT: '0',
         POSTAL_CODE_HOST: '127.0.0.1',
@@ -195,7 +198,19 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
           if (match) { clearTimeout(timeout); resolve(Number(match[1])) }
         })
       })
-      const url = `http://127.0.0.1:${port}/postal-code/long-lat-insee-com?inseeCom=96002`
+      await test(`http://127.0.0.1:${port}`, token)
+    } finally {
+      if (child.pid && child.exitCode === null && child.signalCode === null) {
+        const force = setTimeout(() => { child.kill('SIGKILL') }, 5000)
+        child.kill('SIGTERM')
+        try { await exited } finally { clearTimeout(force) }
+      }
+    }
+  }
+
+  it('runs the HTTP entry point with the Prisma pool and isolated database', async () => {
+    await withHttpServer(async (base, token) => {
+      const url = `${base}/postal-code/long-lat-insee-com?inseeCom=96002`
       const response = await fetch(url, {
         headers: { Authorization: `Token ${token}` }, signal: AbortSignal.timeout(5000),
       })
@@ -208,19 +223,13 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
       expect((await fetch(url, { signal: AbortSignal.timeout(5000) })).status).toBe(401)
       for (const query of ['inseeCom=96004', 'long=2.02&lat=46.02']) {
         const invalid = await fetch(
-          `http://127.0.0.1:${port}/postal-code/long-lat-insee-com?${query}`,
+          `${base}/postal-code/long-lat-insee-com?${query}`,
           { headers: { Authorization: `Token ${token}` }, signal: AbortSignal.timeout(5000) },
         )
         expect(invalid.status).toBe(503)
         expect(await invalid.json()).toMatchObject({ status: 'error', response: {} })
       }
-    } finally {
-      if (child.pid && child.exitCode === null && child.signalCode === null) {
-        const force = setTimeout(() => { child.kill('SIGKILL') }, 5000)
-        child.kill('SIGTERM')
-        try { await exited } finally { clearTimeout(force) }
-      }
-    }
+    })
   }, 20000)
 
   it('distinguishes an unpopulated reference from a missing commune', async () => {
@@ -401,5 +410,122 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
     const before = await live()
     await importPostalReferences(pool!, importSources(), { apply: true })
     expect(await live()).toEqual(before)
+  })
+
+  async function withCliFiles(test: (files: { datanova: string; areas: string }) => Promise<void>) {
+    const folder = await mkdtemp(path.join(os.tmpdir(), 'ban-postal-import-cli-' + suffix + '-'))
+    const files = { datanova: path.join(folder, 'datanova.csv'), areas: path.join(folder, 'areas.geojson') }
+    try {
+      await writeFile(files.datanova, importCsv.replaceAll('96040','96050'))
+      await writeFile(files.areas, importGeo.replaceAll('96040','96050'))
+      await test(files)
+    } finally {
+      expect(path.dirname(folder)).toBe(os.tmpdir())
+      expect(path.basename(folder)).toMatch(new RegExp('^ban-postal-import-cli-' + suffix + '-'))
+      await rm(folder, { recursive: true, force: true })
+    }
+  }
+
+  function command(files: { datanova: string; areas: string }, extra: string[] = [],
+    user = 'postal_test', password = 'postal-test-only') {
+    inspectOwnedPort()
+    return spawnSync(process.execPath, ['--import','tsx','src/import-cli.ts',
+      '--datanova',files.datanova,'--areas',files.areas,'--source-srid','4326',
+      '--expect-database',database,...extra], {
+      cwd: path.resolve(import.meta.dirname,'..'),
+      env: { PATH: process.env.PATH,
+        PG_URL: `postgresql://${user}:${password}@127.0.0.1:${testPort}/${database}` },
+      encoding: 'utf8', timeout: 15000,
+    })
+  }
+
+  it('runs the real import CLI with identity checks, defaults to dry run and exits cleanly', async () => {
+    await verifyDatabase()
+    await withCliFiles(async files => {
+      const before = await live()
+      const run = command(files)
+      expect(run.status, run.stderr).toBe(0)
+      const report = JSON.parse(run.stdout)
+      expect(report).toMatchObject({ status: 'success', applied: false, codes: 1, areas: 1 })
+      expect(run.stdout).not.toContain(files.datanova)
+      expect(run.stdout).not.toContain('postgresql://')
+      expect(await live()).toEqual(before)
+    })
+  })
+
+  it('publishes via the real CLI with a restricted postal role, without UPDATE rights', async () => {
+    await verifyDatabase()
+    await pool!.query(`CREATE ROLE postal_loader_test LOGIN PASSWORD 'postal-loader-test-only';
+      GRANT USAGE ON SCHEMA postal TO postal_loader_test;
+      GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA postal TO postal_loader_test;
+      GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA postal TO postal_loader_test;
+      CREATE ROLE postal_http_reader_test LOGIN PASSWORD 'postal-reader-test-only';
+      GRANT USAGE ON SCHEMA postal TO postal_http_reader_test;
+      GRANT SELECT ON ALL TABLES IN SCHEMA postal TO postal_http_reader_test;`)
+    const rights = await pool!.query(`SELECT has_table_privilege(
+      'postal_loader_test','postal.datanova','UPDATE') AS update`)
+    expect(rights.rows[0].update).toBe(false)
+    await withCliFiles(async files => {
+      const run = command(files,['--apply'],'postal_loader_test','postal-loader-test-only')
+      expect(run.status, run.stderr).toBe(0)
+      expect(JSON.parse(run.stdout)).toMatchObject({ status: 'success', applied: true,
+        sources: { datanova: { records: 2 }, areas: { records: 1 } } })
+      await expect(lookup()({ inseeCom: '96050', position: { long: 2, lat: 45.5 } }))
+        .resolves.toMatchObject({ code_postal: '96050', libelle_acheminement: 'IMPORT FICTIF' })
+    })
+  })
+
+  it.each(['truncated', 'wrong-expected-database'])(
+    'makes CLI %s failures non-successful and leaves the live version unchanged', async failure => {
+      await verifyDatabase()
+      await withCliFiles(async files => {
+        const before = await live()
+        if (failure === 'truncated') await writeFile(files.areas, importGeo.slice(0,-1))
+        let run: ReturnType<typeof command>
+        if (failure === 'wrong-expected-database') {
+          run = spawnSync(process.execPath, ['--import','tsx','src/import-cli.ts',
+            '--datanova',files.datanova,'--areas',files.areas,'--source-srid','4326',
+            '--expect-database','another_synthetic_database','--apply'], {
+            cwd: path.resolve(import.meta.dirname,'..'), encoding:'utf8', timeout:10000,
+            env:{ PATH:process.env.PATH,
+              PG_URL:`postgresql://postal_test:postal-test-only@127.0.0.1:${testPort}/${database}` },
+          })
+        } else run = command(files,['--apply'])
+        expect(run.status, run.stderr).toBe(2)
+        expect(run.stdout).toBe('')
+        expect(JSON.parse(run.stderr)).toMatchObject({ status:'error' })
+        expect(run.stderr).not.toContain('postgresql://')
+        expect(await live()).toEqual(before)
+      })
+    },
+  )
+
+  it('serves the CLI-published version through real HTTP with a read-only database role', async () => {
+    await verifyDatabase()
+    const rights = await pool!.query(`SELECT has_table_privilege(
+      'postal_http_reader_test','postal.datanova','DELETE') AS delete`)
+    expect(rights.rows[0].delete).toBe(false)
+    await withHttpServer(async (base, token) => {
+      const result = await fetch(base + '/postal-code/long-lat-insee-com?inseeCom=96050&long=2&lat=45.5', {
+        headers: { Authorization: 'Token ' + token }, signal: AbortSignal.timeout(5000),
+      })
+      expect(result.status).toBe(200)
+      expect(await result.json()).toMatchObject({ status:'success', response:{
+        code_postal:'96050', libelle_acheminement:'IMPORT FICTIF',
+      } })
+    }, 'postal_http_reader_test', 'postal-reader-test-only')
+  }, 20000)
+
+  it('executes the documented fictional file examples through the real CLI', async () => {
+    await verifyDatabase()
+    await withCliFiles(async files => {
+      await writeFile(files.datanova, readFileSync(new URL('../fixtures/datanova.fictional.csv', import.meta.url)))
+      await writeFile(files.areas, readFileSync(new URL('../fixtures/areas.fictional.geojson', import.meta.url)))
+      const run = command(files, ['--apply'], 'postal_loader_test', 'postal-loader-test-only')
+      expect(run.status, run.stderr).toBe(0)
+      expect(JSON.parse(run.stdout)).toMatchObject({ applied: true, communes: 2, codes: 2, areas: 2 })
+      await expect(lookup()({ inseeCom: '96001', position: { long: 2, lat: 46 } }))
+        .resolves.toMatchObject({ code_postal: '96001', libelle_acheminement: 'COMMUNE FICTIVE A' })
+    })
   })
 })

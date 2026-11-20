@@ -7,7 +7,8 @@
     "build": "tsc --project tsconfig.json",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
-    "test:postgres": "RUN_POSTAL_POSTGRES_TESTS=1 vitest run src/postal.postgres.test.ts"
+    "test:postgres": "RUN_POSTAL_POSTGRES_TESTS=1 vitest run src/postal.postgres.test.ts",
+    "import:references": "tsx src/import-cli.ts"
   },
   "dependencies": {
     "@ban/prisma-client": "workspace:*",

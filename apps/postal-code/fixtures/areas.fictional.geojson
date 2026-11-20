@@ -1,0 +1,73 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "insee_com": "96001",
+        "cp": "96001"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1,
+              45
+            ],
+            [
+              3,
+              45
+            ],
+            [
+              3,
+              47
+            ],
+            [
+              1,
+              47
+            ],
+            [
+              1,
+              45
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "insee_com": "96002",
+        "cp": "96002"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              4,
+              45
+            ],
+            [
+              6,
+              45
+            ],
+            [
+              6,
+              47
+            ],
+            [
+              4,
+              47
+            ],
+            [
+              4,
+              45
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
