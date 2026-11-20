@@ -8,12 +8,19 @@
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "dev": "tsx watch src/index.ts || true"
+    "dev": "tsx watch src/index.ts || true",
+    "test": "vitest run",
+    "test:postgres": "vitest run src/registry.postgres.test.ts"
   },
   "dependencies": {
     "@ban/config": "workspace:*",
+    "@ban/prisma-client": "workspace:*",
     "@ban/rabbitmq": "workspace:*",
-    "@nivalis/normadresse": "^2.0.1",
+    "@nivalis/normadresse": "3.2.0",
+    "pg": "^8.16.3",
     "rascal": "^20.1.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5"
   }
 }
