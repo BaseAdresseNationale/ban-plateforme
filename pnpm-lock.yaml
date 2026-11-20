@@ -236,6 +236,22 @@ importers:
         specifier: ^8.15.5
         version: 8.15.5
 
+  apps/ban-district-admin:
+    dependencies:
+      '@ban/prisma-client':
+        specifier: workspace:*
+        version: link:../../packages/prisma-client
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.15.5
+      pg:
+        specifier: ^8.16.3
+        version: 8.16.3
+
   apps/beautifier:
     dependencies:
       '@ban/config':
