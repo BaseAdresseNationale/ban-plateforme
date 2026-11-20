@@ -6,6 +6,8 @@ Depuis la racine, avec Node.js 24/pnpm 10.12.4 et les dépendances installées s
 pnpm --filter @ban/target-key test
 pnpm --filter @ban/target-key build
 pnpm --filter @ban/rabbitmq test
+pnpm --filter @ban/api exec vitest run
+pnpm --filter @ban/ban-core-writer exec vitest run src/helper.test.ts
 pnpm --filter @ban/prisma-client test
 ```
 
@@ -35,3 +37,18 @@ renommages et transferts. `service.integration.test.ts` est transversal : même
 consommateur que le bootstrap, registre et Rascal 20 réels ; confirmations, publication
 non routable, reprise ciblée et quarantaine. Seul son délai retry est réduit à 100 ms.
 
+Le test transversal writer → schémas reste hors des `rootDir` applicatifs. Lui et les
+exports existants requièrent une configuration factice pour leurs imports historiques :
+
+```sh
+export PG_HOST=127.0.0.1 PG_PORT=1 PG_DB=ban_target_key_unit PG_USER=test PG_PASSWORD=test
+export MONGO_HOST=127.0.0.1 MONGO_PORT=1 MONGO_DB=ban_target_key_unit
+export RABBITMQ_HOST=127.0.0.1 RABBITMQ_PORT=1 RABBITMQ_USER=test RABBITMQ_PASSWORD=test
+pnpm exec vitest run tests/contracts/target-key-writer.contract.test.ts
+pnpm --filter @ban/ban-core-exporter test
+```
+
+Ces commandes ne démarrent aucun service ni worker. Le contrat vérifie que les champs
+produits passent les vrais validateurs sans perte ; les tests export vérifient que
+ciblage/sélection privés ne fuient pas et ne produisent pas de faux DIFF. Mongo et la
+chaîne complète parser/merger/writer ne sont pas démarrés par ces tests.

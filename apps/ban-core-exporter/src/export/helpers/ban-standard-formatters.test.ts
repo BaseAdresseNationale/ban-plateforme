@@ -13,6 +13,21 @@ const address = {
 };
 const toponym = { ...address, labels: [{ isoCode: 'fra', value: 'Rue des Lilas' }], geometry: null };
 
+it('keeps private targeting/retention metadata out of FULL and business DIFF', () => {
+  const base = { ...address, meta: { interop: {
+    balProvidedKey: '96001_a001_00012', banComputedKey: '96001_abc123_00012',
+  } } };
+  const after = { ...base, meta: { ...base.meta,
+    ban: { targetKeys: ['synthetic-target'] },
+    interopSelection: { retainedKey: '96001_a001_00012' },
+  } };
+  expect(toBanStandardEntity(header, after).meta.interop).toEqual(base.meta.interop);
+  expect(toBanStandardEntity(header, after).meta).not.toHaveProperty('interopSelection');
+  expect(toBanStandardEntity(header, after).meta).not.toHaveProperty('ban');
+  expect(getDiffObjLine({ ...header, event: 'updated', datas: [after, base] },
+    banStandardFormatters)).toBeNull();
+});
+
 describe('ban-standard business serialization', () => {
   it.each(['district', 'toponym', 'address'] as const)('uses the envelope INSEE fallback for %s', type => {
     const entity = type === 'address' ? address : toponym;

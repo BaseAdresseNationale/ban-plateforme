@@ -17,9 +17,15 @@ conserve les codes de voie ; aucune lecture des objets BAN ou recherche FANTOIR.
   Renommages et anciennes associations restent conservés ; ambiguïté = quarantaine.
 
 Entrée `{id, rows}` : id opaque de 1–128 caractères (format émis par l'API accepté),
-1–100000 lignes, JSON total ≤20 Mo, profondeur ≤12. Numéro entier de 0 à2147483647 ;
+1–100000 lignes, JSON total ≤20 Mo, profondeur ≤12. Numéro entier de 0 à 2147483647 ;
 index de ligne distinct, UUID facultatifs contrôlés, voie ≤512 caractères, suffixe ≤255,
 clé fournie ≤512. Les objets décodés ont les mêmes limites que les chaînes JSON.
+
+Le writer conserve source/calcul dans `meta.interop`, sélection dans
+`meta.interopSelection` et ciblage dans `meta.ban.targetKeys`. Sélection et ciblage sont
+absents du FULL/DIFF public. Aucun identifiant CSV/lookup historique n'est inventé.
+Les `DEPRECATED_cleInterop*` des parents, copiés depuis la dernière adresse du lot,
+sont supprimés. Les `DEPRECATED_id` existants restent inchangés.
 
 ## Démarrage
 

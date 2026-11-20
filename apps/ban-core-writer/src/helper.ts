@@ -3,6 +3,33 @@ type Label = {
   value: string;
 };
 
+const targetKeys = (value: unknown): { targetKeys?: string[] } => {
+  if (value === undefined) return {}
+  if (!Array.isArray(value) || value.length > 100
+    || value.some(key => typeof key !== 'string' || !key || key.length > 1024)) {
+    throw new TypeError('Invalid target-key metadata')
+  }
+  return { targetKeys: [...value] }
+}
+
+const addressInterop = (row: Record<string, unknown>) => {
+  const provided = row.cle_interop
+  const computed = row.ban_enrich_deprecated_cle_interop
+  const retained = row.ban_enrich_retained_cle_interop
+  for (const value of [provided, computed, retained]) {
+    if (value !== undefined && (typeof value !== 'string' || value.length > 512)) {
+      throw new TypeError('Invalid interop metadata')
+    }
+  }
+  return {
+    ...(provided !== undefined || computed !== undefined ? { interop: {
+      ...(provided !== undefined ? { balProvidedKey: provided } : {}),
+      ...(computed !== undefined ? { banComputedKey: computed } : {}),
+    } } : {}),
+    ...(retained !== undefined ? { interopSelection: { retainedKey: retained } } : {}),
+  }
+}
+
 export const EMPTY_TOPONYM_BAL_IDENTIFIER = 99_999; // Valeur utilisée dans la BAL pour indiquer un toponyme sans numero.
 
 const getLabelsFromRow = (row: Record<string, any>, defaultIsoCode: string = 'fra') => (colName: string) => {
@@ -86,9 +113,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
           ban: {
             source: row.source || '',
             hashIdFix: row.ban_enrich_hash_id_fix || '',
-            DEPRECATED_cleInterop: row.cle_interop || '',
-            DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKeys: row.ban_enrich_ban_target_keys_district || [''],
+            ...targetKeys(row.ban_enrich_ban_target_keys_district),
           },
           dgfip: {
             codeDepartement: row.code_departement || '',
@@ -126,9 +151,7 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
             hashIdFix: row.ban_enrich_hash_id_fix || '',
             DEPRECATED_id: '???',
             DEPRECATED_groupId: row.slug || '',
-            DEPRECATED_cleInterop: row.cle_interop || '',
-            DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKeys: row.ban_enrich_ban_target_keys_toponym || [''],
+            ...targetKeys(row.ban_enrich_ban_target_keys_toponym),
           },
           dgfip: {
             cadastre: (row.cadastre_parcelles || row.cad_parcelles || null)?.split('|') || [],
@@ -165,13 +188,12 @@ export const getBanObjectsFromBalRows = (rows: any[], defaultIsoCode: string, is
         certified: [1, '1', 'oui', 'true', true].includes(row.certification_commune),
         positions: getItemPositions(addresses[rowIds.idAddress as string], row),
         meta: {
+          ...addressInterop(row),
           ban: {
             source: row.source || '',
             sourcePosition: row.ban_source_source_position || '',
             hashIdFix: row.ban_enrich_hash_id_fix || '',
-            DEPRECATED_cleInterop: row.cle_interop || '',
-            DEPRECATED_cleInteropBAN: row.ban_enrich_deprecated_cle_interop || '',
-            targetKeys: row.ban_enrich_ban_target_keys_address || [''],
+            ...targetKeys(row.ban_enrich_ban_target_keys_address),
             oldDistrict: row.ban_enrich_old_district_code && row.ban_enrich_old_district_name
               ? {
                 "labels": [{
