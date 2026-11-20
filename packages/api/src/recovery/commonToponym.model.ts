@@ -9,9 +9,11 @@ import {
   metaBalSchema,
   metaIdfixSchema,
 } from '../api/ban-generic.shema.js';
+import { targetKeyBanMetaSchema } from '../api/target-key-meta.js';
 import { banDistrictSchema } from './district.model.js';
 
 const metaCommonToponymSchema = z.object({
+    ban: targetKeyBanMetaSchema.optional(),
     cadastre: metaCadastreSchema.optional(),
     bal: metaBalSchema.optional(),
     idfix: metaIdfixSchema.optional(),
