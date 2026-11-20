@@ -1,0 +1,145 @@
+openapi: 3.1.0
+info:
+  title: Service postal BAN
+  version: 1.0.0
+  description: Consultation et administration explicite des références postales.
+paths:
+  /postal-code/long-lat-insee-com:
+    get:
+      summary: Consulter les codes postaux et leurs libellés
+      description: |
+        Fournir inseeCom, ou le couple long/lat, ou les trois paramètres.
+        Les coordonnées sont en WGS84 (EPSG:4326), transformées en Lambert-93 pour la recherche.
+        Avec un point, ST_Contains exclut les frontières ; plusieurs résultats différents
+        sont une ambiguïté. Avec une commune seule, ses codes sont uniques et triés.
+        Cette consultation reprend #749 ; elle ne calcule pas le tampon historique BAN/ID-Fix.
+      security:
+        - PostalToken: []
+      parameters:
+        - name: inseeCom
+          in: query
+          description: Code commune INSEE, éventuellement utilisé pour restreindre la recherche spatiale.
+          schema:
+            type: string
+            pattern: '^(?:[0-9]{5}|2[AB][0-9]{3})$'
+            minLength: 5
+            maxLength: 5
+          example: '96001'
+        - name: long
+          in: query
+          description: Longitude WGS84 ; latitude obligatoire lorsqu’elle est fournie.
+          schema:
+            type: number
+            minimum: -180
+            maximum: 180
+        - name: lat
+          in: query
+          description: Latitude WGS84 ; longitude obligatoire lorsqu’elle est fournie.
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+      responses:
+        '200':
+          description: Résultat postal valide ; les libellés constituent une extension à #749.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      status:
+                        const: success
+                      response:
+                        type: object
+                        additionalProperties: false
+                        required: [code_postal, libelle_acheminement, libelles_acheminement]
+                        properties:
+                          code_postal:
+                            oneOf:
+                              - type: string
+                                pattern: '^[0-9]{5}$'
+                              - type: array
+                                minItems: 2
+                                uniqueItems: true
+                                items:
+                                  type: string
+                                  pattern: '^[0-9]{5}$'
+                          libelle_acheminement:
+                            description: Libellé du code unique ; null pour une commune multi-distribuée.
+                            type: [string, 'null']
+                          libelles_acheminement:
+                            description: Correspondance explicite de chaque code postal vers son libellé.
+                            type: object
+                            additionalProperties:
+                              type: string
+        '400':
+          description: Paramètres inconnus, invalides ou incomplets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Authentification absente ou invalide ; aucun accès aux données.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error:
+                    const: Authentication required
+        '404':
+          description: Commune absente ou point non contenu dans un contour disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Plusieurs contours ou libellés incompatibles ; aucun choix arbitraire.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '503':
+          description: Référentiels non alimentés, incomplets ou stockage indisponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /postal-code/postal-datanova:
+    $ref: './src/admin-routes.openapi.yaml#/paths/~1postal-code~1postal-datanova'
+  /postal-code/postal-area/district/cog/{cog}:
+    $ref: './src/admin-routes.openapi.yaml#/paths/~1postal-code~1postal-area~1district~1cog~1{cog}'
+components:
+  securitySchemes:
+    PostalToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Token <valeur de 36 caractères>, configuré via POSTAL_CODE_ADMIN_TOKEN.'
+  schemas:
+    Envelope:
+      type: object
+      required: [date, status, message, response]
+      properties:
+        date:
+          type: string
+          format: date-time
+        status:
+          enum: [success, error]
+        message:
+          type: string
+        response:
+          type: object
+    ErrorEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          properties:
+            status:
+              const: error
+            response:
+              type: object
+              maxProperties: 0
