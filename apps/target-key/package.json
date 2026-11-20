@@ -8,9 +8,10 @@
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "dev": "tsx watch src/index.ts || true",
+    "dev": "node --import tsx --watch src/index.ts",
     "test": "vitest run",
-    "test:postgres": "vitest run src/registry.postgres.test.ts"
+    "test:postgres": "vitest run src/registry.postgres.test.ts",
+    "test:service": "vitest run src/service.integration.test.ts"
   },
   "dependencies": {
     "@ban/config": "workspace:*",

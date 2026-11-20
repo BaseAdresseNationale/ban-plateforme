@@ -1,8 +1,8 @@
-# target-key — calcul et registre
+# target-key
 
-`src/keys.ts` prépare et enrichit une enveloppe BAL validée ; `src/registry.ts`
-conserve transactionnellement les codes nécessaires au fallback. Le raccord au
-consommateur existant est réalisé dans le commit suivant.
+Enrichit `bal.enrich` avant écriture BAN et publie `bal.enriched.target-key`.
+Les clés de ciblage existantes restent inchangées. Le registre PostgreSQL `target_key`
+conserve les codes de voie ; aucune lecture des objets BAN ou recherche FANTOIR.
 
 ## Clés et registre
 
@@ -21,17 +21,45 @@ Entrée `{id, rows}` : id opaque de 1–128 caractères (format émis par l'API 
 index de ligne distinct, UUID facultatifs contrôlés, voie ≤512 caractères, suffixe ≤255,
 clé fournie ≤512. Les objets décodés ont les mêmes limites que les chaînes JSON.
 
-La migration additive `0014_target_key_registry` appartient au service. Aucune
-lecture des objets BAN ni recherche FANTOIR. Le transfert historique et l'initialisation
-explicite des communes sont séparés ; une commune non initialisée bloque le fallback,
-jamais une clé permanente fournie dont le calcul BAN n'est pas requis.
+## Démarrage
 
-Le générateur conserve le format BAN historique six caractères ; bornes RNG0 et
-notation exponentielle corrigées. Référence `ban-plateforme` :
+Node.js 24, pnpm 10.12.4. Fournir explicitement `PG_URL`, `RABBITMQ_HOST`, `RABBITMQ_PORT`,
+`RABBITMQ_USER`, `RABBITMQ_PASSWORD` et éventuellement `RABBITMQ_VHOST` (défaut `/`).
+Aucun `.env` chargé par ce service. Construire Prisma et RabbitMQ avant le service :
+
+```sh
+pnpm --filter @ban/prisma-client build
+pnpm --filter @ban/rabbitmq build
+pnpm --filter @ban/target-key build
+node apps/target-key/dist/index.js
+```
+
+La migration additive `0014_target_key_registry` est requise. Le transfert des codes
+historiques et l'initialisation explicite des communes sont un chantier distinct,
+obligatoire avant allocation en production. Le service ne les initialise jamais depuis
+une BAL ; une commune absente/non initialisée bloque seulement son fallback.
+
+## Reprises et limites
+
+Confirmation persistante/routable avant ACK. Trois reprises via `ban.target-key.retry`
+(TTL 30 s, échange par défaut vers la seule queue d'entrée), puis
+`ban.target-key.dead-letter`. Validation/ambiguïté : quarantaine directe. Si sa publication
+échoue, original remis en file. Les arguments de la queue d'entrée sont préservés.
+
+**Activation production bloquée** avant coordination du merger : il publie actuellement
+des partiels après 5 s, avant ces reprises. Ni exactement une fois, ni succès du writer ou
+de la BAL ne sont garantis. Le rejeu conserve les allocations ; même id avec un autre
+contenu est refusé. Pas de purge automatique du registre/journal.
+
+Choix du 20 novembre 2026 : génération directe sans recherche FANTOIR ; priorité à la clé
+BAL permanente. Source du pseudo-code : `ban-plateforme`, référence
 `37c5b9bf706e19a78ab98b13052e1e1283ce1ae5`, `lib/util/base36.cjs` et
-`lib/pseudo-codes-voies.cjs`. Aucun compteur temporaire x ni identifiant lookup inventé.
-
-## Normalisation et tests
+`lib/pseudo-codes-voies.cjs`. Format nominal conservé ; cas RNG 0/exponentiel corrigés.
+Validation syntaxique locale BAL 1.4 (code de 4 caractères, pseudo-code de 6 caractères,
+UUID et suffixes multi-segments),
+sans prétendre valider un référentiel national ni imposer la même commune à la clé.
+`quater`/`quinquies` fournis ne sont pas prioritaires : BAL attend `qua`/`qui`.
+Le suffixe source et le calcul historique ne sont pas normalisés silencieusement.
 
 `@nivalis/normadresse` passe de 2.0.1 à **3.2.0**, version exacte partagée avec
 `beautifier`. La version précédente cherchait son CSV via une API Bun incompatible
@@ -42,16 +70,4 @@ nominale de 32 caractères et le repli si le normaliseur rend une chaîne vide r
 inchangés. [Version NPM](https://registry.npmjs.org/@nivalis%2Fnormadresse/3.2.0), publiée
 le 27 février 2026, vérifiée le 20 novembre 2026 ; noms/suffixes longs testés sous Node.js 24.
 
-
-Sous Node.js24/pnpm10.12.4, après installation des dépendances sans scripts :
-
-```sh
-pnpm --filter @ban/target-key test
-pnpm --filter @ban/target-key build
-RUN_TARGET_KEY_POSTGRES_TESTS=1 pnpm --filter @ban/target-key test:postgres
-```
-
-Les unités sont sans services. L'intégration explicite crée uniquement un conteneur
-PostGIS dédié (`--pull=never`, image locale `postgis/postgis:17-3.4`), base et port
-loopback uniques, tmpfs ; identité contrôlée avant migration/seed et nettoyage par ID.
-Jamais de base existante ni `.env` personnel.
+Tests et environnement jetable : [TESTING.md](TESTING.md).
