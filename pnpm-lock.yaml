@@ -298,9 +298,15 @@ importers:
       '@ban/prisma-client':
         specifier: workspace:*
         version: link:../../packages/prisma-client
+      csv-parse:
+        specifier: 6.2.1
+        version: 6.2.1
       express:
         specifier: ^4.18.2
         version: 4.22.1
+      stream-json:
+        specifier: 3.9.0
+        version: 3.9.0
     devDependencies:
       '@apidevtools/swagger-parser':
         specifier: 13.1.0
@@ -3354,6 +3360,12 @@ packages:
 
   stream-browserify@3.0.0:
     resolution: {integrity: sha512-H73RAHsVBapbim0tU2JwwOiXUj+fikfiaoYAKHF3VJfA0pe2BCzkhAHBlLG6REzE+2WNZcxOXjK7lkso+9euLA==}
+
+  stream-chain@4.4.2:
+    resolution: {integrity: sha512-6WQtf7XW70N8/IXV4DfpTswi0VHTahsB0nO5UlLGp5HarJN+Q7VHT5HvBMlH9x0x77e+kJFnQkhkCdvFkwv2Vw==}
+
+  stream-json@3.9.0:
+    resolution: {integrity: sha512-kL2w6owYCdzCRApK9/9HI7Vgrd+0iWE5tTGc8P/AS2AdPoHcFTQwUek66sbMpfaX73lgHvDN+u1AoRC/dzB1Hw==}
 
   streamsearch@1.1.0:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
@@ -6978,6 +6990,12 @@ snapshots:
     dependencies:
       inherits: 2.0.4
       readable-stream: 3.6.2
+
+  stream-chain@4.4.2: {}
+
+  stream-json@3.9.0:
+    dependencies:
+      stream-chain: 4.4.2
 
   streamsearch@1.1.0: {}
 

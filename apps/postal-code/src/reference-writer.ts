@@ -154,9 +154,14 @@ export async function writePostalReferences(
         ensureActive()
         if (++rows > 2_000_000 || !validCog(value.cog) || !validCode(value.code)
           || typeof value.label !== 'string' || !value.label.trim() || value.label.length > 512
-          || /[\u0000-\u001f\u007f]/u.test(value.label)) throw invalid()
-        const { rows: accepted } = await client!.query(addCodeSql,
-          [value.cog, value.code, value.label.trim()])
+          || /[\u0000-\u001f\u007f\ud800-\udfff]/u.test(value.label)) throw invalid()
+        let accepted: Record<string, unknown>[]
+        try {
+          const result = await client!.query(addCodeSql, [value.cog, value.code, value.label.trim()])
+          accepted = result.rows
+        } catch {
+          throw new PostalReferenceError('storage', 'Postal reference operation failed')
+        }
         if (accepted.length !== 1) {
           throw new PostalReferenceError('invalid-reference', 'Conflicting postal labels')
         }
@@ -165,7 +170,12 @@ export async function writePostalReferences(
         ensureActive()
         if (++rows > 2_000_000 || !validCog(value.cog) || !validCode(value.code)) throw invalid()
         const geometry = geometryJson(value.geometry, value.sourceSrid)
-        await client!.query(addAreaSql, [value.cog, value.code, geometry, value.sourceSrid])
+        try {
+          await client!.query(addAreaSql, [value.cog, value.code, geometry, value.sourceSrid])
+        } catch (error) {
+          if (record(error) && error.code === '23514') throw invalid()
+          throw new PostalReferenceError('storage', 'Postal reference operation failed')
+        }
       },
     })
     active = false

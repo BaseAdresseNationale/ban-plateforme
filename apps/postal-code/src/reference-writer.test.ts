@@ -69,6 +69,7 @@ describe('postal reference writer', () => {
     { ...code, cog: '' }, { ...code, cog: '96001\n' }, { ...code, code: 'bad' },
     { ...code, code: '96001\n' }, { ...code, label: '' }, { ...code, label: '  ' },
     { ...code, label: 'FICTIF\n' }, { ...code, label: 'a'.repeat(513) },
+    { ...code, label: 'FICTIF\ud800' },
   ])('rejects invalid code references and never publishes %#', async value => {
     const db = database()
     await expect(writePostalReferences(db.pool, sink => sink.code(value), { apply: true }))

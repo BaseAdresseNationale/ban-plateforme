@@ -5,6 +5,7 @@ import { execFileSync, spawn } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { Readable } from 'node:stream'
 import { setTimeout as delay } from 'node:timers/promises'
 
 import { Pool } from 'pg'
@@ -13,6 +14,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createPostalLookup } from './lookup.js'
 import { createPostalRepository } from './repository.js'
 import { writePostalReferences } from './reference-writer.js'
+import { importPostalReferences } from './reference-import.js'
 import type { ReferencePool, ReferenceSink } from './reference-writer.js'
 
 const enabled = process.env.RUN_POSTAL_POSTGRES_TESTS === '1'
@@ -354,5 +356,50 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
       (SELECT count(*)::int FROM postal.datanova) AS codes,
       (SELECT count(*)::int FROM postal.postal_area) AS areas`)
     expect(totals.rows[0]).toEqual({ codes: 1, areas: 1 })
+  })
+
+  const importCsv = 'Code_commune_INSEE;Code_postal;Libellé_d_acheminement\n'
+    + '96040;96040;IMPORT FICTIF\n96040;96040;IMPORT FICTIF\n'
+  const importGeo = JSON.stringify({ type: 'FeatureCollection', features: [{ type: 'Feature',
+    properties: { cp: '96040', insee_com: '96040' }, geometry: { type: 'Polygon',
+      coordinates: [[[1,45],[3,45],[3,47],[1,45]]] } }],
+    crs: { type: 'name', properties: { name: 'EPSG:4326' } } })
+  const importSources = (csv = importCsv, geo = importGeo) => ({
+    datanova: Readable.from([csv]), areas: Readable.from([geo]), sourceSrid: 4326 as const,
+  })
+
+  it('imports streamed CSV/GeoJSON as one candidate and defaults to simulation', async () => {
+    await verifyDatabase()
+    const before = await live()
+    const report = await importPostalReferences(pool!, importSources())
+    expect(report).toMatchObject({ applied: false, codes: 1, communes: 1, areas: 1,
+      sources: { datanova: { records: 2 }, areas: { records: 1 } } })
+    expect(report.sources.datanova.sha256).toMatch(/^[a-f0-9]{64}$/)
+    expect(await live()).toEqual(before)
+  })
+
+  it.each(['truncated', 'projection', 'conflicting-csv'])(
+    'preserves the live snapshot on streamed %s failure', async failure => {
+      await verifyDatabase()
+      const before = await live()
+      const csv = failure === 'conflicting-csv'
+        ? importCsv + '96040;96040;AUTRE LIBELLE FICTIF\n' : importCsv
+      const geo = failure === 'truncated' ? importGeo.slice(0,-1)
+        : failure === 'projection' ? importGeo.replace('EPSG:4326','EPSG:2154') : importGeo
+      await expect(importPostalReferences(pool!, importSources(csv,geo), { apply: true }))
+        .rejects.toMatchObject({ kind: 'invalid-reference' })
+      expect(await live()).toEqual(before)
+    },
+  )
+
+  it('publishes the validated streams with correct spatial results and no replay accumulation', async () => {
+    await verifyDatabase()
+    await expect(importPostalReferences(pool!, importSources(), { apply: true }))
+      .resolves.toMatchObject({ applied: true, codes: 1, areas: 1 })
+    await expect(lookup()({ position: { long: 2, lat: 45.5 } }))
+      .resolves.toMatchObject({ code_postal: '96040', libelle_acheminement: 'IMPORT FICTIF' })
+    const before = await live()
+    await importPostalReferences(pool!, importSources(), { apply: true })
+    expect(await live()).toEqual(before)
   })
 })

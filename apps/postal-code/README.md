@@ -67,3 +67,26 @@ Le rejeu remplace le jeu complet sans accumulation. Aucun audit ou import n’es
 Un échec avant COMMIT conserve l’ancienne version ; une confirmation de COMMIT perdue
 est signalée comme indéterminée, jamais comme un succès. Les droits d’écriture du schéma
 postal sont réservés au futur lancement explicite de l’import, pas requis par la lecture HTTP.
+
+## Formats de l’alimentation
+
+`reference-import.ts` lit les deux flux ensemble via le noyau transactionnel. CSV UTF-8
+avec en-tête : `code_commune_insee`, `code_postal`, `libelle_d_acheminement` ; casse et
+accents des noms de colonnes acceptés, BOM et guillemets CSV gérés. Séparateur `;` par
+défaut, `,` explicite ; colonnes supplémentaires ignorées. Les codes gardent leurs zéros.
+GeoJSON : un `FeatureCollection` non vide, géométries Polygon/MultiPolygon 2D fermées,
+propriétés textuelles `cp` et `insee_com`. Projection source **obligatoire**, 2154 ou 4326,
+jamais déduite des coordonnées ; toute métadonnée CRS contraire est rejetée.
+
+Lecture progressive avec ralentissement par PostgreSQL ; une seule Feature assemblée.
+Limites techniques : 8 Go par fichier, 1 Mo par ligne CSV/valeur JSON, profondeur JSON 32,
+coût d’assemblage borné à 32 Mo par Feature, géométrie encodée ≤16 Mo/1 million de points,
+2 millions d’enregistrements au total. Contradictions, doublons de clés JSON et UTF-8
+invalide échouent sans publication. Les doublons CSV identiques sont regroupés ; les
+libellés différents pour un même couple commune/code ne sont pas départagés.
+
+Le rapport contient comptes, tailles et SHA-256 des deux entrées, jamais leurs chemins
+ou contenu. L’import contrôle la correspondance des contours avec le CSV, pas
+l’exhaustivité géographique d’une source nationale. Aucun téléchargement n’est réalisé.
+Lecteurs : `csv-parse` 6.2.1 et `stream-json` 3.9.0 (ESM/types embarqués), vérifiés sous la
+version Node du projet ; aucune mise à jour des autres dépendances.
