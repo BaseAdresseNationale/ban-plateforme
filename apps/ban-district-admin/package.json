@@ -1,0 +1,20 @@
+{
+  "name": "@ban/ban-district-admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "district": "tsx src/index.ts",
+    "test": "vitest run",
+    "test:postgres": "RUN_DISTRICT_ADMIN_POSTGRES_TESTS=1 vitest run src/district-admin.postgres.test.ts"
+  },
+  "dependencies": {
+    "@ban/prisma-client": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "pg": "^8.16.3"
+  }
+}
