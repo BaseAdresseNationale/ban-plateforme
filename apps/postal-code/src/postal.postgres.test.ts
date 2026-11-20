@@ -168,7 +168,7 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
   })
 
   async function withHttpServer(test: (base: string, token: string) => Promise<void>,
-    user = 'postal_test', password = 'postal-test-only') {
+    user = 'postal_test', password = 'postal-test-only', adminEnabled = false) {
     await verifyDatabase()
     const token = 'f'.repeat(36)
     const child = spawn(process.execPath, ['--import', 'tsx', 'src/index.ts'], {
@@ -177,6 +177,7 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
         PATH: process.env.PATH,
         PG_URL: `postgresql://${user}:${password}@127.0.0.1:${testPort}/${database}`,
         POSTAL_CODE_ADMIN_TOKEN: token,
+        POSTAL_CODE_ADMIN_ENABLED: String(adminEnabled),
         POSTAL_CODE_PORT: '0',
         POSTAL_CODE_HOST: '127.0.0.1',
       },
@@ -230,6 +231,51 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
         expect(await invalid.json()).toMatchObject({ status: 'error', response: {} })
       }
     })
+  }, 20000)
+
+  it('does not mount administration unless enabled in the real entry point', async () => {
+    await withHttpServer(async (base, token) => {
+      const response = await fetch(`${base}/postal-code/postal-datanova`, {
+        method: 'PUT', headers: { Authorization: `Token ${token}`,
+          'Content-Type': 'application/json' }, body: '[]', signal: AbortSignal.timeout(5000),
+      })
+      expect(response.status).toBe(404)
+    })
+  }, 20000)
+
+  it('updates existing communes over real HTTP, reports missing ones and validates first', async () => {
+    await verifyDatabase()
+    try {
+      await withHttpServer(async (base, token) => {
+        const url = `${base}/postal-code/postal-datanova`
+        const headers = { Authorization: `Token ${token}`, 'Content-Type': 'application/json' }
+        const item = { inseeCom: '96002', postalCodes: ['96003'],
+          libelleAcheminementWithPostalCodes: { '96003': 'LIBELLE FICTIF MODIFIE' } }
+        const response = await fetch(url, { method: 'PUT', headers,
+          body: JSON.stringify([item, { ...item, inseeCom: '96099' }]),
+          signal: AbortSignal.timeout(5000) })
+        expect(response.status).toBe(207)
+        expect(await response.json()).toMatchObject({ response: {
+          totalUpdated: 1, failedUpdates: [{ inseeCom: '96099', updatedRowsCount: 0 }],
+        } })
+        await expect(lookup()({ inseeCom: '96002' })).resolves.toMatchObject({
+          libelle_acheminement: 'LIBELLE FICTIF MODIFIE',
+        })
+        const before = await live()
+        expect((await fetch(url, { method: 'PUT', headers,
+          body: JSON.stringify([item, { ...item, id: 1 }]),
+          signal: AbortSignal.timeout(5000) })).status).toBe(400)
+        expect((await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: '{broken', signal: AbortSignal.timeout(5000) })).status).toBe(401)
+        expect(await live()).toEqual(before)
+        expect((await fetch(url, { method: 'PUT', headers, body: JSON.stringify([item]),
+          signal: AbortSignal.timeout(5000) })).status).toBe(200)
+      }, 'postal_test', 'postal-test-only', true)
+    } finally {
+      await verifyDatabase()
+      await pool!.query(`UPDATE postal.datanova SET "libelleAcheminementWithPostalCodes" =
+        '{"96003":"COMMUNE FICTIVE"}' WHERE "inseeCom" = '96002'`)
+    }
   }, 20000)
 
   it('distinguishes an unpopulated reference from a missing commune', async () => {

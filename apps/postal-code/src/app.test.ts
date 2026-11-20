@@ -94,7 +94,7 @@ describe('postal HTTP contract', () => {
     expect(JSON.stringify(response.body)).not.toContain('private SQL diagnostic')
   })
 
-  it('does not expose writes, admin routes, files or broken positional aliases', async () => {
+  it('keeps writes disabled by default and hides files and broken positional aliases', async () => {
     const lookup = vi.fn().mockResolvedValue(result)
     const app = createPostalApp({ lookup, tokens: [token] })
     expect((await request(app, undefined, undefined, 'POST')).status).toBe(404)

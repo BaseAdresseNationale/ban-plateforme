@@ -11,6 +11,10 @@ export function loadPostalConfig(env: NodeJS.ProcessEnv) {
     throw new Error('A valid PostgreSQL PG_URL is required')
   }
   const tokens = parsePostalTokens(env.POSTAL_CODE_ADMIN_TOKEN)
+  const admin = env.POSTAL_CODE_ADMIN_ENABLED ?? 'false'
+  if (!['true', 'false'].includes(admin)) {
+    throw new Error('POSTAL_CODE_ADMIN_ENABLED must be true or false')
+  }
   const rawPort = env.POSTAL_CODE_PORT ?? '0'
   if (!/^\d+$/.test(rawPort) || Number(rawPort) > 65535) {
     throw new Error('POSTAL_CODE_PORT must be an integer between 0 and 65535')
@@ -19,5 +23,5 @@ export function loadPostalConfig(env: NodeJS.ProcessEnv) {
   if (!['127.0.0.1', '::1', '0.0.0.0'].includes(host)) {
     throw new Error('Invalid POSTAL_CODE_HOST')
   }
-  return { tokens, port: Number(rawPort), host }
+  return { tokens, port: Number(rawPort), host, adminEnabled: admin === 'true' }
 }

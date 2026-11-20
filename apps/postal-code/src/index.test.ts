@@ -10,7 +10,7 @@ describe('postal entry point', () => {
       import { pathToFileURL } from 'node:url'
       net.Server.prototype.listen = () => { throw new Error('Unexpected listen') }
       net.Socket.prototype.connect = () => { throw new Error('Unexpected connection') }
-      for (const file of ['app', 'auth', 'config', 'lookup', 'repository', 'reference-writer', 'reference-import', 'import-cli', 'index']) {
+      for (const file of ['app', 'auth', 'config', 'lookup', 'repository', 'reference-writer', 'reference-import', 'import-cli', 'administration', 'admin-routes', 'index']) {
         await import(pathToFileURL(process.cwd() + '/' + file + '.ts').href)
       }
       console.log('IMPORT_OK')

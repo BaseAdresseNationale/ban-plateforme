@@ -1,5 +1,7 @@
 import express from 'express'
 
+import { createPostalAdminRoutes } from './admin-routes.js'
+import type { PostalAdministration } from './admin-routes.js'
 import { isPostalAuthorized } from './auth.js'
 import { parsePostalInput, PostalError } from './lookup.js'
 import type { PostalInput, PostalResult } from './lookup.js'
@@ -7,12 +9,16 @@ import type { PostalInput, PostalResult } from './lookup.js'
 interface AppDependencies {
   lookup(input: PostalInput): Promise<PostalResult>
   tokens: readonly string[]
+  administration?: PostalAdministration
   now?: () => Date
 }
 
-export function createPostalApp({ lookup, tokens, now = () => new Date() }: AppDependencies) {
+export function createPostalApp({
+  lookup, tokens, administration, now = () => new Date(),
+}: AppDependencies) {
   const app = express()
   app.disable('x-powered-by')
+  if (administration) app.use(createPostalAdminRoutes(administration, tokens, now))
   app.get('/postal-code/long-lat-insee-com', async (req, res) => {
     if (!isPostalAuthorized(req.get('authorization'), tokens)) {
       res.status(401).json({ error: 'Authentication required' })

@@ -10,9 +10,18 @@ const configuration = {
 describe('postal startup configuration', () => {
   it('requires a database and tokens, with loopback and a free port by default', () => {
     expect(loadPostalConfig(configuration)).toEqual({
-      tokens: ['f'.repeat(36)], host: '127.0.0.1', port: 0,
+      tokens: ['f'.repeat(36)], host: '127.0.0.1', port: 0, adminEnabled: false,
     })
     expect(loadPostalConfig({ ...configuration, POSTAL_CODE_PORT: '8124' }).port).toBe(8124)
+  })
+
+  it('only enables administration explicitly and rejects ambiguous flags', () => {
+    expect(loadPostalConfig({ ...configuration, POSTAL_CODE_ADMIN_ENABLED: 'true' })
+      .adminEnabled).toBe(true)
+    for (const value of ['', '1', 'yes', 'TRUE']) {
+      expect(() => loadPostalConfig({ ...configuration, POSTAL_CODE_ADMIN_ENABLED: value }))
+        .toThrow('POSTAL_CODE_ADMIN_ENABLED')
+    }
   })
 
   it.each([undefined, '', 'invalid', 'https://example.invalid/database', 'postgresql://host']) (

@@ -44,12 +44,16 @@ export interface ReferenceReport {
 const invalid = () => new PostalReferenceError('invalid-reference', 'Invalid postal reference')
 const record = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value)
-const validCog = (value: unknown): value is string => typeof value === 'string'
+export const isPostalCog = (value: unknown): value is string => typeof value === 'string'
   && value.length === 5 && /^(?:[0-9]{5}|2[AB][0-9]{3})$/.test(value)
-const validCode = (value: unknown): value is string => typeof value === 'string'
+export const isPostalCode = (value: unknown): value is string => typeof value === 'string'
   && value.length === 5 && /^[0-9]{5}$/.test(value)
 
-function geometryJson(input: unknown, srid: number): string {
+export const isPostalLabel = (value: unknown): value is string => typeof value === 'string'
+  && Boolean(value.trim()) && value.length <= 512
+  && !/[\u0000-\u001f\u007f\ud800-\udfff]/u.test(value)
+
+export function serializePostalGeometry(input: unknown, srid: number): string {
   if (!record(input) || !['Polygon', 'MultiPolygon'].includes(String(input.type))) throw invalid()
   if (srid !== 2154 && srid !== 4326) throw invalid()
   const polygons = input.type === 'Polygon' ? [input.coordinates] : input.coordinates
@@ -116,8 +120,10 @@ SELECT (SELECT count(DISTINCT cog)::int FROM pg_temp.ban_postal_candidate_code) 
   ) AS inconsistent
 `
 
+export const postalPublicationLock = 'SELECT pg_advisory_xact_lock(834, 12004);'
+
 const publishSql = `
-SELECT pg_advisory_xact_lock(834, 12004);
+${postalPublicationLock}
 LOCK TABLE postal.datanova, postal.postal_area IN SHARE ROW EXCLUSIVE MODE;
 DELETE FROM postal.postal_area;
 DELETE FROM postal.datanova;
@@ -152,9 +158,8 @@ export async function writePostalReferences(
     await load({
       async code(value) {
         ensureActive()
-        if (++rows > 2_000_000 || !validCog(value.cog) || !validCode(value.code)
-          || typeof value.label !== 'string' || !value.label.trim() || value.label.length > 512
-          || /[\u0000-\u001f\u007f\ud800-\udfff]/u.test(value.label)) throw invalid()
+        if (++rows > 2_000_000 || !isPostalCog(value.cog) || !isPostalCode(value.code)
+          || !isPostalLabel(value.label)) throw invalid()
         let accepted: Record<string, unknown>[]
         try {
           const result = await client!.query(addCodeSql, [value.cog, value.code, value.label.trim()])
@@ -168,8 +173,8 @@ export async function writePostalReferences(
       },
       async area(value) {
         ensureActive()
-        if (++rows > 2_000_000 || !validCog(value.cog) || !validCode(value.code)) throw invalid()
-        const geometry = geometryJson(value.geometry, value.sourceSrid)
+        if (++rows > 2_000_000 || !isPostalCog(value.cog) || !isPostalCode(value.code)) throw invalid()
+        const geometry = serializePostalGeometry(value.geometry, value.sourceSrid)
         try {
           await client!.query(addAreaSql, [value.cog, value.code, geometry, value.sourceSrid])
         } catch (error) {

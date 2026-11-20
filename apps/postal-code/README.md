@@ -1,8 +1,9 @@
 # Service postal
 
-Consultation HTTP et alimentation explicite des références postales. Le service possède
-sa logique et ses accès SQL ; il réutilise le pool de `@ban/prisma-client`.
+Consultation, administration HTTP et alimentation explicite des références postales.
+Le service possède sa logique et ses accès SQL ; il réutilise le pool de `@ban/prisma-client`.
 Contrat HTTP : [OpenAPI](openapi.yaml). Import : [procédure et formats](IMPORT.md).
+Le contrat racine référence le fragment [administration](src/admin-routes.openapi.yaml).
 
 ## Lancer la consultation
 
@@ -37,6 +38,35 @@ Projection source et base attendue obligatoires ; fichiers et destination contr�
 Le rôle d’import nécessite des droits PostgreSQL d’écriture propres au schéma postal ;
 le token HTTP n’est pas utilisé. Détails dans [IMPORT.md](IMPORT.md).
 
+## Administrer par HTTP
+
+Routes désactivées par défaut (`404`). Définir `POSTAL_CODE_ADMIN_ENABLED=true` et fournir
+un rôle PostgreSQL limité au schéma postal : `USAGE` sur le schéma, `SELECT`/`UPDATE` sur
+`postal.datanova`. Même en-tête `Authorization: Token <jeton>` que la consultation : les
+jetons configurés autorisent alors aussi l'administration. Aucun changement de droits SQL
+au démarrage. Préférer une instance séparée avec un rôle de lecture pour la consultation.
+
+Après démarrage sur une base jetable déjà alimentée, adapter le port affiché et utiliser
+un jeton fictif de test :
+
+```sh
+curl --include --request PUT \
+  --header 'Authorization: Token test-only-token-00000000000000000000' \
+  --header 'Content-Type: application/json' \
+  --data '[{"inseeCom":"96001","postalCodes":["96001"],"libelleAcheminementWithPostalCodes":{"96001":"COMMUNE FICTIVE A"}}]' \
+  http://127.0.0.1:54321/postal-code/postal-datanova
+```
+
+Attendre `200` et `response.totalUpdated=1` si cette commune existe ; `207` détaille les
+communes absentes/échouées et les succès déjà appliqués. Aucune commune créée, aucun
+contour modifié. Entrées toutes validées avant écriture, puis transaction par commune.
+Import complet et administration partagent le verrou de publication ; les validations
+des codes/libellés sont communes. L'import suivant remplace toujours le jeu complet.
+Le contrat et les limites sont dans [OpenAPI](openapi.yaml). Les champs historiques
+`updatedBy`/`updateNote` sont facultatifs, acceptés mais non enregistrés : aucun audit.
+Si une confirmation COMMIT est perdue, `503` indique un résultat indéterminé ; le début
+du lot peut déjà être appliqué. Ne pas interpréter cette erreur comme un rollback global.
+
 ## Vérifier
 
 ```sh
@@ -55,8 +85,8 @@ Aucune URL de base utilisateur utilisée par ce harnais ; détails dans son en-t
 L’enveloppe et `code_postal` sont conservés ; libellés appariés ajoutés. Paramètres query
 uniquement, WGS84 réellement transformé en Lambert-93, absence/ambiguïté/erreurs explicites.
 Recherche ponctuelle `ST_Contains`, distincte du tampon historique BAN/ID-Fix de 10 m.
-Pas de calcul pour un toponyme complet, worker BAL, raccord merger/writer, audit ou API
-d’administration. Aucun référentiel réel fourni, téléchargé ou chargé pendant les tests.
+Pas de calcul pour un toponyme complet, worker BAL, raccord merger/writer ou audit.
+Aucun référentiel réel fourni, téléchargé ou chargé pendant les tests.
 
 Origine fonctionnelle : PR #747/#749 ; consultation et alimentation reprises, SQL paramétré
 via le pool Prisma à la place de Sequelize, migrations Prisma et tests isolés. Les autres

@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
+import { updatePostalDatanova } from './administration.js'
 import { createPostalApp } from './app.js'
 import { loadPostalConfig } from './config.js'
 import { createPostalLookup } from './lookup.js'
@@ -12,6 +13,8 @@ async function main() {
   const { pool } = await import('@ban/prisma-client')
   const app = createPostalApp({
     tokens: config.tokens,
+    administration: config.adminEnabled
+      ? { datanova: input => updatePostalDatanova(pool, input) } : undefined,
     lookup: createPostalLookup(createPostalRepository(pool)),
   })
   const server = app.listen(config.port, config.host, () => {
