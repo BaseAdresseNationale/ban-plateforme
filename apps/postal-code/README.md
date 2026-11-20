@@ -1,17 +1,21 @@
-# Références postales — stockage
+# Résolution postale
 
-La migration additive `0012_postal_reference` crée les tables `postal.datanova` et
-`postal.postal_area`, leurs contraintes et les index communal et spatial.
-Les géométries Polygon/MultiPolygon sont en Lambert-93 (EPSG:2154).
+Le stockage de référence est préparé par la migration additive `0012_postal_reference`.
+Aucun référentiel réel n’est fourni, téléchargé ou chargé automatiquement.
 
-Elle utilise le runner de migrations Prisma du projet et nécessite PostGIS.
-Les tables restent vides : aucun téléchargement, import ni modification des données BAN.
-Vérifier explicitement la destination avant toute application sur un environnement dédié.
+`lookup.ts` valide commune et/ou position WGS84 et résout les codes postaux avec leurs
+libellés. Les résultats absents, ambigus et les références indisponibles sont distingués.
+`repository.ts` fournit des requêtes SQL paramétrées, avec transformation vers Lambert-93
+et recherche `ST_Contains`. Le lecteur SQL est injecté ; aucun pool n’est créé à l’import.
+Ces modules n’ouvrent aucun serveur HTTP ni connexion.
 
-Contrôles du schéma et préservation des migrations historiques :
+Versions Node.js/pnpm : [package.json racine](../../package.json).
+Depuis la racine, dépendances installées :
 
 ```sh
-node --test packages/prisma-client/tests/migrations.test.mjs packages/prisma-client/tests/diff-metadata.test.mjs
+pnpm --filter @ban/postal-code test
+pnpm --filter @ban/postal-code build
 ```
 
-Ce commit prépare le stockage ; la résolution et son interface HTTP sont livrées séparément.
+Les tests homonymes de résolution et d’accès SQL fonctionnent sans service.
+L’interface HTTP, son authentification et l’intégration complète sont livrées séparément.

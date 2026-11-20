@@ -293,6 +293,8 @@ importers:
         specifier: ^20.1.1
         version: 20.1.1(amqplib@0.10.8)
 
+  apps/postal-code: {}
+
   apps/target-key:
     dependencies:
       '@ban/config':

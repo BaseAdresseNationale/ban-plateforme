@@ -1,0 +1,10 @@
+{
+  "name": "@ban/postal-code",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "test": "vitest run"
+  }
+}
