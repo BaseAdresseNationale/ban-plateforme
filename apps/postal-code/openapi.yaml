@@ -110,6 +110,8 @@ paths:
                 $ref: '#/components/schemas/ErrorEnvelope'
   /postal-code/postal-datanova:
     $ref: './src/admin-routes.openapi.yaml#/paths/~1postal-code~1postal-datanova'
+  /postal-code/postal-area/district/cog/{cog}:
+    $ref: './src/admin-routes.openapi.yaml#/paths/~1postal-code~1postal-area~1district~1cog~1{cog}'
 components:
   securitySchemes:
     PostalToken:

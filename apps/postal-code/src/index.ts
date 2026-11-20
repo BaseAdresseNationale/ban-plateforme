@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import { updatePostalDatanova } from './administration.js'
+import { replacePostalAreas, updatePostalDatanova } from './administration.js'
 import { createPostalApp } from './app.js'
 import { loadPostalConfig } from './config.js'
 import { createPostalLookup } from './lookup.js'
@@ -14,7 +14,10 @@ async function main() {
   const app = createPostalApp({
     tokens: config.tokens,
     administration: config.adminEnabled
-      ? { datanova: input => updatePostalDatanova(pool, input) } : undefined,
+      ? {
+        datanova: input => updatePostalDatanova(pool, input),
+        areas: (cog, input) => replacePostalAreas(pool, cog, input),
+      } : undefined,
     lookup: createPostalLookup(createPostalRepository(pool)),
   })
   const server = app.listen(config.port, config.host, () => {

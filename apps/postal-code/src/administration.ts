@@ -4,6 +4,7 @@ import {
   isPostalLabel,
   postalPublicationLock,
   PostalReferenceError,
+  serializePostalGeometry,
 } from './reference-writer.js'
 import type { ReferenceClient, ReferencePool } from './reference-writer.js'
 
@@ -110,8 +111,57 @@ export async function updatePostalDatanova(pool: ReferencePool, input: unknown) 
       results.push({ inseeCom: item.inseeCom, updatedRowsCount })
     } catch (error) {
       if (error instanceof PostalReferenceError && error.kind === 'publication-unknown') throw error
-      results.push({ inseeCom: item.inseeCom, updatedRowsCount: 0, error: 'Database update failed' })
+      results.push({
+        inseeCom: item.inseeCom, updatedRowsCount: 0, error: 'Database update failed',
+      })
     }
   }
   return results
+}
+
+export interface PostalAreaReplacement {
+  postalCode: string
+  geometry: string
+}
+
+export function parsePostalAreas(input: unknown): PostalAreaReplacement[] {
+  if (!Array.isArray(input) || input.length === 0 || input.length > 1000) throw invalid()
+  return input.map(item => {
+    if (!record(item) || !isPostalCode(item.postalCode)) throw invalid()
+    checkFields(item, ['postalCode', 'geometry', 'updatedBy', 'updateNote'])
+    if (!record(item.geometry)
+      || Object.keys(item.geometry).some(key => !['type', 'coordinates'].includes(key))) {
+      throw invalid()
+    }
+    return { postalCode: item.postalCode, geometry: serializePostalGeometry(item.geometry, 2154) }
+  })
+}
+
+export async function replacePostalAreas(pool: ReferencePool, cog: string, input: unknown) {
+  if (!isPostalCog(cog)) throw invalid()
+  const areas = parsePostalAreas(input)
+  return transaction(pool, async client => {
+    // PostGIS validates topology before deleting any live contours.
+    for (const area of areas) {
+      const { rows: [result] } = await client.query(`SELECT
+        public.ST_IsValid(geometry) AND NOT public.ST_IsEmpty(geometry) AS valid
+        FROM (SELECT public.ST_SetSRID(public.ST_GeomFromGeoJSON($1), 2154) AS geometry) candidate`,
+      [area.geometry])
+      if (result?.valid !== true) throw invalid()
+    }
+    const { rows: [deleted] } = await client.query(`WITH deleted AS (
+      DELETE FROM postal.postal_area WHERE "inseeCom" = $1 RETURNING id
+    ) SELECT count(*)::int AS count FROM deleted`, [cog])
+    if (!deleted || !Number.isSafeInteger(deleted.count) || Number(deleted.count) < 0) {
+      throw new PostalReferenceError('storage', 'Postal replacement failed')
+    }
+    for (const area of areas) {
+      const { rows } = await client.query(`INSERT INTO postal.postal_area
+        ("inseeCom", "postalCode", geometry)
+        VALUES ($1, $2, public.ST_SetSRID(public.ST_GeomFromGeoJSON($3), 2154)) RETURNING id`,
+      [cog, area.postalCode, area.geometry])
+      if (rows.length !== 1) throw new PostalReferenceError('storage', 'Postal replacement failed')
+    }
+    return { createdCount: areas.length, deletedCount: Number(deleted.count) }
+  })
 }

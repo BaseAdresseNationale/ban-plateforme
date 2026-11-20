@@ -42,7 +42,8 @@ le token HTTP n’est pas utilisé. Détails dans [IMPORT.md](IMPORT.md).
 
 Routes désactivées par défaut (`404`). Définir `POSTAL_CODE_ADMIN_ENABLED=true` et fournir
 un rôle PostgreSQL limité au schéma postal : `USAGE` sur le schéma, `SELECT`/`UPDATE` sur
-`postal.datanova`. Même en-tête `Authorization: Token <jeton>` que la consultation : les
+`postal.datanova` ; `SELECT`/`INSERT`/`DELETE` sur `postal.postal_area` et `USAGE` sur sa
+séquence pour les contours. Même en-tête `Authorization: Token <jeton>` que la consultation : les
 jetons configurés autorisent alors aussi l'administration. Aucun changement de droits SQL
 au démarrage. Préférer une instance séparée avec un rôle de lecture pour la consultation.
 
@@ -66,6 +67,30 @@ Le contrat et les limites sont dans [OpenAPI](openapi.yaml). Les champs historiq
 `updatedBy`/`updateNote` sont facultatifs, acceptés mais non enregistrés : aucun audit.
 Si une confirmation COMMIT est perdue, `503` indique un résultat indéterminé ; le début
 du lot peut déjà être appliqué. Ne pas interpréter cette erreur comme un rollback global.
+
+Pour les contours, utiliser `PUT /postal-code/postal-area/district/cog/:cog` : liste
+non vide de `{postalCode, geometry}`, GeoJSON Polygon/MultiPolygon en **EPSG:2154**.
+Par exemple, sur la même base fictive (adapter port et token), écrire le corps dans
+`/tmp/postal-area-test.json` :
+
+```json
+[{"postalCode":"96001","geometry":{"type":"Polygon","coordinates":[[[0,0],[20,0],[20,20],[0,0]]]}}]
+```
+
+```sh
+curl --include --request PUT \
+  --header 'Authorization: Token test-only-token-00000000000000000000' \
+  --header 'Content-Type: application/json' \
+  --data-binary @/tmp/postal-area-test.json \
+  http://127.0.0.1:54321/postal-code/postal-area/district/cog/96001
+```
+
+Attendre `200`, `createdCount=1` et le nombre de contours supprimés dans `response`.
+Les géométries sont fictives ; ne pas les appliquer à un référentiel existant. Validation
+partagée avec l'import puis contrôle de topologie PostGIS avant tout effacement ; le
+remplacement est transactionnel et limité à cette commune. Une erreur avant COMMIT
+conserve ses anciens contours. Datanova reste inchangé : les codes/libellés nécessaires
+à la consultation doivent être alimentés séparément, sans réparation automatique.
 
 ## Vérifier
 

@@ -85,6 +85,72 @@ paths:
           $ref: '#/components/responses/UnsupportedContent'
         '503':
           $ref: '#/components/responses/WriteUnavailable'
+  /postal-code/postal-area/district/cog/{cog}:
+    put:
+      summary: Remplacer les contours postaux d'une commune
+      description: |
+        Disponible uniquement avec POSTAL_CODE_ADMIN_ENABLED=true ; sinon route absente (404).
+        GeoJSON Polygon/MultiPolygon en Lambert-93 EPSG:2154 uniquement, sans champ crs.
+        Corps JSON de 20 Mio maximum, 1 à 1000 contours ; pas de suppression par liste vide.
+        Au plus un million de points par géométrie, anneaux fermés et topologie PostGIS valide.
+        Tous les contours sont contrôlés avant suppression, puis remplacés en une transaction.
+        Les autres communes et Datanova restent inchangées ; aucun code/libellé n'est inventé.
+        Plusieurs contours du même code sont permis ; un rejeu n'en accumule pas.
+        Les codes doivent être alimentés séparément dans Datanova pour une consultation complète.
+        updatedBy/updateNote sont facultatifs et non enregistrés ; aucun audit.
+        Une perte de confirmation COMMIT donne 503, avec résultat indéterminé.
+      security:
+        - PostalToken: []
+      parameters:
+        - name: cog
+          in: path
+          required: true
+          description: Code INSEE de la seule commune dont les contours sont remplacés.
+          schema:
+            $ref: '#/components/schemas/InseeCode'
+          example: '96001'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              maxItems: 1000
+              items:
+                $ref: '#/components/schemas/PostalAreaUpdate'
+      responses:
+        '200':
+          description: Remplacement effectué ; nombres de contours créés et supprimés.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../openapi.yaml#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      response:
+                        type: object
+                        required: [createdCount, deletedCount]
+                        additionalProperties: false
+                        properties:
+                          createdCount:
+                            type: integer
+                            minimum: 1
+                            maximum: 1000
+                          deletedCount:
+                            type: integer
+                            minimum: 0
+        '400':
+          $ref: '#/components/responses/InvalidUpdate'
+        '401':
+          $ref: '../openapi.yaml#/paths/~1postal-code~1long-lat-insee-com/get/responses/401'
+        '413':
+          $ref: '#/components/responses/TooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedContent'
+        '503':
+          $ref: '#/components/responses/WriteUnavailable'
 components:
   responses:
     InvalidUpdate:
@@ -112,6 +178,54 @@ components:
           schema:
             $ref: '../openapi.yaml#/components/schemas/ErrorEnvelope'
   schemas:
+    PostalAreaUpdate:
+      type: object
+      additionalProperties: false
+      required: [postalCode, geometry]
+      properties:
+        postalCode:
+          type: string
+          pattern: '^[0-9]{5}$'
+        geometry:
+          oneOf:
+            - type: object
+              additionalProperties: false
+              required: [type, coordinates]
+              properties:
+                type:
+                  const: Polygon
+                coordinates:
+                  $ref: '#/components/schemas/PolygonCoordinates'
+            - type: object
+              additionalProperties: false
+              required: [type, coordinates]
+              properties:
+                type:
+                  const: MultiPolygon
+                coordinates:
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/PolygonCoordinates'
+        updatedBy:
+          $ref: '#/components/schemas/DatanovaUpdate/properties/updatedBy'
+        updateNote:
+          $ref: '#/components/schemas/DatanovaUpdate/properties/updateNote'
+    PolygonCoordinates:
+      type: array
+      minItems: 1
+      items:
+        type: array
+        minItems: 4
+        maxItems: 1000000
+        items:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: number
+            minimum: -100000000
+            maximum: 100000000
     InseeCode:
       type: string
       pattern: '^(?:[0-9]{5}|2[AB][0-9]{3})$'

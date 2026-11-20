@@ -43,9 +43,10 @@ async function request(
 describe('postal administration HTTP contract', () => {
   const setup = () => {
     const datanova = vi.fn().mockResolvedValue([{ inseeCom: '96001', updatedRowsCount: 1 }])
+    const areas = vi.fn().mockResolvedValue({ createdCount: 1, deletedCount: 2 })
     const app = createPostalApp({ lookup: vi.fn(), tokens: [token], now,
-      administration: { datanova } })
-    return { app, datanova }
+      administration: { datanova, areas } })
+    return { app, datanova, areas }
   }
 
   it('is absent unless explicitly installed', async () => {
@@ -115,5 +116,37 @@ describe('postal administration HTTP contract', () => {
     expect(operation).toHaveProperty('requestBody.required', true)
     expect(Object.keys(operation?.responses ?? {}).sort())
       .toEqual(['200', '207', '400', '401', '413', '415', '503'])
+  })
+
+  it('mounts the contour replacement with the same protection and explicit counts', async () => {
+    const { app, areas } = setup()
+    const url = '/postal-code/postal-area/district/cog/96001'
+    expect(await request(app, { url })).toMatchObject({ status: 200, body: {
+      message: 'Postal areas updated', response: { createdCount: 1, deletedCount: 2 },
+    } })
+    expect(areas).toHaveBeenCalledExactlyOnceWith('96001', [])
+    expect((await request(app, { url, authorization: '' })).status).toBe(401)
+    expect(areas).toHaveBeenCalledTimes(1)
+  })
+
+  it('documents the contour path, projection, limits and response codes', async () => {
+    const document = await SwaggerParser.validate(fileURLToPath(new URL('../openapi.yaml',
+      import.meta.url)), { resolve: { http: false } })
+    const operation = document.paths?.['/postal-code/postal-area/district/cog/{cog}']?.put
+    expect(operation?.security).toEqual([{ PostalToken: [] }])
+    expect(operation?.parameters).toHaveLength(1)
+    expect(operation).toHaveProperty('requestBody.required', true)
+    expect(Object.keys(operation?.responses ?? {}).sort())
+      .toEqual(['200', '400', '401', '413', '415', '503'])
+  })
+
+  it('bounds contour requests and authenticates before their decoding', async () => {
+    const { app, areas } = setup()
+    const url = '/postal-code/postal-area/district/cog/96001'
+    expect((await request(app, { url, body: '{broken' })).status).toBe(400)
+    expect((await request(app, { url, type: 'text/plain' })).status).toBe(415)
+    expect((await request(app, { url, body: '{broken', authorization: '' })).status).toBe(401)
+    expect((await request(app, { url, body: 'x'.repeat(21_000_000) })).status).toBe(413)
+    expect(areas).not.toHaveBeenCalled()
   })
 })

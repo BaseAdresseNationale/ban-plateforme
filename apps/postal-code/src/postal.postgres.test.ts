@@ -13,6 +13,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { Pool } from 'pg'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
+import { replacePostalAreas } from './administration.js'
 import { createPostalLookup } from './lookup.js'
 import { createPostalRepository } from './repository.js'
 import { writePostalReferences } from './reference-writer.js'
@@ -293,6 +294,100 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
     await expect(lookup()({ inseeCom: '96001' })).resolves.toBeDefined()
   })
 
+  it('replaces only one commune over HTTP and rolls back invalid or failed contours', async () => {
+    await verifyDatabase()
+    try {
+      await withHttpServer(async (base, token) => {
+        const url = `${base}/postal-code/postal-area/district/cog/96020`
+        const headers = { Authorization: `Token ${token}`, 'Content-Type': 'application/json' }
+        const item = { postalCode: '96020', geometry: {
+          type: 'Polygon', coordinates: [[[0, 0], [20, 0], [20, 20], [0, 0]]],
+        } }
+        const send = (items: unknown) => fetch(url, { method: 'PUT', headers,
+          body: JSON.stringify(items), signal: AbortSignal.timeout(5000) })
+        const original = await live()
+        const response = await send([item])
+        expect(response.status).toBe(200)
+        expect(await response.json()).toMatchObject({ response: { createdCount: 1, deletedCount: 0 } })
+        const first = await live()
+        expect(first.codes).toEqual(original.codes)
+        expect(first.areas).toHaveLength(original.areas.length + 1)
+        const replay = await send([item])
+        expect(await replay.json()).toMatchObject({ response: { createdCount: 1, deletedCount: 1 } })
+        expect(await live()).toEqual(first)
+        for (const invalid of [[], [{ ...item, id: 1 }], [{ ...item, geometry: {
+          type: 'Point', coordinates: [0, 0],
+        } }], [item, { ...item, geometry: {
+          type: 'Polygon', coordinates: [[[0, 0], [20, 20], [20, 0], [0, 20], [0, 0]]],
+        } }]]) {
+          expect((await send(invalid)).status).toBe(400)
+          expect(await live()).toEqual(first)
+        }
+        await verifyDatabase()
+        await pool!.query(`CREATE FUNCTION postal.reject_admin_test() RETURNS trigger
+          LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'private synthetic failure'; END $$;
+          CREATE TRIGGER reject_admin_test BEFORE INSERT ON postal.postal_area
+          FOR EACH ROW EXECUTE FUNCTION postal.reject_admin_test()`)
+        try {
+          const failed = await send([item])
+          expect(failed.status).toBe(503)
+          expect(JSON.stringify(await failed.json())).not.toContain('private')
+          expect(await live()).toEqual(first)
+        } finally {
+          await verifyDatabase()
+          await pool!.query(`DROP TRIGGER reject_admin_test ON postal.postal_area;
+            DROP FUNCTION postal.reject_admin_test()`)
+        }
+      }, 'postal_test', 'postal-test-only', true)
+    } finally {
+      await verifyDatabase()
+      await pool!.query('DELETE FROM postal.postal_area WHERE "inseeCom" = $1', ['96020'])
+    }
+  }, 20000)
+
+  it('uses a restricted admin role and cannot bypass a read-only PostgreSQL role', async () => {
+    await verifyDatabase()
+    await pool!.query(`CREATE ROLE postal_admin_test LOGIN PASSWORD 'postal-admin-test-only';
+      CREATE ROLE postal_admin_readonly LOGIN PASSWORD 'postal-readonly-test-only';
+      GRANT USAGE ON SCHEMA postal TO postal_admin_test, postal_admin_readonly;
+      GRANT SELECT ON ALL TABLES IN SCHEMA postal TO postal_admin_test, postal_admin_readonly;
+      GRANT UPDATE ON postal.datanova TO postal_admin_test;
+      GRANT INSERT, DELETE ON postal.postal_area TO postal_admin_test;
+      GRANT USAGE ON SEQUENCE postal.postal_area_id_seq TO postal_admin_test`)
+    const item = { inseeCom: '96002', postalCodes: ['96003'],
+      libelleAcheminementWithPostalCodes: { '96003': 'COMMUNE FICTIVE' } }
+    const area = { postalCode: '96021', geometry: {
+      type: 'Polygon', coordinates: [[[0, 0], [20, 0], [20, 20], [0, 0]]],
+    } }
+    try {
+      for (const role of [
+        { user: 'postal_admin_test', password: 'postal-admin-test-only', codeStatus: 200,
+          areaStatus: 200 },
+        { user: 'postal_admin_readonly', password: 'postal-readonly-test-only', codeStatus: 207,
+          areaStatus: 503 },
+      ]) {
+        await withHttpServer(async (base, token) => {
+          const before = await live()
+          const send = (route: string, body: unknown) => fetch(`${base}/postal-code/${route}`, {
+            method: 'PUT', headers: { Authorization: `Token ${token}`,
+              'Content-Type': 'application/json' },
+            body: JSON.stringify(body), signal: AbortSignal.timeout(5000),
+          })
+          expect((await send('postal-datanova', [item])).status).toBe(role.codeStatus)
+          const result = await send('postal-area/district/cog/96021', [area])
+          expect(result.status).toBe(role.areaStatus)
+          if (role.areaStatus === 503) {
+            expect(await live()).toEqual(before)
+            expect(JSON.stringify(await result.json())).not.toContain('permission denied')
+          }
+        }, role.user, role.password, true)
+      }
+    } finally {
+      await verifyDatabase()
+      await pool!.query('DELETE FROM postal.postal_area WHERE "inseeCom" = $1', ['96021'])
+    }
+  }, 20000)
+
   const candidate = (cog = '96010', code = '96010') => async (sink: ReferenceSink) => {
     await sink.code({ cog, code, label: 'REFERENCE FICTIVE' })
     await sink.area({ cog, code, sourceSrid: 4326,
@@ -411,6 +506,72 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
       (SELECT count(*)::int FROM postal.datanova) AS codes,
       (SELECT count(*)::int FROM postal.postal_area) AS areas`)
     expect(totals.rows[0]).toEqual({ codes: 1, areas: 1 })
+  })
+
+  it('serializes administration behind a complete import without exposing partial data', async () => {
+    await verifyDatabase()
+    const before = await live()
+    let releasePublication!: () => void
+    let stagedPublication!: () => void
+    const held = new Promise<void>(resolve => { releasePublication = resolve })
+    const ready = new Promise<void>(resolve => { stagedPublication = resolve })
+    const delayed: ReferencePool = {
+      async connect() {
+        const client = await pool!.connect()
+        return {
+          async query(sql, values) {
+            const result = await client.query(sql, values)
+            if (sql.includes('DELETE FROM postal.')) {
+              stagedPublication()
+              await held
+            }
+            return result
+          },
+          release: error => client.release(error),
+        }
+      },
+    }
+    let adminPid: number | undefined
+    const observed: ReferencePool = {
+      async connect() {
+        const client = await pool!.connect()
+        try {
+          const { rows: [row] } = await client.query('SELECT pg_backend_pid() AS pid')
+          adminPid = row.pid
+        } catch (error) { client.release(); throw error }
+        return { query: (sql, values) => client.query(sql, values),
+          release: error => client.release(error) }
+      },
+    }
+    const geometry = { type: 'Polygon', coordinates: [[[0, 0], [20, 0], [20, 20], [0, 0]]] }
+    const publication = writePostalReferences(delayed, candidate('96070', '96070'), { apply: true })
+    let administration: Promise<unknown> | undefined
+    try {
+      await Promise.race([ready, publication])
+      administration = replacePostalAreas(observed, '96070', [{ postalCode: '96070', geometry }])
+      let blocked = false
+      const deadline = Date.now() + 3000
+      while (Date.now() < deadline) {
+        const { rows: [state] } = await pool!.query(
+          'SELECT wait_event FROM pg_stat_activity WHERE pid = $1', [adminPid ?? -1],
+        )
+        if (state?.wait_event === 'advisory') { blocked = true; break }
+        await delay(10)
+      }
+      expect(blocked, 'Admin must wait on the same publication lock as the importer').toBe(true)
+      expect(await live()).toEqual(before)
+    } finally {
+      releasePublication()
+      await Promise.allSettled([publication, administration])
+    }
+    await publication
+    expect(await administration).toEqual({ createdCount: 1, deletedCount: 1 })
+    const after = await pool!.query(`SELECT "inseeCom", "postalCode",
+      public.ST_AsGeoJSON(geometry)::jsonb AS geometry FROM postal.postal_area`)
+    expect(after.rows).toEqual([{ inseeCom: '96070', postalCode: '96070', geometry: {
+      ...geometry, crs: { type: 'name', properties: { name: 'EPSG:2154' } },
+    } }])
+    await expect(lookup()({ inseeCom: '96070' })).resolves.toMatchObject({ code_postal: '96070' })
   })
 
   const importCsv = 'Code_commune_INSEE;Code_postal;Libellé_d_acheminement\n'
