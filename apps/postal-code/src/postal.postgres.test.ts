@@ -12,6 +12,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { createPostalLookup } from './lookup.js'
 import { createPostalRepository } from './repository.js'
+import { writePostalReferences } from './reference-writer.js'
+import type { ReferencePool, ReferenceSink } from './reference-writer.js'
 
 const enabled = process.env.RUN_POSTAL_POSTGRES_TESTS === '1'
 const image = 'postgis/postgis:17-3.4'
@@ -70,7 +72,7 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
     testPort = inspectOwnedPort()
     expect(testPort).toBeGreaterThan(0)
     pool = new Pool({ host: '127.0.0.1', port: testPort, database, user: 'postal_test',
-      password: 'postal-test-only', connectionTimeoutMillis: 1000, max: 2 })
+      password: 'postal-test-only', connectionTimeoutMillis: 1000, query_timeout: 3000, max: 3 })
     let ready = false
     const deadline = Date.now() + 15000
     while (Date.now() < deadline) {
@@ -232,5 +234,125 @@ describe.skipIf(!enabled)('owned disposable PostGIS postal service', () => {
       try { await client.query('ROLLBACK') } finally { client.release() }
     }
     await expect(lookup()({ inseeCom: '96001' })).resolves.toBeDefined()
+  })
+
+  const candidate = (cog = '96010', code = '96010') => async (sink: ReferenceSink) => {
+    await sink.code({ cog, code, label: 'REFERENCE FICTIVE' })
+    await sink.area({ cog, code, sourceSrid: 4326,
+      geometry: { type: 'Polygon', coordinates: [[[1,45],[3,45],[3,47],[1,45]]] } })
+  }
+
+  const live = async () => (await pool!.query(`
+    SELECT (SELECT jsonb_agg(jsonb_build_array("inseeCom", "postalCodes",
+      "libelleAcheminementWithPostalCodes") ORDER BY "inseeCom") FROM postal.datanova) AS codes,
+      (SELECT jsonb_agg(jsonb_build_array("inseeCom", "postalCode", ST_AsEWKB(geometry))
+        ORDER BY "inseeCom", "postalCode", id) FROM postal.postal_area) AS areas
+  `)).rows[0]
+
+  it('validates a dry run with PostGIS without changing the live snapshot', async () => {
+    await verifyDatabase()
+    const before = await live()
+    expect(await writePostalReferences(pool!, async sink => {
+      await candidate()(sink)
+      await sink.code({ cog: '96010', code: '96010', label: 'REFERENCE FICTIVE' })
+    })).toEqual({ applied: false, communes: 1, codes: 1, areas: 1 })
+    expect(await live()).toEqual(before)
+  })
+
+  it.each(['missing-code', 'conflicting-label', 'invalid-geometry'])(
+    'rejects %s without publishing any partial reference', async scenario => {
+      await verifyDatabase()
+      const before = await live()
+      await expect(writePostalReferences(pool!, async sink => {
+        await candidate()(sink)
+        if (scenario === 'missing-code') {
+          await sink.area({ cog: '96099', code: '96099', sourceSrid: 2154,
+            geometry: { type: 'Polygon', coordinates: [[[0,0],[2,0],[2,2],[0,0]]] } })
+        } else if (scenario === 'conflicting-label') {
+          await sink.code({ cog: '96010', code: '96010', label: 'CONTRADICTION FICTIVE' })
+        } else {
+          await sink.area({ cog: '96010', code: '96010', sourceSrid: 2154,
+            geometry: { type: 'Polygon', coordinates: [[[0,0],[2,2],[2,0],[0,2],[0,0]]] } })
+        }
+      }, { apply: true })).rejects.toThrow()
+      expect(await live()).toEqual(before)
+    },
+  )
+
+  it('rolls back live deletes when publication fails after staging', async () => {
+    await verifyDatabase()
+    const before = await live()
+    await pool!.query(`CREATE FUNCTION postal.reject_test_publication() RETURNS trigger
+      LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic failure'; END $$;
+      CREATE TRIGGER reject_test_publication BEFORE INSERT ON postal.datanova
+      FOR EACH ROW EXECUTE FUNCTION postal.reject_test_publication()`)
+    try {
+      await expect(writePostalReferences(pool!, candidate(), { apply: true }))
+        .rejects.toMatchObject({ kind: 'storage' })
+      expect(await live()).toEqual(before)
+    } finally {
+      await pool!.query(`DROP TRIGGER reject_test_publication ON postal.datanova;
+        DROP FUNCTION postal.reject_test_publication()`)
+    }
+  })
+
+  it('publishes both complete references and does not accumulate rows on replay', async () => {
+    await verifyDatabase()
+    expect(await writePostalReferences(pool!, candidate(), { apply: true }))
+      .toEqual({ applied: true, communes: 1, codes: 1, areas: 1 })
+    const first = await live()
+    await expect(lookup()({ inseeCom: '96010', position: { long: 2, lat: 45.5 } }))
+      .resolves.toMatchObject({ code_postal: '96010', libelle_acheminement: 'REFERENCE FICTIVE' })
+    await expect(lookup()({ inseeCom: '96002' })).rejects.toMatchObject({ status: 404 })
+    await writePostalReferences(pool!, candidate(), { apply: true })
+    expect(await live()).toEqual(first)
+  })
+
+  it('keeps readers on the previous version and serializes concurrent publications', async () => {
+    await verifyDatabase()
+    const before = await live()
+    let releasePublication!: () => void
+    let stagedPublication!: () => void
+    const held = new Promise<void>(resolve => { releasePublication = resolve })
+    const ready = new Promise<void>(resolve => { stagedPublication = resolve })
+    const delayed: ReferencePool = {
+      async connect() {
+        const client = await pool!.connect()
+        return {
+          async query(sql, values) {
+            const result = await client.query(sql, values)
+            if (sql.includes('DELETE FROM postal.')) {
+              stagedPublication()
+              await held
+            }
+            return result
+          },
+          release: error => client.release(error),
+        }
+      },
+    }
+    const first = writePostalReferences(delayed, candidate('96020','96020'), { apply: true })
+    let secondStaged!: () => void
+    const secondReady = new Promise<void>(resolve => { secondStaged = resolve })
+    let second: Promise<unknown> | undefined
+    try {
+      await Promise.race([ready, first])
+      second = writePostalReferences(pool!, async sink => {
+        await candidate('96030','96030')(sink)
+        secondStaged()
+      }, { apply: true })
+      await Promise.race([secondReady, second])
+      expect(await live()).toEqual(before)
+    } finally {
+      releasePublication()
+      await Promise.allSettled([first, second])
+    }
+    await Promise.all([first, second])
+    await expect(lookup()({ inseeCom: '96030' })).resolves.toMatchObject({ code_postal: '96030' })
+    await expect(lookup()({ inseeCom: '96020' })).rejects.toMatchObject({ status: 404 })
+    const totals = await pool!.query(`SELECT
+      (SELECT count(*)::int FROM postal.datanova) AS codes,
+      (SELECT count(*)::int FROM postal.postal_area) AS areas`)
+    expect(totals.rows[0]).toEqual({ codes: 1, areas: 1 })
   })
 })

@@ -25,7 +25,7 @@ La migration additive `0012_postal_reference` crée les tables vides de schéma 
 et requiert PostGIS disponible côté PostgreSQL. Elle passe par le runner Prisma du projet ;
 aucune migration n’est lancée au démarrage HTTP. Vérifier la destination avant toute application.
 Aucun référentiel réel n’est fourni ou téléchargé : sans alimentation autorisée, les calculs
-retournent `503`. Le chargement réel et l’administration relèvent d’un autre lot.
+retournent `503`. La commande d’alimentation est ajoutée séparément ; l’administration reste hors périmètre.
 
 ## Vérifier
 
@@ -55,3 +55,15 @@ Toponymes complets, administration, import réel, enrichissement BAL et coordina
 Origine fonctionnelle : PR #747 et #749. La consultation HTTP est reprise avec SQL paramétré
 via le pool de `@ban/prisma-client`, migrations Prisma et tests isolés. Les anciens imports,
 worker BAL, adaptations merger/writer, audit et routes d’administration ne sont pas repris.
+
+## Écriture des références
+
+`reference-writer.ts` prépare les codes et contours dans des tables temporaires propres
+à sa connexion. La simulation est le défaut : validation PostGIS puis rollback, sans DML
+sur les références consultées. L’application remplace les deux tables ensemble, sous
+verrou de publication, par une transaction unique ; les lecteurs voient une version complète.
+Codes et libellés contradictoires, contours invalides ou sans code correspondant sont refusés.
+Le rejeu remplace le jeu complet sans accumulation. Aucun audit ou import n’est déclenché ici.
+Un échec avant COMMIT conserve l’ancienne version ; une confirmation de COMMIT perdue
+est signalée comme indéterminée, jamais comme un succès. Les droits d’écriture du schéma
+postal sont réservés au futur lancement explicite de l’import, pas requis par la lecture HTTP.
