@@ -10,7 +10,10 @@
     "dev": "tsx watch src/index.ts || true",
     "build": "tsc --project tsconfig.json",
     "test": "vitest run",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "docs:check": "node --import tsx src/documentation/openapi.ts check",
+    "docs:build": "node --import tsx src/documentation/openapi.ts build",
+    "docs:dev": "node --import tsx src/documentation/preview.ts"
   },
   "dependencies": {
     "@ban/api": "workspace:*",
@@ -27,9 +30,11 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
     "@types/express": "^5.0.3",
     "@types/multer": "^2.0.0",
     "@types/papaparse": "^5.3.16",
-    "@types/uuid": "^10.0.0"
+    "@types/uuid": "^10.0.0",
+    "swagger-ui-dist": "5.34.1"
   }
 }
