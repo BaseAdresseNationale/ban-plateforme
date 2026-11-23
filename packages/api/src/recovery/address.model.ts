@@ -12,6 +12,9 @@ import {
   typePositionsSchema,
   banGeometrySchema,
 } from '../api/ban-generic.shema.js';
+import {
+  interopMetaSchema, interopSelectionSchema, targetKeyBanMetaSchema,
+} from '../api/target-key-meta.js';
 import { banCommonToponymSchema } from './commonToponym.model.js';
 import { banDistrictSchema } from './district.model.js';
 
@@ -25,6 +28,9 @@ const positionSchema = z.object({
 });
 
 const metaSchema = z.object({
+  ban: targetKeyBanMetaSchema.optional(),
+  interop: interopMetaSchema.optional(),
+  interopSelection: interopSelectionSchema.optional(),
   cadastre: metaCadastreSchema.optional(),
   bal: metaBalSchema.optional(),
   idfix: metaIdfixSchema.optional(),

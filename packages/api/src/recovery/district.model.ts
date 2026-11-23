@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { getUUIDv4 } from '@ban/tools';
 
 import { label, banID, pgDateString } from '../api/ban-generic.shema.js';
+import { targetKeyBanMetaSchema } from '../api/target-key-meta.js';
 
 const districtConfigSchema = z.object({
     certificate: z.record(z.any()).optional(),
@@ -16,6 +17,7 @@ const districtInseeMetaSchema = z.object({
 });
 
 const districtMetaSchema = z.object({
+    ban: targetKeyBanMetaSchema.optional(),
     insee: districtInseeMetaSchema.optional(),
     bal: z.record(z.any()).optional(),
 });
