@@ -1,0 +1,25 @@
+{
+  "name": "@ban/postal-code",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "test:postgres": "RUN_POSTAL_POSTGRES_TESTS=1 vitest run src/postal.postgres.test.ts",
+    "import:references": "tsx src/import-cli.ts"
+  },
+  "dependencies": {
+    "@ban/prisma-client": "workspace:*",
+    "csv-parse": "6.2.1",
+    "express": "^4.18.2",
+    "stream-json": "3.9.0"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
+    "@types/express": "^5.0.3",
+    "@types/pg": "^8.15.5",
+    "pg": "^8.16.3"
+  }
+}
