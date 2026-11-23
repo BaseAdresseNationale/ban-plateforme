@@ -1,3 +1,6 @@
+*Contribution assistée par IA — [outil/éditeur] · [modèle/version].*
+
+<!-- Personnaliser avec les informations connues, sinon « non précisé » ; retirer sans assistance IA. -->
 <!-- Adapter la trame, supprimer les sections inutiles et remplacer les indications. -->
 <!-- Nommer le composant livré et son rôle en une phrase. -->
 
