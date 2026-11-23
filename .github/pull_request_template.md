@@ -1,20 +1,25 @@
 <!-- Adapter la trame, supprimer les sections inutiles et remplacer les indications. -->
-<!-- Résumer en une phrase la fonctionnalité livrée. -->
+<!-- Nommer le composant livré et son rôle en une phrase. -->
 
 ### Proposition
 
 - **Mise en place :** ce que la PR apporte.
 - **Objectif :** le besoin auquel elle répond.
-- **Comment :** son fonctionnement général.
+- **Comment :** fonctionnement présenté en étapes ou liste lisible.
+
+### Démarrer le composant
+
+<!-- Prérequis/versions dans package.json, configuration, chargement réel du .env, lancement et URL. -->
 
 ### Interface
 
-<!-- Routes/commandes et paramètres utiles ; lien vers le contrat complet. -->
+<!-- Même présentation par route : méthode/chemin, authentification, paramètres/corps, réponses et contrat. -->
+<!-- Note par route si activation requise : commencer par son objectif, puis expliquer la configuration. -->
 
 ### Tester
 
-<!-- Prérequis : versions requises dans le package.json, configuration et modèle sans secrets. -->
-<!-- Démarrage, URL complète/appel reproductible, authentification et résultat attendu. -->
+<!-- Commenter chaque commande shell, ici et au démarrage : objectif concret, sans supposer Node/pnpm connus. -->
+<!-- Appels reproductibles : URL complète, authentification, données fictives et résultats attendus. -->
 <!-- Vérifications automatiques : commandes, résultats, contrôles non réalisés et causes. -->
 
 ### Périmètre technique

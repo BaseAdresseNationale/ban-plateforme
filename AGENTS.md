@@ -2,7 +2,7 @@
 
 ## Livraison
 
-- PR : fonctionnalité utilisée, tests et documentation ; suivre le [modèle](.github/pull_request_template.md), sections utiles seulement. Justifier les adaptations entre services ; séparer les nettoyages indépendants.
+- PR : fonctionnalité utilisée, tests et documentation ; nommer le composant et son rôle, suivre le [modèle](.github/pull_request_template.md), sections utiles seulement, accessibles aux débutants. Justifier les adaptations entre services ; séparer les nettoyages indépendants.
 - Commits atomiques avec tests/documentation, vérifiés sur leur propre contenu : `type(périmètre): sujet` en français, identifiant de lot conservé ; ne pas harmoniser rétroactivement les messages.
 - Logique métier dans son service ; partage uniquement pour des consommateurs identifiés.
 - Respecter la base et les autres chantiers ; ne pas modifier un autre dépôt ni réécrire une autre branche sans instruction.
