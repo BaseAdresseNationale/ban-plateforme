@@ -22,7 +22,7 @@
     "askComposeAll": "node lib/compose/ask-compose-all.cjs",
     "lint": "xo",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:integration": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --testMatch \"**/*.integration.js\"",
+    "test:integration": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --testMatch \"**/*.integration.spec.js\" --testPathIgnorePatterns /node_modules/",
     "worker": "node worker.js",
     "worker:dev": "npx nodemon worker.js",
     "start": "node server.js",
@@ -109,7 +109,11 @@
     "xo/eslint-plugin-n": "17.24.0"
   },
   "jest": {
-    "transform": {}
+    "transform": {},
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "\\.integration\\.spec\\.js$"
+    ]
   },
   "xo": {
     "envs": [
