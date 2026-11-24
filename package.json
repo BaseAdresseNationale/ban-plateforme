@@ -22,6 +22,7 @@
     "askComposeAll": "node lib/compose/ask-compose-all.cjs",
     "lint": "xo",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:integration": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand --testMatch \"**/*.integration.js\"",
     "worker": "node worker.js",
     "worker:dev": "npx nodemon worker.js",
     "start": "node server.js",
@@ -101,6 +102,7 @@
     "deep-diff": "^1.0.2",
     "jest": "^29.5.0",
     "sequelize-cli": "^6.6.1",
+    "supertest": "^7.3.2",
     "xo": "^0.50.0"
   },
   "resolutions": {
