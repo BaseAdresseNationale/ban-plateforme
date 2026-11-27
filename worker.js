@@ -6,6 +6,7 @@ import ms from 'ms'
 import apiConsumer from './lib/api/consumers/api-consumer.js'
 import exportToExploitationDBConsumer from './lib/api/consumers/export-to-exploitation-db-consumer.js'
 import cleanJobStatusConsumer from './lib/api/consumers/clean-job-status-consumer.js'
+import purgeSessionsConsumer from './lib/api/consumers/purge-sessions-consumer.js'
 
 import mongo from './lib/util/mongo.cjs'
 import {redis} from './lib/util/redis.cjs'
@@ -27,6 +28,7 @@ const allQueues = [
   queue('export-to-exploitation-db'),
   queue('clean-job-status'),
   queue('bal-garbage-collector'),
+  queue('purge-sessions'),
 ]
 
 const shutdown = async signal => {
@@ -76,6 +78,11 @@ async function main() {
     queue('bal-garbage-collector').add({}, {jobId: 'balGarbageCollectorJobId', repeat: {every: ms('1d')}, removeOnComplete: true})
   }
 
+  // Hors du lock scheduler, qu'un worker précédent peut tenir 24 h ; Bull ignore le doublon d'un job répétable.
+  queue('purge-sessions').add({}, {jobId: 'purgeSessionsJobId', repeat: {every: ms('1d')}, removeOnComplete: true})
+    .then(() => console.log('[worker] Cron purge-sessions enregistré (tous les jours)'))
+    .catch(error => console.warn('[worker] Enregistrement du cron purge-sessions impossible:', error.message))
+
   // Recovery optionnelle après crash Valkey confirmé (RECOVERY_SCAN_ON_BOOT=true)
   if (process.env.RECOVERY_SCAN_ON_BOOT === 'true') {
     await runRecoveryScan()
@@ -92,6 +99,7 @@ async function main() {
   queue('api').process(API_CONCURRENCY, apiConsumer)
   queue('export-to-exploitation-db').process(EXPORT_CONCURRENCY, exportToExploitationDBConsumer)
   queue('clean-job-status').process(1, cleanJobStatusConsumer)
+  queue('purge-sessions').process(1, purgeSessionsConsumer)
   queue('bal-garbage-collector').process(1, async () => {
     await balGarbageCollector()
   })
