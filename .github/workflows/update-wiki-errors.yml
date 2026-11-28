@@ -62,16 +62,31 @@ jobs:
           echo "|---------|-----|------|------------------|" >> wiki/Errors-Board.md
           
           # Fonction de parsing en jq (similaire au code React)
-          if ! jq -r '.response.communes[] | 
+          if ! jq -r '
+          # Nettoie une ligne pour l affichage dans une cellule markdown
+          def clean: gsub("\\*\\*"; "") | gsub("`"; "") | gsub("\\|"; "\\|") | gsub("^\\s+|\\s+$"; "");
+          def trunc($n): if length > $n then .[0:$n] + "…" else . end;
+
+          .response.communes[] |
           . as $item |
           ($item.message | ascii_downcase) as $lower |
-          
+
+          # Lignes utiles du message (sans l en-tête commune ni la ligne "BAL bloquée")
+          ([$item.message | split("\n")[] | clean
+            | select(length > 0)
+            | select(contains("bloquée") | not)
+            | select(startswith(($item.districtName // "") + " (") | not)
+          ]) as $lines |
+
+          # Première ligne correspondant à un motif (insensible à la casse), sinon première ligne utile
+          def detail($re): (first($lines[] | select(test($re; "i"))) // $lines[0] // "");
+
           # Parser le message
           (if ($lower | contains("job") and contains("échoué")) then
             if ($item.message | contains("updateDate is a required field")) then
               "🔴 Date mise à jour manquante"
             else
-              "🔴 Erreur interne - contacter le support"
+              "🔴 Erreur interne (job) : " + (detail("job .*échoué") | sub("^.*?échoué\\s*:\\s*"; "") | trunc(150))
             end
           elif ($lower | contains("droits manquants")) then
             "🔴 Droits manquants"
@@ -90,9 +105,9 @@ jobs:
           elif ($lower | contains("enregistrement de la bal sans les identifiants")) then
             "🔴 Enregistrement sans identifiants - Consulter rapport"
           elif ([$lower | contains("api ban"), contains("api dump"), contains("timeout")] | any) then
-            "🔴 Erreur interne - contactez le support"
+            "🔴 Erreur interne : " + (detail("api ban|api dump|timeout") | trunc(150))
           else
-            "🔴 " + ($item.message | split("\n")[0] | .[0:80])
+            "🔴 " + ($lines[0] // "Erreur inconnue" | trunc(150))
           end) as $parsed |
           
           "| \($item.districtName) | `\($item.cog)` | \($item.createdAt[0:10]) | \($parsed) |"
